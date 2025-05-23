@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MemoryApplication {
+public class MemoryApiApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MemoryApplication.class, args);
+        SpringApplication.run(MemoryApiApplication.class, args);
     }
 
 }

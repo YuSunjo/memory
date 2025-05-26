@@ -1,8 +1,9 @@
 package com.memory.controller.member;
 
-import com.memory.ApiResponse;
+import com.memory.dto.member.response.MemberLoginResponse;
+import com.memory.response.ApiResponse;
 import com.memory.dto.member.MemberRequest;
-import com.memory.dto.member.MemberResponse;
+import com.memory.dto.member.response.MemberResponse;
 import com.memory.service.member.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,9 @@ public class MemberController {
         return ApiResponse.success(memberService.signup(signupRequestDto));
     }
 
+    @PostMapping("api/v1/member/login")
+    public ApiResponse<MemberLoginResponse> login(@RequestBody @Valid MemberRequest.Login loginRequestDto) {
+        return ApiResponse.success(memberService.login(loginRequestDto));
+    }
 
 }

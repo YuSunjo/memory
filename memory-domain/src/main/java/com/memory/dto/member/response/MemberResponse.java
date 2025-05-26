@@ -1,4 +1,4 @@
-package com.memory.dto.member;
+package com.memory.dto.member.response;
 
 import com.memory.domain.member.Member;
 

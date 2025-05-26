@@ -1,6 +1,6 @@
 package com.memory.exception.controllerAdvice;
 
-import com.memory.ApiResponse;
+import com.memory.response.ApiResponse;
 import com.memory.exception.customException.ConflictException;
 import com.memory.exception.customException.NotFoundException;
 import com.memory.exception.customException.ValidationException;

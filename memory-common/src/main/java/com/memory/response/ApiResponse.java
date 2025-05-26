@@ -1,4 +1,4 @@
-package com.memory;
+package com.memory.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

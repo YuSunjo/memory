@@ -9,3 +9,12 @@ Content-Type: application/json
   "nickname": "tnswh",
   "profileImageUrl": "aa"
 }
+
+### login
+POST {{memory_api}}/api/v1/member/login
+Content-Type: application/json
+
+{
+  "email": "tnswh2023@naver.com",
+  "password": "1234"
+}

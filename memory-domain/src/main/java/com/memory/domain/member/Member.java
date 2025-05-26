@@ -1,11 +1,12 @@
 package com.memory.domain.member;
 
 import com.memory.domain.BaseTimeEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.memory.domain.relationship.Relationship;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ToString
 @Entity
@@ -21,12 +22,23 @@ public class Member extends BaseTimeEntity {
 
     private String nickname;
 
+    private String email;
+
     private String password;
 
-    @Builder
-    public Member(String name, String nickname, String password) {
+    private String profileImageUrl;
+
+    @OneToMany(mappedBy = "member")
+    private List<Relationship> relationshipList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "relatedMember")
+    private List<Relationship> relatedRelationshipList = new ArrayList<>();    // 내가 받은 관계들
+
+    public Member(String name, String nickname, String email, String password, String profileImageUrl) {
         this.name = name;
         this.nickname = nickname;
+        this.email = email;
         this.password = password;
+        this.profileImageUrl = profileImageUrl;
     }
 }

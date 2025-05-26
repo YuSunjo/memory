@@ -1,0 +1,11 @@
+### signup
+POST {{memory_api}}/api/v1/member/signup
+Content-Type: application/json
+
+{
+  "email": "tnswh2023@naver.com",
+  "password": "1234",
+  "name": "tnswh",
+  "nickname": "tnswh",
+  "profileImageUrl": "aa"
+}

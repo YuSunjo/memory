@@ -28,3 +28,17 @@ jwt:
     expiration: 3600
     refresh: 2592000
     secret: secure_enough_for_the_HS256_algorithm_memory_secret_key_v1
+
+# SpringDoc configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    disable-swagger-default-url: true
+  packages-to-scan: com.memory.controller
+  paths-to-match: /api/**
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8

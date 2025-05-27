@@ -26,7 +26,5 @@ spring:
 jwt:
   token:
     expiration: 3600
-    refresh: 604800
+    refresh: 2592000
     secret: secure_enough_for_the_HS256_algorithm_memory_secret_key_v1
-
-

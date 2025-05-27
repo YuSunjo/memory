@@ -24,4 +24,16 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         );
     }
 
+    @Override
+    public Optional<Member> findMemberById(Long memberId) {
+        return Optional.ofNullable(
+            queryFactory.selectFrom(member)
+                .where(
+                    member.id.eq(memberId),
+                    member.deleteDate.isNull()
+                )
+                .fetchOne()
+        );
+    }
+
 }

@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -24,27 +23,21 @@ public class JwtTokenProvider {
 
     @PostConstruct
     public void init() {
-        String secret = Base64.getEncoder().encodeToString(jwtComponent.getSecret().getBytes());
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.key = Keys.hmacShaKeyFor(jwtComponent.getSecret().getBytes());
     }
 
     public String createAccessToken(String subject) {
-        Claims claims = Jwts.claims().setSubject(subject);
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + jwtComponent.getExpiration());
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(key, signatureAlgorithm)
-                .compact();
+        return createToken(subject, jwtComponent.getExpiration() * 1000);
     }
 
     public String createRefreshToken(String subject) {
+        return createToken(subject, jwtComponent.getRefresh() * 1000);
+    }
+
+    private String createToken(String subject, long expirationTimeMillis) {
         Claims claims = Jwts.claims().setSubject(subject);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + jwtComponent.getExpiration() * 1000);
+        Date validity = new Date(now.getTime() + expirationTimeMillis);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -55,6 +48,7 @@ public class JwtTokenProvider {
     }
 
     public String getSubject(String token) {
+        System.out.println("JWT 토큰: " + token);
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(key)

@@ -47,4 +47,11 @@ public class MemberService {
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getEmail());
         return MemberLoginResponse.of(accessToken, refreshToken);
     }
+
+    @Transactional(readOnly = true)
+    public MemberResponse findMemberById(Long memberId) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+        return MemberResponse.from(member);
+    }
 }

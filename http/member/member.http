@@ -18,3 +18,11 @@ Content-Type: application/json
   "email": "tnswh2023@naver.com",
   "password": "1234"
 }
+
+> {%
+    client.global.set("access_token", response.body.data.accessToken);
+%}
+
+### find member (requires JWT token)
+GET {{memory_api}}/api/v1/member/me
+Authorization: Bearer {{access_token}}

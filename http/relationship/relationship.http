@@ -6,3 +6,7 @@ Authorization: Bearer {{access_token}}
 {
   "relatedMemberId": 2
 }
+
+### accept relationship request (requires JWT token)
+POST {{memory_api}}/api/v1/relationship/accept/1
+Authorization: Bearer {{access_token}}

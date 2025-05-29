@@ -2,6 +2,7 @@ package com.memory.domain.relationship;
 
 import com.memory.domain.BaseTimeEntity;
 import com.memory.domain.member.Member;
+import com.memory.exception.customException.ValidationException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,8 +40,14 @@ public class Relationship extends BaseTimeEntity {
         this.startDate = LocalDateTime.now();
     }
 
-    public static Relationship createPendingRelationship(Member member, Member relatedMember) {
-        return new Relationship(member, relatedMember, RelationshipStatus.PENDING);
+    public static Relationship createRelationship(Member member, Member relatedMember, RelationshipStatus relationshipStatus) {
+        return new Relationship(member, relatedMember, relationshipStatus);
     }
 
+    public void accept() {
+        if (this.relationshipStatus != RelationshipStatus.PENDING) {
+            throw new ValidationException("Only pending relationships can be accepted");
+        }
+        this.relationshipStatus = RelationshipStatus.ACCEPTED;
+    }
 }

@@ -18,7 +18,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         return Optional.ofNullable(
             queryFactory.selectFrom(member)
                 .where(
-                    member.email.eq(email)
+                    member.email.eq(email),
+                    member.deleteDate.isNull()
                 )
                 .fetchOne()
         );

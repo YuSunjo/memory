@@ -79,4 +79,11 @@ public class MemberService {
 
         return MemberResponse.from(member);
     }
+
+    @Transactional(readOnly = true)
+    public MemberResponse findMemberByEmail(String email) {
+        Member member = memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 이메일입니다."));
+        return MemberResponse.from(member);
+    }
 }

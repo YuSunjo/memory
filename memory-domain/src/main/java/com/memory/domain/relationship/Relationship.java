@@ -39,4 +39,8 @@ public class Relationship extends BaseTimeEntity {
         this.startDate = LocalDateTime.now();
     }
 
+    public static Relationship createPendingRelationship(Member member, Member relatedMember) {
+        return new Relationship(member, relatedMember, RelationshipStatus.PENDING);
+    }
+
 }

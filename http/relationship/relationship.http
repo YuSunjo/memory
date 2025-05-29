@@ -1,0 +1,8 @@
+### create relationship request (requires JWT token)
+POST {{memory_api}}/api/v1/relationship/request
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "relatedMemberId": 2
+}

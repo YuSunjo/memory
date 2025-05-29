@@ -5,9 +5,6 @@ import com.memory.domain.relationship.Relationship;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @ToString
 @Entity
 @Getter
@@ -28,11 +25,11 @@ public class Member extends BaseTimeEntity {
 
     private String profileImageUrl;
 
-    @OneToMany(mappedBy = "member")
-    private List<Relationship> relationshipList = new ArrayList<>();
+    @OneToOne(mappedBy = "member")
+    private Relationship relationship;
 
-    @OneToMany(mappedBy = "relatedMember")
-    private List<Relationship> relatedRelationshipList = new ArrayList<>();    // 내가 받은 관계들
+    @OneToOne(mappedBy = "relatedMember")
+    private Relationship relatedRelationship;    // 내가 받은 관계
 
     public Member(String name, String nickname, String email, String password, String profileImageUrl) {
         this.name = name;

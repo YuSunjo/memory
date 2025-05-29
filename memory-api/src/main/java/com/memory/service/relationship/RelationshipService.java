@@ -41,9 +41,7 @@ public class RelationshipService {
         Relationship relationship = relationshipRepository.findById(relationshipId)
                 .orElseThrow(() -> new NotFoundException("관계 요청을 찾을 수 없습니다."));
 
-        if (!relationship.getRelatedMember().getId().equals(member.getId())) {
-            throw new IllegalArgumentException("관계 요청을 수락할 권한이 없습니다.");
-        }
+        relationship.validateAcceptPermission(member);
 
         relationship.accept();
 

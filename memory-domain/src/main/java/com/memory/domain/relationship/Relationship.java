@@ -18,11 +18,11 @@ public class Relationship extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "related_member_id")
     private Member relatedMember;
 
@@ -42,6 +42,12 @@ public class Relationship extends BaseTimeEntity {
 
     public static Relationship createRelationship(Member member, Member relatedMember, RelationshipStatus relationshipStatus) {
         return new Relationship(member, relatedMember, relationshipStatus);
+    }
+
+    public void validateAcceptPermission(Member member) {
+        if (!this.getRelatedMember().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("관계 요청을 수락할 권한이 없습니다.");
+        }
     }
 
     public void accept() {

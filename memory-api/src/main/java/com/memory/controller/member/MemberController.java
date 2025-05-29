@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -119,5 +120,22 @@ public class MemberController {
             @Parameter(hidden = true) @MemberId Long memberId,
             @RequestBody @Valid MemberRequest.PasswordUpdate passwordUpdateRequestDto) {
         return ServerResponse.success(memberService.updatePassword(memberId, passwordUpdateRequestDto));
+    }
+
+    @Operation(
+        summary = "이메일로 회원 조회",
+        description = "이메일로 회원을 조회합니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "회원 조회 성공",
+            content = @Content(schema = @Schema(implementation = MemberResponse.class))
+        ),
+    })
+    @GetMapping("api/v1/member/email")
+    public ServerResponse<MemberResponse> findMemberByEmail(
+            @RequestParam("email") String email) {
+        return ServerResponse.success(memberService.findMemberByEmail(email));
     }
 }

@@ -46,3 +46,6 @@ Authorization: Bearer {{access_token}}
 {
   "password": "newpassword"
 }
+
+### find member by email
+GET {{memory_api}}/api/v1/member/email?email=tnswh2023@naver.com

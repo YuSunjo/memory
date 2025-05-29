@@ -3,6 +3,7 @@ package com.memory.service.relationship;
 import com.memory.domain.member.Member;
 import com.memory.domain.member.repository.MemberRepository;
 import com.memory.domain.relationship.Relationship;
+import com.memory.domain.relationship.RelationshipStatus;
 import com.memory.domain.relationship.repository.RelationshipRepository;
 import com.memory.dto.relationship.RelationshipRequest;
 import com.memory.dto.relationship.response.RelationshipResponse;
@@ -26,8 +27,32 @@ public class RelationshipService {
         Member relatedMember = memberRepository.findMemberById(createRequestDto.getRelatedMemberId())
                 .orElseThrow(() -> new NotFoundException("대상 회원을 찾을 수 없습니다."));
 
-        Relationship relationship = Relationship.createPendingRelationship(member, relatedMember);
+        Relationship relationship = Relationship.createRelationship(member, relatedMember, RelationshipStatus.PENDING);
         relationshipRepository.save(relationship);
+
+        return RelationshipResponse.from(relationship);
+    }
+
+    @Transactional
+    public RelationshipResponse acceptRelationshipRequest(Long memberId, Long relationshipId) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("요청한 회원을 찾을 수 없습니다."));
+
+        Relationship relationship = relationshipRepository.findById(relationshipId)
+                .orElseThrow(() -> new NotFoundException("관계 요청을 찾을 수 없습니다."));
+
+        if (!relationship.getRelatedMember().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("관계 요청을 수락할 권한이 없습니다.");
+        }
+
+        relationship.accept();
+
+        Relationship reciprocalRelationship = Relationship.createRelationship(
+                relationship.getRelatedMember(), 
+                relationship.getMember(),
+                RelationshipStatus.ACCEPTED
+        );
+        relationshipRepository.save(reciprocalRelationship);
 
         return RelationshipResponse.from(relationship);
     }

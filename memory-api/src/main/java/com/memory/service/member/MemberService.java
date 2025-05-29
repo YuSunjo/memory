@@ -54,4 +54,29 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
         return MemberResponse.from(member);
     }
+
+    @Transactional
+    public MemberResponse updateMember(Long memberId, MemberRequest.Update updateRequestDto) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+
+        member.update(
+            updateRequestDto.getName(), 
+            updateRequestDto.getNickname(), 
+            updateRequestDto.getProfileImageUrl()
+        );
+
+        return MemberResponse.from(member);
+    }
+
+    @Transactional
+    public MemberResponse updatePassword(Long memberId, MemberRequest.PasswordUpdate passwordUpdateRequestDto) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+
+        String encodedPassword = passwordEncoder.encode(passwordUpdateRequestDto.getPassword());
+        member.updatePassword(encodedPassword);
+
+        return MemberResponse.from(member);
+    }
 }

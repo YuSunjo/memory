@@ -26,3 +26,23 @@ Content-Type: application/json
 ### find member (requires JWT token)
 GET {{memory_api}}/api/v1/member/me
 Authorization: Bearer {{access_token}}
+
+### update member (requires JWT token)
+PUT {{memory_api}}/api/v1/member/me
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": "Updated Name",
+  "nickname": "Updated Nickname",
+  "profileImageUrl": "https://new-profile-image-url.com/image.jpg"
+}
+
+### update password (requires JWT token)
+PUT {{memory_api}}/api/v1/member/me/password
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "password": "newpassword"
+}

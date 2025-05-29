@@ -52,4 +52,28 @@ public class MemberRequest {
         }
     }
 
+    @Getter
+    public static class Update {
+        @NotBlank(message = "이름은 필수 입력값입니다.")
+        private String name;
+        @NotBlank(message = "닉네임은 필수 입력값입니다.")
+        private String nickname;
+        private final String profileImageUrl;
+
+        public Update(String name, String nickname, String profileImageUrl) {
+            this.name = name;
+            this.nickname = nickname;
+            this.profileImageUrl = profileImageUrl;
+        }
+    }
+
+    @Getter
+    public static class PasswordUpdate {
+        @NotBlank(message = "비밀번호는 필수 입력값입니다.")
+        private String password;
+
+        public PasswordUpdate(String password) {
+            this.password = password;
+        }
+    }
 }

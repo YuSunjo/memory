@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -80,4 +81,43 @@ public class MemberController {
         return ServerResponse.success(memberService.findMemberById(memberId));
     }
 
+    @Operation(
+        summary = "회원 정보 수정",
+        description = "회원의 이름, 닉네임, 프로필 이미지 URL을 수정합니다.",
+        security = { @SecurityRequirement(name = "bearerAuth") }
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "회원 정보 수정 성공",
+            content = @Content(schema = @Schema(implementation = MemberResponse.class))
+        ),
+    })
+    @Auth
+    @PutMapping("api/v1/member/me")
+    public ServerResponse<MemberResponse> updateMember(
+            @Parameter(hidden = true) @MemberId Long memberId,
+            @RequestBody MemberRequest.Update updateRequestDto) {
+        return ServerResponse.success(memberService.updateMember(memberId, updateRequestDto));
+    }
+
+    @Operation(
+        summary = "비밀번호 수정",
+        description = "회원의 비밀번호를 수정합니다.",
+        security = { @SecurityRequirement(name = "bearerAuth") }
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "비밀번호 수정 성공",
+            content = @Content(schema = @Schema(implementation = MemberResponse.class))
+        ),
+    })
+    @Auth
+    @PutMapping("api/v1/member/me/password")
+    public ServerResponse<MemberResponse> updatePassword(
+            @Parameter(hidden = true) @MemberId Long memberId,
+            @RequestBody @Valid MemberRequest.PasswordUpdate passwordUpdateRequestDto) {
+        return ServerResponse.success(memberService.updatePassword(memberId, passwordUpdateRequestDto));
+    }
 }

@@ -5,9 +5,9 @@ spring:
       activate:
           on-profile: local
   datasource:
-    url: jdbc:postgresql://localhost:5432/myMemory
-    username: postgres
-    password: 1111
+    url: jdbc:postgresql://localhost:5433/memory
+    username: memory
+    password: memory
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

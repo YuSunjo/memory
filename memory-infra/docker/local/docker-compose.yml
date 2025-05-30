@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: memory-postgres-local
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: memory
+      POSTGRES_USER: memory
+      POSTGRES_DB: memory
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - memory-network
+
+  redis:
+    image: redis:6.2
+    container_name: memory-redis-local
+    ports:
+      - "6379:6379"
+    networks:
+      - memory-network
+
+networks:
+  memory-network:
+    driver: bridge
+
+volumes:
+  postgres-data:

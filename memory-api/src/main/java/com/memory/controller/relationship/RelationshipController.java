@@ -110,4 +110,24 @@ public class RelationshipController {
             @RequestParam("status") String status) {
         return ServerResponse.success(relationshipService.getRelationshipsByStatus(memberId, RelationshipStatus.valueOf(status)));
     }
+
+    @Operation(
+        summary = "관계 끊기",
+        description = "기존 관계를 끊습니다.",
+        security = { @SecurityRequirement(name = "bearerAuth") }
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "관계 끊기 성공",
+            content = @Content(schema = @Schema(implementation = RelationshipResponse.class))
+        ),
+    })
+    @Auth
+    @PostMapping("api/v1/relationship/end/{relationshipId}")
+    public ServerResponse<RelationshipResponse> endRelationship(
+            @Parameter(hidden = true) @MemberId Long memberId,
+            @PathVariable Long relationshipId) {
+        return ServerResponse.success(relationshipService.endRelationship(memberId, relationshipId));
+    }
 }

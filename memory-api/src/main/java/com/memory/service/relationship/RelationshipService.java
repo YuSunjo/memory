@@ -75,4 +75,29 @@ public class RelationshipService {
         return RelationshipListResponse.fromEntities(relationships);
     }
 
+    @Transactional
+    public RelationshipResponse endRelationship(Long memberId, Long relationshipId) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("요청한 회원을 찾을 수 없습니다."));
+
+        Relationship relationship = relationshipRepository.findById(relationshipId)
+                .orElseThrow(() -> new NotFoundException("관계를 찾을 수 없습니다."));
+
+        relationship.validateEndPermission(member);
+        relationship.end();
+
+        List<Relationship> reciprocalRelationships = relationshipRepository.findByMemberIdAndRelatedMemberId(
+                relationship.getRelatedMember().getId(),
+                relationship.getMember().getId()
+        );
+
+        for (Relationship reciprocalRelationship : reciprocalRelationships) {
+            if (reciprocalRelationship.getRelationshipStatus() == RelationshipStatus.ACCEPTED) {
+                reciprocalRelationship.end();
+            }
+        }
+
+        return RelationshipResponse.from(relationship);
+    }
+
 }

@@ -46,7 +46,13 @@ public class Relationship extends BaseTimeEntity {
 
     public void validateAcceptPermission(Member member) {
         if (!this.getRelatedMember().getId().equals(member.getId())) {
-            throw new IllegalArgumentException("관계 요청을 수락할 권한이 없습니다.");
+            throw new ValidationException("관계 요청을 수락할 권한이 없습니다.");
+        }
+    }
+
+    public void validateEndPermission(Member member) {
+        if (!this.getMember().getId().equals(member.getId()) && !this.getRelatedMember().getId().equals(member.getId())) {
+            throw new ValidationException("관계를 끊을 권한이 없습니다.");
         }
     }
 
@@ -55,5 +61,13 @@ public class Relationship extends BaseTimeEntity {
             throw new ValidationException("Only pending relationships can be accepted");
         }
         this.relationshipStatus = RelationshipStatus.ACCEPTED;
+    }
+
+    public void end() {
+        if (this.relationshipStatus != RelationshipStatus.ACCEPTED) {
+            throw new ValidationException("Only accepted relationships can be ended");
+        }
+        this.relationshipStatus = RelationshipStatus.ENDED;
+        this.endDate = LocalDateTime.now();
     }
 }

@@ -33,4 +33,17 @@ public class Memory extends BaseTimeEntity {
     @JoinColumn(name = "map_id")
     private Map map;
 
+    public Memory(String title, String content, String locationName, Member member, Map map) {
+        this.title = title;
+        this.content = content;
+        this.locationName = locationName;
+        this.member = member;
+        this.map = map;
+    }
+
+    public void update(String title, String content, String locationName) {
+        this.title = title;
+        this.content = content;
+        this.locationName = locationName;
+    }
 }

@@ -1,0 +1,50 @@
+### Login first
+POST {{memory_api}}/api/v1/member/login
+Content-Type: application/json
+
+{
+  "email": "tnswh2023@naver.com",
+  "password": "1234"
+}
+
+> {%
+    client.global.set("access_token", response.body.data.accessToken);
+%}
+
+### Create a new memory
+POST {{memory_api}}/api/v1/memories
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "첫 번째 추억",
+  "content": "서울 시청에서의 즐거운 시간",
+  "locationName": "서울 시청",
+  "mapId": 1
+}
+
+### Get memory by ID
+GET {{memory_api}}/api/v1/memories/1
+
+### Get memories for current member (requires JWT token)
+GET {{memory_api}}/api/v1/memories/member
+Authorization: Bearer {{access_token}}
+
+### Get paginated memories for current member (requires JWT token)
+GET {{memory_api}}/api/v1/memories/member?lastMemoryId=1&size=5
+Authorization: Bearer {{access_token}}
+
+### Update a memory (requires JWT token)
+PUT {{memory_api}}/api/v1/memories/1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "수정된 추억",
+  "content": "서울 시청에서의 더욱 즐거운 시간",
+  "locationName": "서울 시청 광장"
+}
+
+### Delete a memory (requires JWT token)
+DELETE {{memory_api}}/api/v1/memories/1
+Authorization: Bearer {{access_token}}

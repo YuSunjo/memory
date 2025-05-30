@@ -15,7 +15,7 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect
         format_sql: true
         use_sql_comments: true
         default_batch_fetch_size: 1000
@@ -29,7 +29,6 @@ jwt:
     refresh: 2592000
     secret: secure_enough_for_the_HS256_algorithm_memory_secret_key_v1
 
-# SpringDoc configuration
 springdoc:
   api-docs:
     path: /v3/api-docs

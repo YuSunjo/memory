@@ -13,6 +13,10 @@ dependencies {
     implementation 'org.springframework.data:spring-data-jpa'
     runtimeOnly 'org.postgresql:postgresql'
 
+    // PostGIS support
+    implementation 'org.hibernate:hibernate-spatial:6.4.0.Final'
+    implementation 'org.locationtech.jts:jts-core:1.19.0'
+
     // QueryDSL
     implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"

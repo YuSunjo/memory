@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### docker data
+memory-infra/docker/**/data/postgres-data/

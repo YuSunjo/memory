@@ -6,11 +6,14 @@ import com.memory.domain.relationship.Relationship;
 import com.memory.domain.relationship.RelationshipStatus;
 import com.memory.domain.relationship.repository.RelationshipRepository;
 import com.memory.dto.relationship.RelationshipRequest;
+import com.memory.dto.relationship.response.RelationshipListResponse;
 import com.memory.dto.relationship.response.RelationshipResponse;
 import com.memory.exception.customException.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +45,6 @@ public class RelationshipService {
                 .orElseThrow(() -> new NotFoundException("관계 요청을 찾을 수 없습니다."));
 
         relationship.validateAcceptPermission(member);
-
         relationship.accept();
 
         Relationship reciprocalRelationship = Relationship.createRelationship(
@@ -54,4 +56,23 @@ public class RelationshipService {
 
         return RelationshipResponse.from(relationship);
     }
+
+    @Transactional(readOnly = true)
+    public RelationshipListResponse getRelationships(Long memberId) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+
+        List<Relationship> relationships = relationshipRepository.findByMember(member);
+        return RelationshipListResponse.fromEntities(relationships);
+    }
+
+    @Transactional(readOnly = true)
+    public RelationshipListResponse getRelationshipsByStatus(Long memberId, RelationshipStatus status) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+
+        List<Relationship> relationships = relationshipRepository.findByMemberAndRelationshipStatus(member, status);
+        return RelationshipListResponse.fromEntities(relationships);
+    }
+
 }

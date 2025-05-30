@@ -48,7 +48,6 @@ public class JwtTokenProvider {
     }
 
     public String getSubject(String token) {
-        System.out.println("JWT 토큰: " + token);
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(key)

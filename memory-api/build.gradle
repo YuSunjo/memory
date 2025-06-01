@@ -6,11 +6,10 @@ bootJar {enabled = true}
 jar {enabled = false}
 
 dependencies {
-
     implementation project(':memory-common')
     implementation project(':memory-domain')
 
-    // Swagger UI
+    // Swagger UI common에 의존성 있는데 왜 여기서도 선언해야 하지?
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 }
 

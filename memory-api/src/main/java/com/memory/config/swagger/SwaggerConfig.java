@@ -1,9 +1,8 @@
-package com.memory.config;
+package com.memory.config.swagger;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springdoc.core.models.GroupedOpenApi;
@@ -33,8 +32,6 @@ public class SwaggerConfig {
                 .in(SecurityScheme.In.HEADER)
                 .name("Authorization");
 
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
-
         // Add server configuration
         Server server = new Server().url("/").description("Default Server URL");
 
@@ -42,7 +39,6 @@ public class SwaggerConfig {
                 .openapi("3.0.1")
                 .info(info)
                 .addServersItem(server)
-                .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
-                .addSecurityItem(securityRequirement);
+                .components(new Components().addSecuritySchemes("bearerAuth", securityScheme));
     }
 }

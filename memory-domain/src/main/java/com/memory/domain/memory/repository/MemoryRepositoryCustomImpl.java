@@ -33,7 +33,7 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
                 .where(
                         memory.member.eq(member),
                         memory.deleteDate.isNull(),
-                        ltMemoryId(lastMemoryId)
+                        gtMemoryId(lastMemoryId)
                 )
                 .orderBy(memory.id.desc())
                 .limit(size)
@@ -41,18 +41,17 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
     }
 
     @Override
-    public Optional<Memory> findMemoryById(Long memoryId) {
-        return Optional.ofNullable(
-                queryFactory.selectFrom(memory)
-                        .where(
-                                memory.id.eq(memoryId),
-                                memory.deleteDate.isNull()
-                        )
-                        .fetchOne()
-        );
+    public Optional<Memory> findMemoryByIdAndMemberId(Long memoryId, Long memberId) {
+        return Optional.ofNullable(queryFactory.selectFrom(memory)
+                .where(
+                        memory.id.eq(memoryId),
+                        memory.member.id.eq(memberId),
+                        memory.deleteDate.isNull()
+                )
+                .fetchOne());
     }
 
-    private BooleanExpression ltMemoryId(Long memoryId) {
+    private BooleanExpression gtMemoryId(Long memoryId) {
         return memoryId != null ? memory.id.gt(memoryId) : null;
     }
 }

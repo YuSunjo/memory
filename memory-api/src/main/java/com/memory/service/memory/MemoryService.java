@@ -39,9 +39,13 @@ public class MemoryService {
     }
 
     @Transactional(readOnly = true)
-    public MemoryResponse findMemoryById(Long memoryId) {
-        Memory memory = memoryRepository.findMemoryById(memoryId)
-                .orElseThrow(() -> new NotFoundException("메모리를 찾을 수 없습니다."));
+    public MemoryResponse findMemoryById(Long memberId, Long memoryId) {
+        memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+
+        Memory memory = memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)
+                .orElseThrow(() -> new NotFoundException("해당 유저의 메모리를 찾을 수 없습니다."));
+
         return MemoryResponse.from(memory);
     }
 
@@ -68,8 +72,8 @@ public class MemoryService {
         memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
 
-        Memory memory = memoryRepository.findMemoryById(memoryId)
-                .orElseThrow(() -> new NotFoundException("메모리를 찾을 수 없습니다."));
+        Memory memory = memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)
+                .orElseThrow(() -> new NotFoundException("해당 유저의 메모리를 찾을 수 없습니다."));
 
         // Check if the memory belongs to the member
         if (!memory.getMember().getId().equals(memberId)) {
@@ -87,8 +91,8 @@ public class MemoryService {
         memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
 
-        Memory memory = memoryRepository.findMemoryById(memoryId)
-                .orElseThrow(() -> new NotFoundException("메모리를 찾을 수 없습니다."));
+        Memory memory = memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)
+                .orElseThrow(() -> new NotFoundException("해당 유저의 메모리를 찾을 수 없습니다."));
 
         if (!memory.getMember().getId().equals(memberId)) {
             throw new NotFoundException("해당 메모리에 접근 권한이 없습니다.");

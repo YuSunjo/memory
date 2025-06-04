@@ -33,7 +33,6 @@ Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
 {
-  "name": "Updated Name",
   "nickname": "Updated Nickname",
   "profileImageUrl": "https://new-profile-image-url.com/image.jpg"
 }

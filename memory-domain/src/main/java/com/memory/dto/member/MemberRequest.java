@@ -54,14 +54,11 @@ public class MemberRequest {
 
     @Getter
     public static class Update {
-        @NotBlank(message = "이름은 필수 입력값입니다.")
-        private String name;
         @NotBlank(message = "닉네임은 필수 입력값입니다.")
         private String nickname;
         private final String profileImageUrl;
 
-        public Update(String name, String nickname, String profileImageUrl) {
-            this.name = name;
+        public Update(String nickname, String profileImageUrl) {
             this.nickname = nickname;
             this.profileImageUrl = profileImageUrl;
         }

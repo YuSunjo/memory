@@ -41,6 +41,23 @@ services:
       - memory-network
     restart: always
 
+  mc:
+    image: minio/mc
+    container_name: minio-mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+        sleep 5;
+        echo 'Configuring MinIO Client...';
+        mc alias set local http://minio:9000 minioadmin minioadmin &&
+        mc mb -p local/memory &&
+        mc anonymous set download local/memory;
+        exit 0;
+      "
+    networks:
+      - memory-network
+
   app:
     build:
       context: ../../..

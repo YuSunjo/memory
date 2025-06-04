@@ -23,9 +23,25 @@ services:
     networks:
       - memory-network
 
+  minio:
+    image: minio/minio:latest
+    container_name: memory-minio-local
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - ./data/minio-data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - memory-network
+
 networks:
   memory-network:
     driver: bridge
 
 volumes:
   postgres-data:
+  minio-data:

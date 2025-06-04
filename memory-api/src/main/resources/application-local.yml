@@ -41,3 +41,16 @@ springdoc:
   paths-to-match: /api/**
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY:minioadmin}
+      secret-key: ${AWS_SECRET_KEY:minioadmin}
+    region:
+      static: ${AWS_REGION:ap-northeast-2}
+    s3:
+      bucket: ${S3_BUCKET_NAME:memory}
+      endpoint: ${S3_ENDPOINT:http://localhost:9000}
+    stack:
+      auto: false

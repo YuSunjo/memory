@@ -25,6 +25,22 @@ services:
       - memory-network
     restart: always
 
+  minio:
+    image: minio/minio:latest
+    container_name: memory-minio-dev
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - ./data/minio-data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - memory-network
+    restart: always
+
   app:
     build:
       context: ../../..
@@ -33,6 +49,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - minio
     ports:
       - "8080:8080"
     environment:
@@ -43,6 +60,11 @@ services:
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
+      CLOUD_AWS_CREDENTIALS_ACCESS-KEY: minioadmin
+      CLOUD_AWS_CREDENTIALS_SECRET-KEY: minioadmin
+      CLOUD_AWS_S3_BUCKET: memory-images
+      CLOUD_AWS_REGION_STATIC: us-east-1
+      CLOUD_AWS_S3_ENDPOINT: http://minio:9000
     networks:
       - memory-network
     restart: always
@@ -53,3 +75,4 @@ networks:
 
 volumes:
   postgres-data:
+  minio-data:

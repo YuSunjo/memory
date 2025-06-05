@@ -1,0 +1,12 @@
+cloud:
+  aws:
+    credentials:
+      access-key: minioadmin
+      secret-key: minioadmin
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: memory
+      endpoint: http://localhost:9000
+    stack:
+      auto: false

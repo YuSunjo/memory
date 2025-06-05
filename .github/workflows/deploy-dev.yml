@@ -20,6 +20,9 @@ jobs:
         username: ubuntu
         key: ${{ secrets.DEV_SERVER_PRIVATE_KEY }}
         script: |
+          # GitHub Container Registry 로그인
+          echo ${{ secrets.PAT_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          
           # 프로젝트 디렉토리 생성 및 이동
           mkdir -p ~/memory/memory-backend
           cd ~/memory/memory-backend
@@ -32,7 +35,7 @@ jobs:
             git reset --hard origin/develop
           fi
           
-          # docker-compose 실행
+          # docker compose 실행
           cd memory-infra/docker/dev
           
           # .env 파일 생성
@@ -40,10 +43,15 @@ jobs:
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-
           JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }}
           EOF
           
-          # 컨테이너 실행
-          docker-compose pull
-          docker-compose up -d
+          # 기존 컨테이너 중지 및 제거
+          docker compose down
+          
+          # 새 이미지 풀 및 컨테이너 시작
+          docker compose pull
+          docker compose up -d
+          
+          # 사용하지 않는 이미지 정리
+          docker image prune -f

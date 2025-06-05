@@ -16,15 +16,6 @@ services:
       - memory-network
     restart: always
 
-  redis:
-    image: redis:6.2
-    container_name: memory-redis-dev
-    ports:
-      - "6379:6379"
-    networks:
-      - memory-network
-    restart: always
-
   minio:
     image: minio/minio:latest
     container_name: memory-minio-dev
@@ -65,7 +56,6 @@ services:
     container_name: memory-app-dev
     depends_on:
       - postgres
-      - redis
       - minio
     ports:
       - "8080:8080"
@@ -74,14 +64,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       CLOUD_AWS_CREDENTIALS_ACCESS-KEY: minioadmin
       CLOUD_AWS_CREDENTIALS_SECRET-KEY: minioadmin
-      CLOUD_AWS_S3_BUCKET: memory-images
-      CLOUD_AWS_REGION_STATIC: us-east-1
+      CLOUD_AWS_S3_BUCKET: memory
+      CLOUD_AWS_REGION_STATIC: ap-northeast-2
       CLOUD_AWS_S3_ENDPOINT: http://minio:9000
+      JWT_TOKEN_SECRET: ${JWT_TOKEN_SECRET}
     networks:
       - memory-network
     restart: always

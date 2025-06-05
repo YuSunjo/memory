@@ -1,0 +1,32 @@
+name: Build and Push to GHCR
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: memory-infra/docker/Dockerfile
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository }}/memory-app:${{ github.sha }}
+          ${{ github.ref == 'refs/heads/main' && format('ghcr.io/{0}/memory-app:latest', github.repository) || format('ghcr.io/{0}/memory-app:dev', github.repository) }}

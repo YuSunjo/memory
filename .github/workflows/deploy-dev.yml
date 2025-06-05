@@ -1,0 +1,49 @@
+name: Deploy to Development Server
+
+on:
+  workflow_run:
+    workflows: ["Run Tests", "Build and Push to GHCR"]
+    types:
+      - completed
+    branches: [ develop ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - name: Deploy to development server
+      uses: appleboy/ssh-action@master
+      with:
+        host: 144.24.78.166
+        username: ubuntu
+        key: ${{ secrets.DEV_SERVER_PRIVATE_KEY }}
+        script: |
+          # 프로젝트 디렉토리 생성 및 이동
+          mkdir -p ~/memory/memory-backend
+          cd ~/memory/memory-backend
+          
+          # 기존 저장소가 없다면 클론, 있다면 풀
+          if [ ! -d ".git" ]; then
+            git clone -b develop https://github.com/${{ github.repository }}.git .
+          else
+            git fetch origin develop
+            git reset --hard origin/develop
+          fi
+          
+          # docker-compose 실행
+          cd memory-infra/docker/dev
+          
+          # .env 파일 생성
+          cat > .env << EOF
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+
+          JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }}
+          EOF
+          
+          # 컨테이너 실행
+          docker-compose pull
+          docker-compose up -d

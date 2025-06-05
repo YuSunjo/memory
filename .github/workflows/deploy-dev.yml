@@ -50,7 +50,7 @@ jobs:
           docker compose down
           
           # 컨테이너 빌드 및 시작
-          docker compose up -d --build
+          docker compose up -d
           
           # 사용하지 않는 이미지 정리
           docker image prune -f

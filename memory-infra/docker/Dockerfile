@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-jammy AS builder
 
 WORKDIR /app
 
@@ -20,5 +20,13 @@ RUN chmod +x ./gradlew
 # Build the application
 RUN ./gradlew :memory-api:clean :memory-api:build -x test
 
+# Runtime stage
+FROM eclipse-temurin:17-jre-jammy
+
+WORKDIR /app
+
+# Copy the built artifact from builder stage
+COPY --from=builder /app/memory-api/build/libs/memory-api-0.0.1-SNAPSHOT.jar app.jar
+
 # Set the JAR file as the entrypoint
-ENTRYPOINT ["java", "-jar", "memory-api/build/libs/memory-api-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

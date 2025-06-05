@@ -18,7 +18,7 @@ COPY memory-infra memory-infra
 RUN chmod +x ./gradlew
 
 # Build the application
-RUN ./gradlew clean build -x test
+RUN ./gradlew :memory-api:clean :memory-api:build -x test
 
 # Set the JAR file as the entrypoint
 ENTRYPOINT ["java", "-jar", "memory-api/build/libs/memory-api-0.0.1-SNAPSHOT.jar"]

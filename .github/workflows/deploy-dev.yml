@@ -2,7 +2,7 @@ name: Deploy to Development Server
 
 on:
   workflow_run:
-    workflows: ["Run Tests", "Build and Push to GHCR"]
+    workflows: ["Build and Push to GHCR"]
     types:
       - completed
     branches: [ develop ]

@@ -1,32 +1,41 @@
 name: Build and Push to GHCR
 
 on:
-  push:
-    branches:
-      - main
-      - develop
+  workflow_run:
+    workflows: ["Run Tests"]
+    types:
+      - completed
+    branches: [ main, develop ]
+
 
 jobs:
   build-push:
     runs-on: ubuntu-latest
-    
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: memory-infra/docker/Dockerfile
-        push: true
-        tags: |
-          ghcr.io/${{ github.repository }}/memory-app:${{ github.sha }}
-          ${{ github.ref == 'refs/heads/main' && format('ghcr.io/{0}/memory-app:latest', github.repository) || format('ghcr.io/{0}/memory-app:dev', github.repository) }}
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Convert to lowercase
+        id: string
+        uses: ASzc/change-string-case-action@v5
+        with:
+          string: ${{ github.repository }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: memory-infra/docker/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ steps.string.outputs.lowercase }}/memory-app:${{ github.sha }}
+            ${{ github.ref == 'refs/heads/main' && format('ghcr.io/{0}/memory-app:latest', steps.string.outputs.lowercase) || format('ghcr.io/{0}/memory-app:dev', steps.string.outputs.lowercase) }}

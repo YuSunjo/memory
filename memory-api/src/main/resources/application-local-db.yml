@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/memory
+    username: memory
+    password: memory
+  jpa:
+    hibernate:
+      ddl-auto: create

@@ -75,6 +75,24 @@ public class RelationshipService {
         return RelationshipListResponse.fromEntities(relationships);
     }
 
+    @Transactional(readOnly = true)
+    public RelationshipListResponse getReceivedRelationships(Long memberId) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+
+        List<Relationship> relationships = relationshipRepository.findByRelatedMember(member);
+        return RelationshipListResponse.fromEntities(relationships);
+    }
+
+    @Transactional(readOnly = true)
+    public RelationshipListResponse getReceivedRelationshipsByStatus(Long memberId, RelationshipStatus status) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+
+        List<Relationship> relationships = relationshipRepository.findByRelatedMemberAndRelationshipStatus(member, status);
+        return RelationshipListResponse.fromEntities(relationships);
+    }
+
     @Transactional
     public RelationshipResponse endRelationship(Long memberId, Long relationshipId) {
         Member member = memberRepository.findMemberById(memberId)

@@ -47,4 +47,24 @@ public class RelationshipRepositoryCustomImpl implements RelationshipRepositoryC
                 .fetch();
     }
 
+    @Override
+    public List<Relationship> findByRelatedMember(Member relatedMember) {
+        return queryFactory.selectFrom(relationship)
+                .where(
+                    relationship.relatedMember.eq(relatedMember),
+                    relationship.deleteDate.isNull()
+                )
+                .fetch();
+    }
+
+    @Override
+    public List<Relationship> findByRelatedMemberAndRelationshipStatus(Member relatedMember, RelationshipStatus status) {
+        return queryFactory.selectFrom(relationship)
+                .where(
+                    relationship.relatedMember.eq(relatedMember),
+                    relationship.relationshipStatus.eq(status),
+                    relationship.deleteDate.isNull()
+                )
+                .fetch();
+    }
 }

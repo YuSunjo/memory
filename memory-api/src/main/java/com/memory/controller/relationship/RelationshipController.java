@@ -79,6 +79,31 @@ public class RelationshipController {
     }
 
     @ApiOperations.SecuredApi(
+            summary = "받은 관계 목록 조회",
+            description = "내가 받은 모든 관계를 조회합니다.",
+            response = RelationshipListResponse.class
+    )
+    @Auth
+    @GetMapping("api/v1/relationship/received")
+    public ServerResponse<RelationshipListResponse> getReceivedRelationships(
+            @Parameter(hidden = true) @MemberId Long memberId) {
+        return ServerResponse.success(relationshipService.getReceivedRelationships(memberId));
+    }
+
+    @ApiOperations.SecuredApi(
+            summary = "받은 관계 상태별 조회",
+            description = "특정 상태의 받은 관계를 조회합니다.",
+            response = RelationshipListResponse.class
+    )
+    @Auth
+    @GetMapping("api/v1/relationship/received/status")
+    public ServerResponse<RelationshipListResponse> getReceivedRelationshipsByStatus(
+            @Parameter(hidden = true) @MemberId Long memberId,
+            @RequestParam("status") String status) {
+        return ServerResponse.success(relationshipService.getReceivedRelationshipsByStatus(memberId, RelationshipStatus.valueOf(status)));
+    }
+
+    @ApiOperations.SecuredApi(
             summary = "관계 종료",
             description = "관계를 종료합니다.",
             response = RelationshipResponse.class

@@ -10,4 +10,6 @@ public interface RelationshipRepositoryCustom {
     List<Relationship> findByMember(Member member);
     List<Relationship> findByMemberAndRelationshipStatus(Member member, RelationshipStatus status);
     List<Relationship> findByMemberIdAndRelatedMemberId(Long memberId, Long relatedMemberId);
+    List<Relationship> findByRelatedMember(Member relatedMember);
+    List<Relationship> findByRelatedMemberAndRelationshipStatus(Member relatedMember, RelationshipStatus status);
 }

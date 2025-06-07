@@ -99,8 +99,8 @@ class RelationshipServiceTest {
         // Then
         assertNotNull(response);
         assertEquals(relationshipId, response.id());
-        assertEquals(member1Id, response.memberId());
-        assertEquals(member2Id, response.relatedMemberId());
+        assertEquals(member1Id, response.member().id());
+        assertEquals(member2Id, response.relatedMember().id());
         assertEquals(RelationshipStatus.PENDING, response.relationshipStatus());
 
         verify(memberRepository).findMemberById(member1Id);
@@ -155,8 +155,8 @@ class RelationshipServiceTest {
         // Then
         assertNotNull(response);
         assertEquals(relationshipId, response.id());
-        assertEquals(member1Id, response.memberId());
-        assertEquals(member2Id, response.relatedMemberId());
+        assertEquals(member1Id, response.member().id());
+        assertEquals(member2Id, response.relatedMember().id());
         assertEquals(RelationshipStatus.ACCEPTED, response.relationshipStatus());
 
         verify(memberRepository).findMemberById(member2Id);

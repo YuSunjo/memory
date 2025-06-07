@@ -32,6 +32,14 @@ Authorization: Bearer {{access_token}}
 GET {{memory_api}}/api/v1/relationship/status?status=PENDING
 Authorization: Bearer {{access_token}}
 
+### get all received relationships (requires JWT token)
+GET {{memory_api}}/api/v1/relationship/received
+Authorization: Bearer {{access_token}}
+
+### get received relationships by status (requires JWT token)
+GET {{memory_api}}/api/v1/relationship/received/status?status=PENDING
+Authorization: Bearer {{access_token}}
+
 ### end relationship (requires JWT token)
 POST {{memory_api}}/api/v1/relationship/end/1
 Authorization: Bearer {{access_token}}

@@ -1,6 +1,7 @@
 package com.memory.domain.map;
 
 import com.memory.domain.BaseTimeEntity;
+import com.memory.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,12 +36,17 @@ public class Map extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MapType mapType;
 
-    public Map(String name, String description, String address, String latitude, String longitude, MapType mapType) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    public Map(String name, String description, String address, String latitude, String longitude, MapType mapType, Member member) {
         this.name = name;
         this.description = description;
         this.address = address;
         this.location = createPoint(Double.parseDouble(longitude), Double.parseDouble(latitude));
         this.mapType = mapType;
+        this.member = member;
     }
 
     private Point createPoint(double longitude, double latitude) {

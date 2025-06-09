@@ -1,9 +1,12 @@
 package com.memory.domain.member;
 
 import com.memory.domain.BaseTimeEntity;
+import com.memory.domain.map.Map;
 import com.memory.domain.relationship.Relationship;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @ToString
 @Entity
@@ -31,12 +34,28 @@ public class Member extends BaseTimeEntity {
     @OneToOne(mappedBy = "relatedMember")
     private Relationship relatedRelationship;    // 내가 받은 관계
 
+    @Enumerated(EnumType.STRING)
+    private MemberType memberType;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Map> maps = List.of();
+
     public Member(String name, String nickname, String email, String password, String profileImageUrl) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
         this.profileImageUrl = profileImageUrl;
+        this.memberType = MemberType.MEMBER;
+    }
+
+    public Member(String name, String nickname, String email, String password, String profileImageUrl, MemberType memberType) {
+        this.name = name;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.profileImageUrl = profileImageUrl;
+        this.memberType = memberType;
     }
 
     public void update(String nickname, String profileImageUrl) {

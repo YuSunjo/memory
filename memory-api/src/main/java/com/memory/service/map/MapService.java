@@ -3,6 +3,8 @@ package com.memory.service.map;
 import com.memory.domain.map.Map;
 import com.memory.domain.map.MapType;
 import com.memory.domain.map.repository.MapRepository;
+import com.memory.domain.member.Member;
+import com.memory.domain.member.repository.MemberRepository;
 import com.memory.dto.map.MapRequest;
 import com.memory.dto.map.response.MapResponse;
 import com.memory.exception.customException.NotFoundException;
@@ -17,11 +19,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MapService {
 
+    private final MemberRepository memberRepository;
     private final MapRepository mapRepository;
 
     @Transactional
-    public MapResponse createMap(MapRequest.Create createRequest) {
-        Map savedMap = mapRepository.save(createRequest.toEntity());
+    public MapResponse createMap(MapRequest.Create createRequest, Long memberId) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원이 존재하지 않습니다."));
+        Map savedMap = mapRepository.save(createRequest.toEntity(member));
         return MapResponse.from(savedMap);
     }
 
@@ -35,6 +40,14 @@ public class MapService {
     @Transactional(readOnly = true)
     public List<MapResponse> findMapsByType(MapType mapType) {
         List<Map> maps = mapRepository.findByMapType(mapType);
+        return maps.stream()
+                .map(MapResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<MapResponse> findMapsByMemberAndType(Long memberId) {
+        List<Map> maps = mapRepository.findByMemberId(memberId);
         return maps.stream()
                 .map(MapResponse::from)
                 .collect(Collectors.toList());

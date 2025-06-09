@@ -23,4 +23,15 @@ public class MapRepositoryCustomImpl implements MapRepositoryCustom {
                 )
                 .fetch();
     }
+
+    @Override
+    public List<Map> findByMemberId(Long memberId) {
+        return queryFactory.selectFrom(map)
+                .where(
+                        map.member.id.eq(memberId),
+                        map.mapType.eq(MapType.USER_PLACE),
+                        map.deleteDate.isNull()
+                )
+                .fetch();
+    }
 }

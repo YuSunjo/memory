@@ -2,6 +2,7 @@ package com.memory.dto.map;
 
 import com.memory.domain.map.Map;
 import com.memory.domain.map.MapType;
+import com.memory.domain.member.Member;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -36,8 +37,8 @@ public class MapRequest {
             this.mapType = mapType;
         }
 
-        public Map toEntity() {
-            return new Map(name, description, address, latitude, longitude, mapType);
+        public Map toEntity(Member member) {
+            return new Map(name, description, address, latitude, longitude, mapType, member);
         }
     }
 }

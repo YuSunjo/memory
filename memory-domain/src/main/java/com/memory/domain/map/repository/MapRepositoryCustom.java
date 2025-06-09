@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface MapRepositoryCustom {
     List<Map> findByMapType(MapType mapType);
+    List<Map> findByMemberId(Long memberId);
 }

@@ -28,5 +28,12 @@ Authorization: Bearer {{access_token}}
 ### Get map by ID
 GET {{memory_api}}/api/v1/maps/1
 
-### Get maps by type - USER_PLACE
-GET {{memory_api}}/api/v1/maps/type/USER_PLACE
+### Get maps by type - FESTIVAL
+GET {{memory_api}}/api/v1/maps?mapType=FESTIVAL
+
+### Get maps with default type (FESTIVAL)
+GET {{memory_api}}/api/v1/maps
+
+### Get maps by member and type
+GET {{memory_api}}/api/v1/maps/member
+Authorization: Bearer {{access_token}}

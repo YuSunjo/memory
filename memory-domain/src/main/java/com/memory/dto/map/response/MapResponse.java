@@ -2,6 +2,7 @@ package com.memory.dto.map.response;
 
 import com.memory.domain.map.Map;
 import com.memory.domain.map.MapType;
+import com.memory.dto.member.response.MemberResponse;
 
 public record MapResponse(
         Long id,
@@ -10,7 +11,8 @@ public record MapResponse(
         String address,
         String latitude,
         String longitude,
-        MapType mapType
+        MapType mapType,
+        MemberResponse member
 ) {
 
     public static MapResponse from(Map map) {
@@ -21,7 +23,8 @@ public record MapResponse(
                 map.getAddress(),
                 map.getLatitude(),
                 map.getLongitude(),
-                map.getMapType()
+                map.getMapType(),
+                MemberResponse.from(map.getMember())
         );
     }
 }

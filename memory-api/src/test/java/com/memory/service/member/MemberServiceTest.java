@@ -2,6 +2,7 @@ package com.memory.service.member;
 
 import com.memory.config.jwt.JwtTokenProvider;
 import com.memory.domain.member.Member;
+import com.memory.domain.member.MemberType;
 import com.memory.domain.member.repository.MemberRepository;
 import com.memory.dto.member.MemberRequest;
 import com.memory.dto.member.response.MemberLoginResponse;
@@ -55,7 +56,7 @@ class MemberServiceTest {
     void setUp() {
         signupRequest = new MemberRequest.Signup(email, password, name, nickname, profileImageUrl);
         loginRequest = new MemberRequest.Login(email, password);
-        
+
         member = new Member(name, nickname, email, encodedPassword, profileImageUrl);
         try {
             java.lang.reflect.Field idField = Member.class.getDeclaredField("id");
@@ -84,6 +85,7 @@ class MemberServiceTest {
         assertEquals(name, response.name());
         assertEquals(nickname, response.nickname());
         assertEquals(profileImageUrl, response.profileImageUrl());
+        assertEquals(MemberType.MEMBER, response.memberType());
 
         verify(memberRepository).findMemberByEmail(email);
         verify(passwordEncoder).encode(password);
@@ -98,7 +100,7 @@ class MemberServiceTest {
 
         // When & Then
         ConflictException exception = assertThrows(ConflictException.class, () -> memberService.signup(signupRequest));
-        
+
         assertEquals("이미 존재하는 이메일입니다.", exception.getMessage());
         verify(memberRepository).findMemberByEmail(email);
         verify(passwordEncoder, never()).encode(anyString());
@@ -138,7 +140,7 @@ class MemberServiceTest {
 
         // When & Then
         NotFoundException exception = assertThrows(NotFoundException.class, () -> memberService.login(loginRequest));
-        
+
         assertEquals("존재하지 않는 이메일입니다.", exception.getMessage());
         verify(memberRepository).findMemberByEmail(email);
         verify(passwordEncoder, never()).matches(anyString(), anyString());
@@ -155,7 +157,7 @@ class MemberServiceTest {
 
         // When & Then
         ValidationException exception = assertThrows(ValidationException.class, () -> memberService.login(loginRequest));
-        
+
         assertEquals("비밀번호가 일치하지 않습니다.", exception.getMessage());
         verify(memberRepository).findMemberByEmail(email);
         verify(passwordEncoder).matches(password, encodedPassword);
@@ -179,6 +181,7 @@ class MemberServiceTest {
         assertEquals(name, response.name());
         assertEquals(nickname, response.nickname());
         assertEquals(profileImageUrl, response.profileImageUrl());
+        assertEquals(MemberType.MEMBER, response.memberType());
 
         verify(memberRepository).findMemberById(memberId);
     }
@@ -191,8 +194,32 @@ class MemberServiceTest {
 
         // When & Then
         NotFoundException exception = assertThrows(NotFoundException.class, () -> memberService.findMemberById(memberId));
-        
+
         assertEquals("회원을 찾을 수 없습니다.", exception.getMessage());
+        verify(memberRepository).findMemberById(memberId);
+    }
+
+    @Test
+    @DisplayName("회원 타입 테스트 - ADMIN 타입 설정")
+    void memberTypeAdminTest() {
+        // Given
+        Member adminMember = new Member(name, nickname, email, encodedPassword, profileImageUrl, MemberType.ADMIN);
+        try {
+            java.lang.reflect.Field idField = Member.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(adminMember, memberId);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set member ID", e);
+        }
+
+        when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(adminMember));
+
+        // When
+        MemberResponse response = memberService.findMemberById(memberId);
+
+        // Then
+        assertNotNull(response);
+        assertEquals(MemberType.ADMIN, response.memberType());
         verify(memberRepository).findMemberById(memberId);
     }
 }

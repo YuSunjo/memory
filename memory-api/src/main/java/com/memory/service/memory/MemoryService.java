@@ -105,7 +105,8 @@ public class MemoryService {
         memory.update(
             updateRequest.getTitle(),
             updateRequest.getContent(),
-            updateRequest.getLocationName()
+            updateRequest.getLocationName(),
+            updateRequest.getMemoryType()
         );
     }
 }

@@ -25,6 +25,9 @@ public class Memory extends BaseTimeEntity {
 
     private String locationName;
 
+    @Enumerated(EnumType.STRING)
+    private MemoryType memoryType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -33,17 +36,19 @@ public class Memory extends BaseTimeEntity {
     @JoinColumn(name = "map_id")
     private Map map;
 
-    public Memory(String title, String content, String locationName, Member member, Map map) {
+    public Memory(String title, String content, String locationName, MemoryType memoryType, Member member, Map map) {
         this.title = title;
         this.content = content;
         this.locationName = locationName;
+        this.memoryType = memoryType;
         this.member = member;
         this.map = map;
     }
 
-    public void update(String title, String content, String locationName) {
+    public void update(String title, String content, String locationName, MemoryType memoryType) {
         this.title = title;
         this.content = content;
         this.locationName = locationName;
+        this.memoryType = memoryType;
     }
 }

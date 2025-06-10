@@ -20,7 +20,8 @@ Authorization: Bearer {{access_token}}
   "title": "첫 번째 추억",
   "content": "서울 시청에서의 즐거운 시간",
   "locationName": "서울 시청",
-  "mapId": 1
+  "mapId": 1,
+  "memoryType": "PUBLIC"
 }
 
 ### Get memory by ID
@@ -42,7 +43,8 @@ Authorization: Bearer {{access_token}}
 {
   "title": "수정된 추억",
   "content": "서울 시청에서의 더욱 즐거운 시간",
-  "locationName": "서울 시청 광장"
+  "locationName": "서울 시청 광장",
+  "memoryType": "PRIVATE"
 }
 
 ### Delete a memory (requires JWT token)

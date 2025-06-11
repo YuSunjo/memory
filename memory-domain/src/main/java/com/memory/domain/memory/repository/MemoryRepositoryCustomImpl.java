@@ -2,6 +2,7 @@ package com.memory.domain.memory.repository;
 
 import com.memory.domain.memory.Memory;
 import com.memory.domain.member.Member;
+import com.memory.domain.memory.MemoryType;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,11 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Memory> findByMember(Member member) {
+    public List<Memory> findByMemberAndMemoryType(Member member, MemoryType memoryType) {
         return queryFactory.selectFrom(memory)
                 .where(
                         memory.member.eq(member),
+                        memory.memoryType.eq(memoryType),
                         memory.deleteDate.isNull()
                 )
                 .orderBy(memory.id.desc())
@@ -28,10 +30,11 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
     }
 
     @Override
-    public List<Memory> findByMember(Member member, Long lastMemoryId, int size) {
+    public List<Memory> findByMemberAndMemoryType(Member member, MemoryType memoryType, Long lastMemoryId, int size) {
         return queryFactory.selectFrom(memory)
                 .where(
                         memory.member.eq(member),
+                        memory.memoryType.eq(memoryType),
                         memory.deleteDate.isNull(),
                         gtMemoryId(lastMemoryId)
                 )

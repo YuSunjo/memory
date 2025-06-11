@@ -35,6 +35,22 @@ Authorization: Bearer {{access_token}}
 GET {{memory_api}}/api/v1/memories/member?lastMemoryId=1&size=5
 Authorization: Bearer {{access_token}}
 
+### Get PUBLIC memories for current member (requires JWT token)
+GET {{memory_api}}/api/v1/memories/member
+Authorization: Bearer {{access_token}}
+
+### Get PRIVATE memories for current member (requires JWT token)
+GET {{memory_api}}/api/v1/memories/member?memoryType=PRIVATE
+Authorization: Bearer {{access_token}}
+
+### Get RELATIONSHIP memories for current member (requires JWT token)
+GET {{memory_api}}/api/v1/memories/member?memoryType=RELATIONSHIP
+Authorization: Bearer {{access_token}}
+
+### Get paginated PUBLIC memories for current member (requires JWT token)
+GET {{memory_api}}/api/v1/memories/member?memoryType=PUBLIC&lastMemoryId=1&size=5
+Authorization: Bearer {{access_token}}
+
 ### Update a memory (requires JWT token)
 PUT {{memory_api}}/api/v1/memories/1
 Content-Type: application/json

@@ -18,7 +18,7 @@ public record MemberResponse(
                 member.getEmail(),
                 member.getName(),
                 member.getNickname(),
-                member.getProfileImageUrl(),
+                null,
                 member.getMemberType()
         );
     }

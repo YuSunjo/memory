@@ -1,6 +1,7 @@
 package com.memory.domain.member;
 
 import com.memory.domain.BaseTimeEntity;
+import com.memory.domain.file.File;
 import com.memory.domain.map.Map;
 import com.memory.domain.relationship.Relationship;
 import jakarta.persistence.*;
@@ -26,7 +27,8 @@ public class Member extends BaseTimeEntity {
 
     private String password;
 
-    private String profileImageUrl;
+    @OneToOne(mappedBy = "member")
+    private File file;
 
     @OneToOne(mappedBy = "member")
     private Relationship relationship;
@@ -45,7 +47,6 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         this.email = email;
         this.password = password;
-        this.profileImageUrl = profileImageUrl;
         this.memberType = MemberType.MEMBER;
     }
 
@@ -54,13 +55,11 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         this.email = email;
         this.password = password;
-        this.profileImageUrl = profileImageUrl;
         this.memberType = memberType;
     }
 
     public void update(String nickname, String profileImageUrl) {
         this.nickname = nickname;
-        this.profileImageUrl = profileImageUrl;
     }
 
     public void updatePassword(String password) {

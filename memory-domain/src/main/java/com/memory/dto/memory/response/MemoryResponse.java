@@ -1,6 +1,7 @@
 package com.memory.dto.memory.response;
 
 import com.memory.domain.memory.Memory;
+import com.memory.domain.memory.MemoryType;
 import com.memory.dto.map.response.MapResponse;
 import com.memory.dto.member.response.MemberResponse;
 
@@ -13,6 +14,7 @@ public record MemoryResponse(
         String locationName,
         MemberResponse member,
         MapResponse map,
+        MemoryType memoryType,
         LocalDateTime createDate
 ) {
 
@@ -24,6 +26,7 @@ public record MemoryResponse(
                 memory.getLocationName(),
                 MemberResponse.from(memory.getMember()),
                 MapResponse.from(memory.getMap()),
+                memory.getMemoryType(),
                 memory.getCreateDate()
         );
     }

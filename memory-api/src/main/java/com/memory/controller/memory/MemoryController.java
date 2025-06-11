@@ -56,8 +56,6 @@ public class MemoryController {
     @Auth
     @GetMapping("api/v1/memories/member")
     public ServerResponse<List<MemoryResponse>> findMemoriesByMember(@Parameter(hidden = true) @MemberId Long memberId, MemoryRequest.GetByMember request) {
-        System.out.println("request = " + request.getMemoryType());
-        System.out.println(request.getSize());
         return ServerResponse.success(memoryService.findMemoriesByMember(memberId, request.getLastMemoryId(), request.getSize(), request.getMemoryType()));
     }
 

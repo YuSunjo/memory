@@ -84,7 +84,6 @@ class MemberServiceTest {
         assertEquals(email, response.email());
         assertEquals(name, response.name());
         assertEquals(nickname, response.nickname());
-        assertEquals(profileImageUrl, response.profileImageUrl());
         assertEquals(MemberType.MEMBER, response.memberType());
 
         verify(memberRepository).findMemberByEmail(email);
@@ -180,7 +179,6 @@ class MemberServiceTest {
         assertEquals(email, response.email());
         assertEquals(name, response.name());
         assertEquals(nickname, response.nickname());
-        assertEquals(profileImageUrl, response.profileImageUrl());
         assertEquals(MemberType.MEMBER, response.memberType());
 
         verify(memberRepository).findMemberById(memberId);

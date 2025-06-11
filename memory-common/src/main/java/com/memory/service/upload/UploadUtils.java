@@ -26,14 +26,14 @@ public class UploadUtils {
         }
     }
 
-    public static String createFileName(String dirName, String originalFilename) {
+    public static String createFileName(String originalFilename) {
         String filenameWithoutExtension = originalFilename.substring(0, originalFilename.lastIndexOf("."));
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
 
         LocalDateTime now = LocalDateTime.now();
         String timestamp = now.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
 
-        return dirName + "/" + filenameWithoutExtension + "_" + timestamp + extension;
+        return filenameWithoutExtension + "_" + timestamp + extension;
     }
 
     public static void validateMultipartFile(MultipartFile multipartFile) {

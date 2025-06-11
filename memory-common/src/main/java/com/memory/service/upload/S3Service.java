@@ -1,4 +1,4 @@
-package com.memory.service;
+package com.memory.service.upload;
 
 import com.memory.component.storage.S3Component;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +13,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -24,19 +22,8 @@ public class S3Service {
     private final S3Client s3Client;
     private final S3Component s3Component;
 
-    public String uploadFile(MultipartFile multipartFile, String dirName) {
+    public String uploadFile(MultipartFile multipartFile, String fileName) {
         try {
-            String originalFilename = multipartFile.getOriginalFilename();
-            String filenameWithoutExtension = originalFilename.substring(0, originalFilename.lastIndexOf("."));
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-
-            // Format current date and time
-            LocalDateTime now = LocalDateTime.now();
-            String timestamp = now.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-
-            // Combine original filename with timestamp
-            String fileName = dirName + "/" + filenameWithoutExtension + "_" + timestamp + extension;
-
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(s3Component.getS3().getBucket())
                     .key(fileName)
@@ -89,6 +76,4 @@ public class S3Service {
             return url.toString();
         }
     }
-
-
 }

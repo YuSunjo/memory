@@ -42,10 +42,10 @@ public class UploadController {
             description = "S3에서 이미지를 삭제합니다.",
             response = String.class
     )
-    @DeleteMapping("api/v1/image")
+    @DeleteMapping("api/v1/file")
     public ServerResponse<String> deleteImage(
-            @RequestParam("imageUrl") String imageUrl) {
-        uploadService.deleteFile(imageUrl);
+            @RequestParam("fileUrl") String fileUrl) {
+        uploadService.deleteFile(fileUrl);
         return ServerResponse.OK;
     }
 

@@ -50,13 +50,15 @@ public class MemoryController {
 
     @ApiOperations.SecuredApi(
         summary = "회원의 메모리 목록 조회",
-        description = "회원의 메모리 목록을 조회합니다. lastMemoryId를 통해 페이징 처리할 수 있습니다.",
+        description = "회원의 메모리 목록을 조회합니다. lastMemoryId를 통해 페이징 처리할 수 있습니다. memoryType을 통해 메모리 타입별로 조회할 수 있습니다.",
         response = MemoryResponse.class
     )
     @Auth
     @GetMapping("api/v1/memories/member")
     public ServerResponse<List<MemoryResponse>> findMemoriesByMember(@Parameter(hidden = true) @MemberId Long memberId, MemoryRequest.GetByMember request) {
-        return ServerResponse.success(memoryService.findMemoriesByMember(memberId, request.getLastMemoryId(), request.getSize()));
+        System.out.println("request = " + request.getMemoryType());
+        System.out.println(request.getSize());
+        return ServerResponse.success(memoryService.findMemoriesByMember(memberId, request.getLastMemoryId(), request.getSize(), request.getMemoryType()));
     }
 
     @ApiOperations.SecuredApi(

@@ -5,6 +5,7 @@ import com.memory.domain.map.repository.MapRepository;
 import com.memory.domain.member.Member;
 import com.memory.domain.member.repository.MemberRepository;
 import com.memory.domain.memory.Memory;
+import com.memory.domain.memory.MemoryType;
 import com.memory.domain.memory.repository.MemoryRepository;
 import com.memory.dto.memory.MemoryRequest;
 import com.memory.dto.memory.response.MemoryResponse;
@@ -50,16 +51,15 @@ public class MemoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<MemoryResponse> findMemoriesByMember(Long memberId, Long lastMemoryId, Integer size) {
+    public List<MemoryResponse> findMemoriesByMember(Long memberId, Long lastMemoryId, Integer size, MemoryType memoryType) {
         Member member = memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
 
         List<Memory> memories;
         if (lastMemoryId == null) {
-            memories = memoryRepository.findByMember(member);
+            memories = memoryRepository.findByMemberAndMemoryType(member, memoryType);
         } else {
-            int pageSize = size != null ? size : DEFAULT_PAGE_SIZE;
-            memories = memoryRepository.findByMember(member, lastMemoryId, pageSize);
+            memories = memoryRepository.findByMemberAndMemoryType(member, memoryType, lastMemoryId, size);
         }
 
         return memories.stream()
@@ -80,8 +80,7 @@ public class MemoryService {
             throw new NotFoundException("해당 메모리에 접근 권한이 없습니다.");
         }
 
-        // Update memory fields
-        updateMemoryFields(memory, updateRequest);
+        memory.update(updateRequest.getTitle(), updateRequest.getContent(), updateRequest.getLocationName(), updateRequest.getMemoryType());
 
         return MemoryResponse.from(memory);
     }
@@ -99,14 +98,5 @@ public class MemoryService {
         }
 
         memory.updateDelete();
-    }
-
-    private void updateMemoryFields(Memory memory, MemoryRequest.Update updateRequest) {
-        memory.update(
-            updateRequest.getTitle(),
-            updateRequest.getContent(),
-            updateRequest.getLocationName(),
-            updateRequest.getMemoryType()
-        );
     }
 }

@@ -66,23 +66,13 @@ public class MemoryRequest {
     public static class GetByMember {
         private Long lastMemoryId;
         private Integer size;
+        private MemoryType memoryType;
 
-        public GetByMember(Long lastMemoryId, Integer size) {
+        public GetByMember(Long lastMemoryId, Integer size, MemoryType memoryType) {
             this.lastMemoryId = lastMemoryId;
-            this.size = size;
-        }
-    }
+            this.size = size != null ? size : 10;
+            this.memoryType = memoryType != null ? memoryType : MemoryType.PUBLIC;
 
-    @Getter
-    public static class GetByMap {
-        private Long mapId;
-        private Long lastMemoryId;
-        private Integer size;
-
-        public GetByMap(Long mapId, Long lastMemoryId, Integer size) {
-            this.mapId = mapId;
-            this.lastMemoryId = lastMemoryId;
-            this.size = size;
         }
     }
 }

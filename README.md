@@ -15,6 +15,16 @@ The project is organized into multiple modules following a modular architecture:
 ### Package Structure
 ```
 memory/
+├── .github/                # GitHub configuration
+│   └── workflows/          # GitHub Actions workflows for CI/CD
+├── http/                   # HTTP client files for API testing
+│   ├── file/               # File API requests
+│   ├── map/                # Map API requests
+│   ├── member/             # Member API requests
+│   ├── memory/             # Memory API requests
+│   ├── relationship/       # Relationship API requests
+│   ├── ...                 # Other API requests
+│   └── http-client.env.json # Environment configuration for HTTP client
 ├── memory-api/
 │   ├── src/main/java/com/memory/
 │   │   ├── config/         # API-specific configurations
@@ -101,8 +111,60 @@ The application provides the following main API endpoints:
 - **Memory API**: Creation and management of memories associated with maps
 - **Relationship API**: Management of relationships between users
 - **File API**: Upload and management of files (images)
-- ... Other APIs as defined in the controllers
 
 For detailed API documentation, refer to the Swagger UI available at `http://localhost:8080/swagger-ui.html` when the application is running.
+
+## GitHub Workflows
+
+The `.github/workflows` directory contains GitHub Actions workflows for continuous integration and deployment:
+
+- **build-push.yml**: Builds the application and pushes Docker images to a registry
+- **deploy-dev.yml**: Deploys the application to a development environment
+- **run-tests.yml**: Runs automated tests to ensure code quality
+
+These workflows are triggered automatically on specific events like pushes to the main branch or pull requests.
+
+## HTTP Client Files
+
+The `http` directory contains HTTP client files for testing the API endpoints. These files can be used with tools like IntelliJ IDEA's HTTP Client or Visual Studio Code's REST Client extension.
+
+The directory is organized by API domain:
+
+- **file**: Requests for file upload and management
+- **map**: Requests for map creation and management
+- **member**: Requests for user registration, authentication, and profile management
+- **memory**: Requests for memory creation and management
+- **relationship**: Requests for relationship management
+
+The `http-client.env.json` file contains environment variables used in the HTTP client files, such as the base URL for the API.
+
+Example usage:
+```http
+### Login to get access token
+POST {{memory_api}}/api/v1/member/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password"
+}
+
+> {%
+    client.global.set("access_token", response.body.data.accessToken);
+%}
+
+### Create a new memory
+POST {{memory_api}}/api/v1/memories
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "My Memory",
+  "content": "This is a great memory",
+  "locationName": "Seoul",
+  "mapId": 1,
+  "memoryType": "PUBLIC"
+}
+```
 
 ## License

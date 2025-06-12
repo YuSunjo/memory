@@ -95,3 +95,9 @@ Authorization: Bearer {{access_token}}
 ### Delete a memory (requires JWT token)
 DELETE {{memory_api}}/api/v1/memories/1
 Authorization: Bearer {{access_token}}
+
+### Get all public memories (no authentication required)
+GET {{memory_api}}/api/v1/memories/public
+
+### Get paginated public memories (no authentication required)
+GET {{memory_api}}/api/v1/memories/public?lastMemoryId=10&size=5

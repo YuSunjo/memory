@@ -85,4 +85,14 @@ public class MemoryController {
             @PathVariable Long memoryId) {
         memoryService.deleteMemory(memberId, memoryId);
     }
+
+    @ApiOperations.BasicApi(
+        summary = "공개 메모리 목록 조회",
+        description = "모든 공개(PUBLIC) 메모리 목록을 조회합니다. 로그인 없이 접근 가능합니다. lastMemoryId를 통해 페이징 처리할 수 있습니다.",
+        response = MemoryResponse.class
+    )
+    @GetMapping("api/v1/memories/public")
+    public ServerResponse<List<MemoryResponse>> findPublicMemories(MemoryRequest.GetByPublic request) {
+        return ServerResponse.success(memoryService.findPublicMemories(request.getLastMemoryId(), request.getSize()));
+    }
 }

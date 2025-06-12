@@ -81,7 +81,17 @@ public class MemoryRequest {
             this.lastMemoryId = lastMemoryId;
             this.size = size != null ? size : 10;
             this.memoryType = memoryType != null ? memoryType : MemoryType.PUBLIC;
+        }
+    }
 
+    @Getter
+    public static class GetByPublic {
+        private Long lastMemoryId;
+        private Integer size;
+
+        public GetByPublic(Long lastMemoryId, Integer size) {
+            this.lastMemoryId = lastMemoryId;
+            this.size = size != null ? size : 10;
         }
     }
 }

@@ -64,7 +64,7 @@ public class MemoryService {
 
         List<Memory> memories;
         if (lastMemoryId == null) {
-            memories = memoryRepository.findByMemberAndMemoryType(member, memoryType);
+            memories = memoryRepository.findByMemberAndMemoryType(member, memoryType, size);
         } else {
             memories = memoryRepository.findByMemberAndMemoryType(member, memoryType, lastMemoryId, size);
         }
@@ -113,5 +113,19 @@ public class MemoryService {
         }
 
         memory.updateDelete();
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemoryResponse> findPublicMemories(Long lastMemoryId, Integer size) {
+        List<Memory> memories;
+        if (lastMemoryId == null) {
+            memories = memoryRepository.findByMemoryType(MemoryType.PUBLIC, size);
+        } else {
+            memories = memoryRepository.findByMemoryType(MemoryType.PUBLIC, lastMemoryId, size != null ? size : 10);
+        }
+
+        return memories.stream()
+                .map(MemoryResponse::from)
+                .collect(Collectors.toList());
     }
 }

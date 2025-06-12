@@ -19,7 +19,7 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Memory> findByMemberAndMemoryType(Member member, MemoryType memoryType) {
+    public List<Memory> findByMemberAndMemoryType(Member member, MemoryType memoryType, int size) {
         return queryFactory.selectFrom(memory)
                 .where(
                         memory.member.eq(member),
@@ -27,6 +27,7 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
                         memory.deleteDate.isNull()
                 )
                 .orderBy(memory.id.desc())
+                .limit(size)
                 .fetch();
     }
 
@@ -35,7 +36,7 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
         return queryFactory.selectFrom(memory)
                 .where(
                         memory.member.eq(member),
-                        memory.memoryType.eq(memoryType),
+                        getMemoryType(memoryType),
                         memory.deleteDate.isNull(),
                         gtMemoryId(lastMemoryId)
                 )
@@ -53,6 +54,31 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
                         memory.deleteDate.isNull()
                 )
                 .fetchOne());
+    }
+
+    @Override
+    public List<Memory> findByMemoryType(MemoryType memoryType, int size) {
+        return queryFactory.selectFrom(memory)
+                .where(
+                        memory.memoryType.eq(memoryType),
+                        memory.deleteDate.isNull()
+                )
+                .orderBy(memory.id.desc())
+                .limit(size)
+                .fetch();
+    }
+
+    @Override
+    public List<Memory> findByMemoryType(MemoryType memoryType, Long lastMemoryId, int size) {
+        return queryFactory.selectFrom(memory)
+                .where(
+                        getMemoryType(memoryType),
+                        memory.deleteDate.isNull(),
+                        gtMemoryId(lastMemoryId)
+                )
+                .orderBy(memory.id.desc())
+                .limit(size)
+                .fetch();
     }
 
     private BooleanExpression gtMemoryId(Long memoryId) {

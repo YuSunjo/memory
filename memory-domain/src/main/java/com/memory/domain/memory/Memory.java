@@ -25,6 +25,7 @@ public class Memory extends BaseTimeEntity {
 
     private String title;
 
+    @Column(columnDefinition = "text")
     private String content;
 
     private String locationName;

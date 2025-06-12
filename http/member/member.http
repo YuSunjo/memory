@@ -6,8 +6,7 @@ Content-Type: application/json
   "email": "tnswh2023@naver.com",
   "password": "1234",
   "name": "tnswh",
-  "nickname": "tnswh",
-  "profileImageUrl": "aa"
+  "nickname": "tnswh"
 }
 
 ### login
@@ -34,7 +33,17 @@ Authorization: Bearer {{access_token}}
 
 {
   "nickname": "Updated Nickname",
-  "profileImageUrl": "https://new-profile-image-url.com/image.jpg"
+  "fileId": 1
+}
+
+### update member with fileId (requires JWT token)
+PUT {{memory_api}}/api/v1/member/me
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "nickname": "Updated Nickname",
+  "fileId": 1
 }
 
 ### update password (requires JWT token)

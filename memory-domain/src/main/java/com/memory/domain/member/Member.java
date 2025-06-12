@@ -42,7 +42,7 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Map> maps = List.of();
 
-    public Member(String name, String nickname, String email, String password, String profileImageUrl) {
+    public Member(String name, String nickname, String email, String password) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
@@ -50,7 +50,7 @@ public class Member extends BaseTimeEntity {
         this.memberType = MemberType.MEMBER;
     }
 
-    public Member(String name, String nickname, String email, String password, String profileImageUrl, MemberType memberType) {
+    public Member(String name, String nickname, String email, String password, MemberType memberType) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
@@ -58,8 +58,18 @@ public class Member extends BaseTimeEntity {
         this.memberType = memberType;
     }
 
-    public void update(String nickname, String profileImageUrl) {
+    public void update(String nickname, File file) {
         this.nickname = nickname;
+        this.updateFile(file);
+    }
+
+    // 연관관계 편의 메서드
+    private void updateFile(File file) {
+        if (this.file != null) {
+            this.file.updateMember(null);
+        }
+        this.file = file;
+        file.updateMember(this);
     }
 
     public void updatePassword(String password) {

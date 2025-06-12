@@ -1,6 +1,8 @@
 package com.memory.service.member;
 
 import com.memory.config.jwt.JwtTokenProvider;
+import com.memory.domain.file.File;
+import com.memory.domain.file.repository.FileRepository;
 import com.memory.domain.member.Member;
 import com.memory.domain.member.repository.MemberRepository;
 import com.memory.dto.member.MemberRequest;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -60,10 +63,14 @@ public class MemberService {
         Member member = memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
 
-        member.update(
-            updateRequestDto.getNickname(),
-            updateRequestDto.getProfileImageUrl()
-        );
+        File file = fileRepository.findById(updateRequestDto.getFileId())
+                .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
+
+        if (file.validateMember(memberId)) {
+            throw new ValidationException("이미 다른 회원과 연결된 파일입니다.");
+        }
+
+        member.update(updateRequestDto.getNickname(), file);
 
         return MemberResponse.from(member);
     }

@@ -1,5 +1,7 @@
 package com.memory.service.memory;
 
+import com.memory.domain.file.File;
+import com.memory.domain.file.repository.FileRepository;
 import com.memory.domain.map.Map;
 import com.memory.domain.map.repository.MapRepository;
 import com.memory.domain.member.Member;
@@ -24,8 +26,7 @@ public class MemoryService {
     private final MemoryRepository memoryRepository;
     private final MemberRepository memberRepository;
     private final MapRepository mapRepository;
-
-    private static final int DEFAULT_PAGE_SIZE = 10;
+    private final FileRepository fileRepository;
 
     @Transactional
     public MemoryResponse createMemory(Long memberId, MemoryRequest.Create createRequest) {
@@ -36,6 +37,12 @@ public class MemoryService {
                 .orElseThrow(() -> new NotFoundException("지도를 찾을 수 없습니다."));
 
         Memory savedMemory = memoryRepository.save(createRequest.toEntity(member, map));
+
+        if (createRequest.getFileIdList() != null && !createRequest.getFileIdList().isEmpty()) {
+            List<File> files = fileRepository.findAllById(createRequest.getFileIdList());
+            savedMemory.addFiles(files);
+        }
+
         return MemoryResponse.from(savedMemory);
     }
 
@@ -81,6 +88,14 @@ public class MemoryService {
         }
 
         memory.update(updateRequest.getTitle(), updateRequest.getContent(), updateRequest.getLocationName(), updateRequest.getMemoryType());
+
+        // Associate files with the memory if fileIdList is not empty
+        if (updateRequest.getFileIdList() != null && !updateRequest.getFileIdList().isEmpty()) {
+            List<File> files = fileRepository.findAllById(updateRequest.getFileIdList());
+            for (File file : files) {
+                memory.addFile(file);
+            }
+        }
 
         return MemoryResponse.from(memory);
     }

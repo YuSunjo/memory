@@ -23,7 +23,7 @@ Content-Disposition: form-data; name="file"; filename="memory_rogo.png"
 --WebAppBoundary--
 
 ### Upload multiple images
-POST {{memory_api}}/api/v1/files?fileType=MEMBER
+POST {{memory_api}}/api/v1/files?fileType=MEMORY
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 Authorization: Bearer {{access_token}}
 

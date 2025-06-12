@@ -22,18 +22,15 @@ public class MemberRequest {
         @NotBlank(message = "닉네임은 필수 입력값입니다.")
         private String nickname;
 
-        private final String profileImageUrl;
-
-        public Signup(String email, String password, String name, String nickname, String profileImageUrl) {
+        public Signup(String email, String password, String name, String nickname) {
             this.email = email;
             this.password = password;
             this.name = name;
             this.nickname = nickname;
-            this.profileImageUrl = profileImageUrl;
         }
 
         public Member toEntity(String encodedPassword) {
-            return new Member(name, nickname, email, encodedPassword, profileImageUrl);
+            return new Member(name, nickname, email, encodedPassword);
         }
     }
 
@@ -56,11 +53,13 @@ public class MemberRequest {
     public static class Update {
         @NotBlank(message = "닉네임은 필수 입력값입니다.")
         private String nickname;
-        private final String profileImageUrl;
 
-        public Update(String nickname, String profileImageUrl) {
+        @NotBlank(message = "파일 ID는 필수 입력값입니다.")
+        private Long fileId;
+
+        public Update(String nickname, Long fileId) {
             this.nickname = nickname;
-            this.profileImageUrl = profileImageUrl;
+            this.fileId = fileId;
         }
     }
 

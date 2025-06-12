@@ -49,4 +49,12 @@ public class File extends BaseTimeEntity {
     public void updateMemory(Memory memory) {
         this.memory = memory;
     }
+
+    public void updateMember(Member member) {
+        this.member = member;
+    }
+
+    public boolean validateMember(Long memberId) {
+        return this.getMember() != null && !this.getMember().getId().equals(memberId);
+    }
 }

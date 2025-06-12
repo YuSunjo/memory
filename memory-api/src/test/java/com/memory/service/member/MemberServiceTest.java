@@ -50,14 +50,12 @@ class MemberServiceTest {
     private final String encodedPassword = "encodedPassword";
     private final String name = "Test User";
     private final String nickname = "testuser";
-    private final String profileImageUrl = "http://example.com/profile.jpg";
-
     @BeforeEach
     void setUp() {
-        signupRequest = new MemberRequest.Signup(email, password, name, nickname, profileImageUrl);
+        signupRequest = new MemberRequest.Signup(email, password, name, nickname);
         loginRequest = new MemberRequest.Login(email, password);
 
-        member = new Member(name, nickname, email, encodedPassword, profileImageUrl);
+        member = new Member(name, nickname, email, encodedPassword);
         try {
             java.lang.reflect.Field idField = Member.class.getDeclaredField("id");
             idField.setAccessible(true);
@@ -85,6 +83,7 @@ class MemberServiceTest {
         assertEquals(name, response.name());
         assertEquals(nickname, response.nickname());
         assertEquals(MemberType.MEMBER, response.memberType());
+        assertNull(response.profile());  // No file associated with the member yet
 
         verify(memberRepository).findMemberByEmail(email);
         verify(passwordEncoder).encode(password);
@@ -180,6 +179,7 @@ class MemberServiceTest {
         assertEquals(name, response.name());
         assertEquals(nickname, response.nickname());
         assertEquals(MemberType.MEMBER, response.memberType());
+        assertNull(response.profile());  // No file associated with the member yet
 
         verify(memberRepository).findMemberById(memberId);
     }
@@ -201,7 +201,7 @@ class MemberServiceTest {
     @DisplayName("회원 타입 테스트 - ADMIN 타입 설정")
     void memberTypeAdminTest() {
         // Given
-        Member adminMember = new Member(name, nickname, email, encodedPassword, profileImageUrl, MemberType.ADMIN);
+        Member adminMember = new Member(name, nickname, email, encodedPassword, MemberType.ADMIN);
         try {
             java.lang.reflect.Field idField = Member.class.getDeclaredField("id");
             idField.setAccessible(true);
@@ -218,6 +218,7 @@ class MemberServiceTest {
         // Then
         assertNotNull(response);
         assertEquals(MemberType.ADMIN, response.memberType());
+        assertNull(response.profile());  // No file associated with the member yet
         verify(memberRepository).findMemberById(memberId);
     }
 }

@@ -2,14 +2,15 @@ package com.memory.dto.member.response;
 
 import com.memory.domain.member.Member;
 import com.memory.domain.member.MemberType;
+import com.memory.dto.file.response.FileResponse;
 
 public record MemberResponse(
         Long id,
         String email,
         String name,
         String nickname,
-        String profileImageUrl,
-        MemberType memberType
+        MemberType memberType,
+        FileResponse profile
 ) {
 
     public static MemberResponse from(Member member) {
@@ -18,8 +19,8 @@ public record MemberResponse(
                 member.getEmail(),
                 member.getName(),
                 member.getNickname(),
-                null,
-                member.getMemberType()
+                member.getMemberType(),
+                member.getFile() != null ? FileResponse.from(member.getFile()) : null
         );
     }
 }

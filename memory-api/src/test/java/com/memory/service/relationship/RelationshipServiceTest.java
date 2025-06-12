@@ -51,8 +51,8 @@ class RelationshipServiceTest {
     @BeforeEach
     void setUp() {
         // Create test members
-        member1 = new Member("Member 1", "member1", "member1@example.com", "password1", "http://example.com/profile1.jpg");
-        member2 = new Member("Member 2", "member2", "member2@example.com", "password2", "http://example.com/profile2.jpg");
+        member1 = new Member("Member 1", "member1", "member1@example.com", "password1");
+        member2 = new Member("Member 2", "member2", "member2@example.com", "password2");
 
         // Set IDs using reflection
         setId(member1, member1Id);
@@ -200,7 +200,7 @@ class RelationshipServiceTest {
     @DisplayName("관계 요청 수락 실패 테스트 - 권한 없음")
     void acceptRelationshipRequestFailNoPermission() {
         // Given
-        Member otherMember = new Member("Other", "other", "other@example.com", "password", "http://example.com/other.jpg");
+        Member otherMember = new Member("Other", "other", "other@example.com", "password");
         setId(otherMember, 3L);
 
         when(memberRepository.findMemberById(3L)).thenReturn(Optional.of(otherMember));
@@ -318,7 +318,7 @@ class RelationshipServiceTest {
     @DisplayName("관계 종료 실패 테스트 - 권한 없음")
     void endRelationshipFailNoPermission() {
         // Given
-        Member otherMember = new Member("Other", "other", "other@example.com", "password", "http://example.com/other.jpg");
+        Member otherMember = new Member("Other", "other", "other@example.com", "password");
         setId(otherMember, 3L);
 
         when(memberRepository.findMemberById(3L)).thenReturn(Optional.of(otherMember));

@@ -63,4 +63,8 @@ public class Memory extends BaseTimeEntity {
         this.files.add(file);
         file.updateMemory(this);
     }
+
+    public void addFiles(List<File> files) {
+        files.forEach(this::addFile);
+    }
 }

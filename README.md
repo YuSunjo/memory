@@ -121,6 +121,7 @@ The `.github/workflows` directory contains GitHub Actions workflows for continuo
 - **build-push.yml**: Builds the application and pushes Docker images to a registry
 - **deploy-dev.yml**: Deploys the application to a development environment
 - **run-tests.yml**: Runs automated tests to ensure code quality
+- ... other workflows as needed
 
 These workflows are triggered automatically on specific events like pushes to the main branch or pull requests.
 
@@ -135,36 +136,8 @@ The directory is organized by API domain:
 - **member**: Requests for user registration, authentication, and profile management
 - **memory**: Requests for memory creation and management
 - **relationship**: Requests for relationship management
+- ... other domains as needed
 
 The `http-client.env.json` file contains environment variables used in the HTTP client files, such as the base URL for the API.
-
-Example usage:
-```http
-### Login to get access token
-POST {{memory_api}}/api/v1/member/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password"
-}
-
-> {%
-    client.global.set("access_token", response.body.data.accessToken);
-%}
-
-### Create a new memory
-POST {{memory_api}}/api/v1/memories
-Content-Type: application/json
-Authorization: Bearer {{access_token}}
-
-{
-  "title": "My Memory",
-  "content": "This is a great memory",
-  "locationName": "Seoul",
-  "mapId": 1,
-  "memoryType": "PUBLIC"
-}
-```
 
 ## License

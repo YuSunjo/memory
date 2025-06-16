@@ -1,0 +1,75 @@
+### Login first
+POST {{memory_api}}/api/v1/member/login
+Content-Type: application/json
+
+{
+  "email": "tnswh2023@naver.com",
+  "password": "1234"
+}
+
+> {%
+    client.global.set("access_token", response.body.data.accessToken);
+%}
+
+### Create a new personal event
+POST {{memory_api}}/api/v1/calendar/events
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "개인 일정",
+  "description": "중요한 미팅",
+  "startDateTime": "2023-12-01T10:00:00",
+  "endDateTime": "2023-12-01T11:00:00",
+  "location": "회사 회의실",
+  "eventType": "PERSONAL",
+  "repeatType": "NONE",
+  "repeatInterval": null,
+  "repeatEndDate": null
+}
+
+### Create a new personal event with repeat settings
+POST {{memory_api}}/api/v1/calendar/events
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "주간 미팅",
+  "description": "팀 주간 미팅",
+  "startDateTime": "2023-12-04T14:00:00",
+  "endDateTime": "2023-12-04T15:00:00",
+  "location": "회사 회의실",
+  "eventType": "PERSONAL",
+  "repeatType": "WEEKLY",
+  "repeatInterval": 1,
+  "repeatEndDate": "2024-03-31"
+}
+
+### Create a new relationship event
+POST {{memory_api}}/api/v1/calendar/events
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "데이트",
+  "description": "영화 관람",
+  "startDateTime": "2023-12-02T18:00:00",
+  "endDateTime": "2023-12-02T22:00:00",
+  "location": "CGV 강남",
+  "eventType": "RELATIONSHIP_EVENT"
+}
+
+### Create a new anniversary event
+POST {{memory_api}}/api/v1/calendar/events
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "100일 기념일",
+  "description": "만난지 100일",
+  "startDateTime": "2023-12-25T00:00:00",
+  "endDateTime": "2023-12-25T23:59:59",
+  "location": "레스토랑",
+  "eventType": "ANNIVERSARY_EVENT",
+  "relationshipId": 1
+}

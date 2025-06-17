@@ -73,3 +73,77 @@ Authorization: Bearer {{access_token}}
   "eventType": "ANNIVERSARY_EVENT",
   "relationshipId": 1
 }
+
+### Update a personal event
+PUT {{memory_api}}/api/v1/calendar/events/1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "수정된 개인 일정",
+  "description": "일정 변경됨",
+  "startDateTime": "2023-12-01T11:00:00",
+  "endDateTime": "2023-12-01T12:00:00",
+  "location": "회사 회의실 2",
+  "eventType": "PERSONAL",
+  "repeatType": "NONE",
+  "repeatInterval": null,
+  "repeatEndDate": null
+}
+
+### Update a personal event with repeat settings
+PUT {{memory_api}}/api/v1/calendar/events/2
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "수정된 주간 미팅",
+  "description": "팀 주간 미팅 시간 변경",
+  "startDateTime": "2023-12-04T15:00:00",
+  "endDateTime": "2023-12-04T16:00:00",
+  "location": "회사 회의실",
+  "eventType": "PERSONAL",
+  "repeatType": "WEEKLY",
+  "repeatInterval": 2,
+  "repeatEndDate": "2024-06-30"
+}
+
+### Update a relationship event
+PUT {{memory_api}}/api/v1/calendar/events/3
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "수정된 데이트",
+  "description": "영화 관람 및 식사",
+  "startDateTime": "2023-12-02T17:00:00",
+  "endDateTime": "2023-12-02T23:00:00",
+  "location": "CGV 강남, 레스토랑",
+  "eventType": "RELATIONSHIP_EVENT"
+}
+
+### Update an anniversary event
+PUT {{memory_api}}/api/v1/calendar/events/4
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "수정된 100일 기념일",
+  "description": "만난지 100일 기념 식사",
+  "startDateTime": "2023-12-25T18:00:00",
+  "endDateTime": "2023-12-25T22:00:00",
+  "location": "고급 레스토랑",
+  "eventType": "ANNIVERSARY_EVENT"
+}
+
+### Get calendar events by date range
+GET {{memory_api}}/api/v1/calendar/events?startDate=2023-12-01&endDate=2023-12-31
+Authorization: Bearer {{access_token}}
+
+### Get calendar events for a specific week
+GET {{memory_api}}/api/v1/calendar/events?startDate=2023-12-04&endDate=2023-12-10
+Authorization: Bearer {{access_token}}
+
+### Get calendar events for a specific day
+GET {{memory_api}}/api/v1/calendar/events?startDate=2023-12-25&endDate=2023-12-25
+Authorization: Bearer {{access_token}}

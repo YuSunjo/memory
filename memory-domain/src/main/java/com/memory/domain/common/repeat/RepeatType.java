@@ -1,4 +1,4 @@
-package com.memory.domain.calendar.repeat;
+package com.memory.domain.common.repeat;
 
 import lombok.Getter;
 
@@ -15,5 +15,4 @@ public enum RepeatType {
     RepeatType(String description) {
         this.description = description;
     }
-
 }

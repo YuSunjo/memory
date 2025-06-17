@@ -1,0 +1,96 @@
+### Login first
+POST {{memory_api}}/api/v1/member/login
+Content-Type: application/json
+
+{
+  "email": "tnswh2023@naver.com",
+  "password": "1234"
+}
+
+> {%
+    client.global.set("access_token", response.body.data.accessToken);
+%}
+
+### Create a new todo
+POST {{memory_api}}/api/v1/todos
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "프로젝트 계획서 작성",
+  "content": "다음 주 미팅을 위한 프로젝트 계획서 작성",
+  "dueDate": "2023-12-10T18:00:00"
+}
+
+### Create a new todo with repeat settings
+POST {{memory_api}}/api/v1/todos
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "주간 보고서 작성",
+  "content": "팀 주간 보고서 작성 및 제출",
+  "dueDate": "2023-12-08T17:00:00",
+  "repeatType": "WEEKLY",
+  "repeatInterval": 1,
+  "repeatEndDate": "2024-03-31"
+}
+
+### Update a todo
+PUT {{memory_api}}/api/v1/todos/1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "수정된 프로젝트 계획서 작성",
+  "content": "다음 주 미팅을 위한 프로젝트 계획서 작성 및 검토",
+  "dueDate": "2023-12-11T12:00:00"
+}
+
+### Update a todo with repeat settings
+PUT {{memory_api}}/api/v1/todos/2
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "수정된 주간 보고서 작성",
+  "content": "팀 주간 보고서 작성, 검토 및 제출",
+  "dueDate": "2023-12-08T16:00:00",
+  "repeatType": "WEEKLY",
+  "repeatInterval": 2,
+  "repeatEndDate": "2024-06-30"
+}
+
+### Update todo status (mark as completed)
+PATCH {{memory_api}}/api/v1/todos/1/status
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "completed": true
+}
+
+### Update todo status (mark as incomplete)
+PATCH {{memory_api}}/api/v1/todos/1/status
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "completed": false
+}
+
+### Delete a todo
+DELETE {{memory_api}}/api/v1/todos/3
+Authorization: Bearer {{access_token}}
+
+### Get todos by date range
+GET {{memory_api}}/api/v1/todos/date-range?startDate=2023-12-01&endDate=2023-12-31
+Authorization: Bearer {{access_token}}
+
+### Get todos for a specific week
+GET {{memory_api}}/api/v1/todos/date-range?startDate=2023-12-04&endDate=2023-12-10
+Authorization: Bearer {{access_token}}
+
+### Get todos for a specific day
+GET {{memory_api}}/api/v1/todos/date-range?startDate=2023-12-08&endDate=2023-12-08
+Authorization: Bearer {{access_token}}

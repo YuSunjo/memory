@@ -1,6 +1,6 @@
 package com.memory.domain.calendar;
 
-import com.memory.domain.calendar.repeat.RepeatSetting;
+import com.memory.domain.common.repeat.RepeatSetting;
 import com.memory.domain.member.Member;
 import com.memory.exception.customException.ValidationException;
 import jakarta.persistence.*;

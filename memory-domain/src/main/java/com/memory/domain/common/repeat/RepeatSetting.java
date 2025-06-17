@@ -1,4 +1,4 @@
-package com.memory.domain.calendar.repeat;
+package com.memory.domain.common.repeat;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -39,5 +39,4 @@ public class RepeatSetting {
         }
         return new RepeatSetting(repeatType, interval, endDate);
     }
-
 }

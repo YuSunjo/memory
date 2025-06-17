@@ -4,8 +4,8 @@ import com.memory.domain.calendar.AnniversaryEvent;
 import com.memory.domain.calendar.CalendarEventType;
 import com.memory.domain.calendar.PersonalEvent;
 import com.memory.domain.calendar.RelationshipEvent;
-import com.memory.domain.calendar.repeat.RepeatSetting;
-import com.memory.domain.calendar.repeat.RepeatType;
+import com.memory.domain.common.repeat.RepeatSetting;
+import com.memory.domain.common.repeat.RepeatType;
 import com.memory.domain.member.Member;
 import com.memory.domain.relationship.Relationship;
 import jakarta.validation.constraints.NotNull;
@@ -66,9 +66,9 @@ public class CalendarEventRequest {
         private CalendarEventType eventType;
 
         // Personal event fields
-        private RepeatType repeatType;
-        private Integer repeatInterval;
-        private LocalDate repeatEndDate;
+        private final RepeatType repeatType;
+        private final Integer repeatInterval;
+        private final LocalDate repeatEndDate;
 
         public Update(String title, String description, LocalDateTime startDateTime,
                      LocalDateTime endDateTime, String location, CalendarEventType eventType,

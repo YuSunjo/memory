@@ -2,7 +2,7 @@ package com.memory.dto.calendar.response;
 
 import com.memory.domain.calendar.BaseCalendarEvent;
 import com.memory.domain.calendar.PersonalEvent;
-import com.memory.domain.calendar.repeat.RepeatType;
+import com.memory.domain.common.repeat.RepeatType;
 import com.memory.dto.member.response.MemberResponse;
 import lombok.Getter;
 

@@ -57,8 +57,8 @@ public abstract class BaseCalendarEvent extends BaseTimeEntity {
     }
 
     // 일정 소유자 확인 메서드
-    public boolean isOwnedBy(Member member) {
-        return this.member.getId().equals(member.getId());
+    public boolean isOwner(Member member) {
+        return !this.member.getId().equals(member.getId());
     }
 
     // 일정 접근 권한 확인 메서드

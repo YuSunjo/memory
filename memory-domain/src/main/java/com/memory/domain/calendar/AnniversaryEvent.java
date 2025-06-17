@@ -50,7 +50,7 @@ public class AnniversaryEvent extends BaseCalendarEvent {
     // 일정 접근 권한 확인 메서드 (기념일은 소유자와 관계에 있는 회원만 접근 가능)
     @Override
     public void validateAccessPermission(Member member) {
-        if (!isOwnedBy(member) && !isRelatedTo(member)) {
+        if (isOwner(member) && !isRelatedTo(member)) {
             throw new ValidationException("이 일정에 접근할 권한이 없습니다.");
         }
     }

@@ -37,6 +37,11 @@ public class PersonalEvent extends BaseCalendarEvent {
                                 location, member, repeatSetting);
     }
 
+    // 개인 일정 반복 설정 업데이트 메서드
+    public void updateRepeatSetting(RepeatSetting repeatSetting) {
+        this.repeatSetting = repeatSetting != null ? repeatSetting : RepeatSetting.none();
+    }
+
     // 일정 접근 권한 확인 메서드 (개인 일정은 소유자만 접근 가능)
     @Override
     public void validateAccessPermission(Member member) {

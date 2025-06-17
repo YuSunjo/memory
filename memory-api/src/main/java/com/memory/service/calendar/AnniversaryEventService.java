@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.memory.service.calendar.CalendarEventServiceUtils.validateRelationshipMember;
 
@@ -48,5 +50,42 @@ public class AnniversaryEventService implements CalendarEventFactoryService {
                 .toList();
 
         return BaseCalendarEventResponse.from(savedEventList.get(0));
+    }
+
+    @Override
+    @Transactional
+    public BaseCalendarEventResponse updateCalendarEvent(Long memberId, Long eventId, CalendarEventRequest.Update request) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+
+        AnniversaryEvent anniversaryEvent = anniversaryEventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("일정을 찾을 수 없습니다."));
+
+        // 접근 권한 확인
+        anniversaryEvent.validateAccessPermission(member);
+
+        // 일정 업데이트
+        anniversaryEvent.update(
+                request.getTitle(),
+                request.getDescription(),
+                request.getStartDateTime(),
+                request.getEndDateTime(),
+                request.getLocation()
+        );
+
+        return BaseCalendarEventResponse.from(anniversaryEvent);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BaseCalendarEventResponse> getCalendarEventsByDateRange(Long memberId, LocalDateTime startDate, LocalDateTime endDate) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+
+        List<AnniversaryEvent> events = anniversaryEventRepository.findByMemberAndStartDateTimeBetween(member, startDate, endDate);
+
+        return events.stream()
+                .map(BaseCalendarEventResponse::from)
+                .collect(Collectors.toList());
     }
 }

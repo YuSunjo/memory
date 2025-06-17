@@ -59,4 +59,33 @@ public class CalendarEventRequest {
             );
         }
     }
+
+    @Getter
+    public static class Update extends BaseCalendarEventRequest.Update {
+        @NotNull(message = "이벤트 타입은 필수 입력값입니다.")
+        private CalendarEventType eventType;
+
+        // Personal event fields
+        private RepeatType repeatType;
+        private Integer repeatInterval;
+        private LocalDate repeatEndDate;
+
+        public Update(String title, String description, LocalDateTime startDateTime,
+                     LocalDateTime endDateTime, String location, CalendarEventType eventType,
+                     RepeatType repeatType, Integer repeatInterval, LocalDate repeatEndDate) {
+            super(title, description, startDateTime, endDateTime, location);
+            this.eventType = eventType;
+            this.repeatType = repeatType;
+            this.repeatInterval = repeatInterval;
+            this.repeatEndDate = repeatEndDate;
+        }
+
+        public RepeatSetting toRepeatSetting() {
+            return RepeatSetting.of(
+                    repeatType != null ? repeatType : RepeatType.NONE,
+                    repeatInterval,
+                    repeatEndDate
+            );
+        }
+    }
 }

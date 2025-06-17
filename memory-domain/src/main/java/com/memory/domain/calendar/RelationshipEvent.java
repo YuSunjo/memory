@@ -48,7 +48,7 @@ public class RelationshipEvent extends BaseCalendarEvent {
 
     @Override
     public void validateAccessPermission(Member member) {
-        if (!isOwnedBy(member) && !isRelatedTo(member)) {
+        if (isOwner(member) && !isRelatedTo(member)) {
             throw new ValidationException("이 일정에 접근할 권한이 없습니다.");
         }
     }

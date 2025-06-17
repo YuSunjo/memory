@@ -1,0 +1,54 @@
+### Login first
+POST {{memory_api}}/api/v1/member/login
+Content-Type: application/json
+
+{
+  "email": "tnswh2023@naver.com",
+  "password": "1234"
+}
+
+> {%
+    client.global.set("access_token", response.body.data.accessToken);
+%}
+
+### Create a new diary
+POST {{memory_api}}/api/v1/diaries
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "오늘의 일기",
+  "content": "오늘은 날씨가 좋아서 공원에 산책을 다녀왔다. 기분이 좋았다.",
+  "date": "2023-12-15",
+  "mood": "행복",
+  "weather": "맑음"
+}
+
+### Update a diary
+PUT {{memory_api}}/api/v1/diaries/1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "수정된 일기",
+  "content": "오늘은 날씨가 좋아서 공원에 산책을 다녀왔다. 친구도 만나서 더 기분이 좋았다.",
+  "date": "2023-12-15",
+  "mood": "행복",
+  "weather": "맑음"
+}
+
+### Delete a diary
+DELETE {{memory_api}}/api/v1/diaries/1
+Authorization: Bearer {{access_token}}
+
+### Get all diaries
+GET {{memory_api}}/api/v1/diaries
+Authorization: Bearer {{access_token}}
+
+### Get diaries for a specific date
+GET {{memory_api}}/api/v1/diaries/date?date=2023-12-15
+Authorization: Bearer {{access_token}}
+
+### Get diaries for a date range
+GET {{memory_api}}/api/v1/diaries/date-range?startDate=2023-12-01&endDate=2023-12-31
+Authorization: Bearer {{access_token}}

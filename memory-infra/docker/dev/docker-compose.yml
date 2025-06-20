@@ -95,6 +95,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - /home/ubuntu/memory/memory-front:/usr/share/nginx/html
     depends_on:
       minio:
         condition: service_healthy

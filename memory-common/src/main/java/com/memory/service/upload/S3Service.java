@@ -3,6 +3,7 @@ package com.memory.service.upload;
 import com.memory.component.storage.S3Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -17,6 +18,7 @@ import java.net.URL;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "cloud.aws", name = "enabled", havingValue = "true")
 public class S3Service {
 
     private final S3Client s3Client;

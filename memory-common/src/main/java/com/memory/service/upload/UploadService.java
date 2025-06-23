@@ -3,6 +3,7 @@ package com.memory.service.upload;
 import com.memory.dto.UploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "cloud.aws", name = "enabled", havingValue = "true")
 public class UploadService {
 
     private final S3Service s3Service;

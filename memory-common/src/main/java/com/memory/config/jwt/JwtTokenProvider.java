@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -15,6 +16,7 @@ import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "jwt.token", name = "enabled", havingValue = "true")
 public class JwtTokenProvider {
 
     private final JwtComponent jwtComponent;

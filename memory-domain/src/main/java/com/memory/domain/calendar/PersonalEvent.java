@@ -1,6 +1,5 @@
 package com.memory.domain.calendar;
 
-import com.memory.domain.common.repeat.RepeatSetting;
 import com.memory.domain.member.Member;
 import com.memory.exception.customException.ValidationException;
 import jakarta.persistence.*;
@@ -18,28 +17,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PersonalEvent extends BaseCalendarEvent {
 
-    @Embedded
-    private RepeatSetting repeatSetting;
-
     private PersonalEvent(String title, String description, LocalDateTime startDateTime, 
-                         LocalDateTime endDateTime, String location, Member member, 
-                         RepeatSetting repeatSetting) {
+                         LocalDateTime endDateTime, String location, Member member) {
         super(title, description, startDateTime, endDateTime, location, member);
-        this.repeatSetting = repeatSetting != null ? repeatSetting : RepeatSetting.none();
     }
 
     // 개인 일정 생성 팩토리 메서드
     public static PersonalEvent create(String title, String description, 
                                      LocalDateTime startDateTime, LocalDateTime endDateTime, 
-                                     String location, Member member, 
-                                     RepeatSetting repeatSetting) {
+                                     String location, Member member) {
         return new PersonalEvent(title, description, startDateTime, endDateTime, 
-                                location, member, repeatSetting);
-    }
-
-    // 개인 일정 반복 설정 업데이트 메서드
-    public void updateRepeatSetting(RepeatSetting repeatSetting) {
-        this.repeatSetting = repeatSetting != null ? repeatSetting : RepeatSetting.none();
+                                location, member);
     }
 
     // 일정 접근 권한 확인 메서드 (개인 일정은 소유자만 접근 가능)

@@ -56,9 +56,6 @@ public class PersonalEventService implements CalendarEventFactoryService {
                 request.getLocation()
         );
 
-        // 반복 설정 업데이트 (개인 일정만 해당)
-        personalEvent.updateRepeatSetting(request.toRepeatSetting());
-
         return BaseCalendarEventResponse.from(personalEvent);
     }
 

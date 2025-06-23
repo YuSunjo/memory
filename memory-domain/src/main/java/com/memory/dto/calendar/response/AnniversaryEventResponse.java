@@ -10,13 +10,15 @@ import java.time.LocalDateTime;
 @Getter
 public class AnniversaryEventResponse extends BaseCalendarEventResponse {
     private final MemberResponse relatedMember;
+    private final Boolean isDday;
 
     public AnniversaryEventResponse(Long id, String title, String description, 
                              LocalDateTime startDateTime, LocalDateTime endDateTime, 
                              String location, MemberResponse member, LocalDateTime createDate,
-                             MemberResponse relatedMember) {
+                             MemberResponse relatedMember, Boolean isDday) {
         super(id, title, description, startDateTime, endDateTime, location, member, createDate);
         this.relatedMember = relatedMember;
+        this.isDday = isDday;
     }
 
     public static AnniversaryEventResponse from(BaseCalendarEvent event) {
@@ -33,7 +35,8 @@ public class AnniversaryEventResponse extends BaseCalendarEventResponse {
                 anniversaryEvent.getLocation(),
                 MemberResponse.from(anniversaryEvent.getMember()),
                 anniversaryEvent.getCreateDate(),
-                MemberResponse.from(anniversaryEvent.getRelationship().getRelatedMember())
+                MemberResponse.from(anniversaryEvent.getRelationship().getRelatedMember()),
+                anniversaryEvent.getIsDday()
         );
     }
 }

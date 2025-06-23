@@ -70,7 +70,8 @@ public class AnniversaryEventService implements CalendarEventFactoryService {
                 request.getDescription(),
                 request.getStartDateTime(),
                 request.getEndDateTime(),
-                request.getLocation()
+                request.getLocation(),
+                request.getIsDday()
         );
 
         return BaseCalendarEventResponse.from(anniversaryEvent);

@@ -22,10 +22,7 @@ Authorization: Bearer {{access_token}}
   "startDateTime": "2023-12-01T10:00:00",
   "endDateTime": "2023-12-01T11:00:00",
   "location": "회사 회의실",
-  "eventType": "PERSONAL",
-  "repeatType": "NONE",
-  "repeatInterval": null,
-  "repeatEndDate": null
+  "eventType": "PERSONAL"
 }
 
 ### Create a new personal event with repeat settings
@@ -39,10 +36,7 @@ Authorization: Bearer {{access_token}}
   "startDateTime": "2023-12-04T14:00:00",
   "endDateTime": "2023-12-04T15:00:00",
   "location": "회사 회의실",
-  "eventType": "PERSONAL",
-  "repeatType": "WEEKLY",
-  "repeatInterval": 1,
-  "repeatEndDate": "2024-03-31"
+  "eventType": "PERSONAL"
 }
 
 ### Create a new relationship event
@@ -65,13 +59,13 @@ Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
 {
-  "title": "100일 기념일",
-  "description": "만난지 100일",
-  "startDateTime": "2023-12-25T00:00:00",
-  "endDateTime": "2023-12-25T23:59:59",
+  "title": "결혼 기념일",
+  "description": "결혼 기념일",
+  "startDateTime": "2025-06-15T00:00:00",
   "location": "레스토랑",
   "eventType": "ANNIVERSARY_EVENT",
-  "relationshipId": 1
+  "relationshipId": 1,
+  "isDday": true
 }
 
 ### Update a personal event
@@ -85,10 +79,7 @@ Authorization: Bearer {{access_token}}
   "startDateTime": "2023-12-01T11:00:00",
   "endDateTime": "2023-12-01T12:00:00",
   "location": "회사 회의실 2",
-  "eventType": "PERSONAL",
-  "repeatType": "NONE",
-  "repeatInterval": null,
-  "repeatEndDate": null
+  "eventType": "PERSONAL"
 }
 
 ### Update a personal event with repeat settings
@@ -102,10 +93,7 @@ Authorization: Bearer {{access_token}}
   "startDateTime": "2023-12-04T15:00:00",
   "endDateTime": "2023-12-04T16:00:00",
   "location": "회사 회의실",
-  "eventType": "PERSONAL",
-  "repeatType": "WEEKLY",
-  "repeatInterval": 2,
-  "repeatEndDate": "2024-06-30"
+  "eventType": "PERSONAL"
 }
 
 ### Update a relationship event

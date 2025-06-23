@@ -1,6 +1,7 @@
 package com.memory.config.storage;
 
 import com.memory.component.storage.S3Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -12,6 +13,7 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 import java.net.URI;
 
 @Configuration
+@ConditionalOnProperty(prefix = "cloud.aws", name = "enabled", havingValue = "true")
 public class S3Config {
 
     private final S3Component s3Component;

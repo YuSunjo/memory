@@ -26,6 +26,11 @@ jwt:
   token:
     expiration: 3600
     refresh: 2592000
+    enabled: true
+
+cloud:
+  aws:
+    enabled: true
 
 ---
 

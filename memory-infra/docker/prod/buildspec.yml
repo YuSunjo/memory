@@ -7,13 +7,12 @@ phases:
       - aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 228749872437.dkr.ecr.ap-northeast-2.amazonaws.com
       - REPOSITORY_URI=228749872437.dkr.ecr.ap-northeast-2.amazonaws.com/my_memory/memory
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - cd memory-infra/docker
-  
+
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:$IMAGE_TAG -f Dockerfile .
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG -f memory-infra/docker/Dockerfile .
       - docker tag $REPOSITORY_URI:$IMAGE_TAG $REPOSITORY_URI:latest
   
   post_build:

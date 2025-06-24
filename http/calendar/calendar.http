@@ -19,8 +19,8 @@ Authorization: Bearer {{access_token}}
 {
   "title": "개인 일정",
   "description": "중요한 미팅",
-  "startDateTime": "2023-12-01T10:00:00",
-  "endDateTime": "2023-12-01T11:00:00",
+  "startDateTime": "2025-06-15T10:00:00",
+  "endDateTime": "2025-06-15T11:00:00",
   "location": "회사 회의실",
   "eventType": "PERSONAL"
 }

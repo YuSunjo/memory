@@ -32,7 +32,7 @@ public class S3Config {
         return S3Client.builder()
                 .endpointOverride(URI.create(s3Component.getS3().getEndpoint()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
-                .region(Region.US_EAST_1)
+                .region(Region.of(s3Component.getRegion().getStatic()))
                 .serviceConfiguration(S3Configuration.builder()
                         .pathStyleAccessEnabled(true)
                         .build())

@@ -21,12 +21,9 @@ phases:
       - echo Pushing the Docker images...
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - docker push $REPOSITORY_URI:latest
-      - echo Writing image definitions file...
-      - printf '{"ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imageDefinitions.json
 
 artifacts:
   files:
-    - memory-infra/docker/prod/imageDefinitions.json
     - memory-infra/docker/prod/appspec.yml
     - memory-infra/docker/prod/taskdef.yml
   discard-paths: yes

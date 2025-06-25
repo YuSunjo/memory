@@ -1,0 +1,77 @@
+{
+  "family": "my-memory-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::228749872437:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "my-memory",
+      "image": "228749872437.dkr.ecr.ap-northeast-2.amazonaws.com/my_memory/memory:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "cloud.aws.credentials.secret-key",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:AWS_S3_SECRET_KEY"
+        },
+        {
+          "name": "cloud.aws.credentials.access-key",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:AWS_S3_ACCESS_KEY"
+        },
+        {
+          "name": "spring.datasource.username",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:DB_USERNAME"
+        },
+        {
+          "name": "cloud.aws.s3.bucket",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:AWS_S3_BUCKET"
+        },
+        {
+          "name": "spring.datasource.url",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:DB_URL"
+        },
+        {
+          "name": "cloud.aws.s3.endpoint",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:AWS_S3_ENDPOINT"
+        },
+        {
+          "name": "cloud.aws.region.static",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:AWS_S3_REGION"
+        },
+        {
+          "name": "jwt.token.secret",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:JWT_TOKEN_SECRET"
+        },
+        {
+          "name": "spring.jpa.hibernate.ddl.auto",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:SPRING_JPA_DDL_AUTO"
+        },
+        {
+          "name": "spring.profiles.active",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:SPRING_PROFILES_ACTIVE"
+        },
+        {
+          "name": "spring.datasource.password",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:DB_PASSWORD"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/my-memory-task",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

@@ -24,6 +24,7 @@ phases:
 
 artifacts:
   files:
+    - memory-infra/docker/prod/imagedefinitions.json
     - memory-infra/docker/prod/appspec.yml
     - memory-infra/docker/prod/taskdef.yml
   discard-paths: yes

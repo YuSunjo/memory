@@ -1,0 +1,6 @@
+[
+  {
+    "name": "my-memory",
+    "imageUri": "228749872437.dkr.ecr.ap-northeast-2.amazonaws.com/my_memory/memory:latest"
+  }
+]

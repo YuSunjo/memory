@@ -23,8 +23,9 @@ phases:
       - docker push $REPOSITORY_URI:latest
 
 artifacts:
+  base-directory: memory-infra/docker/prod
   files:
-    - memory-infra/docker/prod/imagedefinitions.json
-    - memory-infra/docker/prod/appspec.json
-    - memory-infra/docker/prod/taskdef.yml
+    - taskdef.json
+    - appspec.json
+    - imagedefinitions.json
   discard-paths: yes

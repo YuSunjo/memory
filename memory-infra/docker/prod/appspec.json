@@ -1,5 +1,5 @@
 {
-  "version": "1",
+  "version": 1.0,
   "Resources": [
     {
       "TargetService": {
@@ -9,18 +9,9 @@
           "LoadBalancerInfo": {
             "ContainerName": "my-memory",
             "ContainerPort": 8080
-          },
-          "PlatformVersion": "1.4.0",
-          "CapacityProviderStrategy": [
-            {
-              "CapacityProvider": "FARGATE",
-              "Base": 0,
-              "Weight": 1
-            }
-          ]
+          }
         }
       }
     }
-  ],
-  "Hooks": []
+  ]
 }

@@ -5,7 +5,7 @@
       "TargetService": {
         "Type": "AWS::ECS::Service",
         "Properties": {
-          "TaskDefinition": "<TASK_DEFINITION>",
+          "TaskDefinition": "arn:aws:ecs:ap-northeast-2:228749872437:task-definition/my-memory-task:7",
           "LoadBalancerInfo": {
             "ContainerName": "my-memory",
             "ContainerPort": 8080

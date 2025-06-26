@@ -27,3 +27,4 @@ artifacts:
     - memory-infra/docker/prod/imagedefinitions.json
     - memory-infra/docker/prod/appspec.json
     - memory-infra/docker/prod/taskdef.yml
+  discard-paths: yes

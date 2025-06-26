@@ -1,0 +1,16 @@
+version: 0.0
+os: linux
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "<taskdef.json>"
+        LoadBalancerInfo:
+          ContainerName: "my-memory"
+          ContainerPort: 8080
+        PlatformVersion: "1.4.0"
+        CapacityProviderStrategy:
+          - CapacityProvider: "FARGATE"
+            Base: 0
+            Weight: 1
+Hooks: []

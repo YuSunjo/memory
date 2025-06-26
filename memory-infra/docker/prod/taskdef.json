@@ -52,7 +52,7 @@
           "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:JWT_TOKEN_SECRET"
         },
         {
-          "name": "spring.jpa.hibernate.ddl.auto",
+          "name": "spring.jpa.hibernate.ddl-auto",
           "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:228749872437:secret:SPRING_JPA_DDL_AUTO"
         },
         {

@@ -23,7 +23,7 @@ phases:
       - docker push $REPOSITORY_URI:latest
 
 artifacts:
-  base-directory: memory-infra/docker/prod
+  base-directory: memory-infra/docker/prod/ecs
   files:
     - taskdef.json
     - appspec.json

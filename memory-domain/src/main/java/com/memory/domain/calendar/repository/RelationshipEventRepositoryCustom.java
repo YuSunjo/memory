@@ -9,5 +9,6 @@ import java.util.List;
 public interface RelationshipEventRepositoryCustom {
 
     List<RelationshipEvent> findByMemberAndStartDateTimeBetween(Member member, LocalDateTime startDate, LocalDateTime endDate);
-    
+
+    List<RelationshipEvent> findByMemberAndFutureEvents(Member member);
 }

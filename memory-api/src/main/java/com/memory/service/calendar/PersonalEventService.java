@@ -72,4 +72,16 @@ public class PersonalEventService implements CalendarEventFactoryService {
                 .map(BaseCalendarEventResponse::from)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<BaseCalendarEventResponse> getCalendarEventsWithDday(Long memberId) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+
+        List<PersonalEvent> events = personalEventRepository.findByMemberAndFutureEvents(member);
+
+        return events.stream()
+                .map(BaseCalendarEventResponse::from)
+                .collect(Collectors.toList());
+    }
 }

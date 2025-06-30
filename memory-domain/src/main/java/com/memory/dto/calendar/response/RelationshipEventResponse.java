@@ -6,6 +6,8 @@ import com.memory.dto.member.response.MemberResponse;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Getter
 public class RelationshipEventResponse extends BaseCalendarEventResponse {
@@ -14,8 +16,8 @@ public class RelationshipEventResponse extends BaseCalendarEventResponse {
     public RelationshipEventResponse(Long id, String title, String description, 
                             LocalDateTime startDateTime, LocalDateTime endDateTime, 
                             String location, MemberResponse member, LocalDateTime createDate,
-                            MemberResponse relatedMember) {
-        super(id, title, description, startDateTime, endDateTime, location, member, createDate);
+                            MemberResponse relatedMember, Integer dday) {
+        super(id, title, description, startDateTime, endDateTime, location, member, createDate, dday);
         this.relatedMember = relatedMember;
     }
 
@@ -23,6 +25,8 @@ public class RelationshipEventResponse extends BaseCalendarEventResponse {
         if (!(event instanceof RelationshipEvent relationshipEvent)) {
             throw new IllegalArgumentException("Event is not a RelationshipEvent");
         }
+
+        Integer dday = calculateDday(relationshipEvent.getStartDateTime());
 
         return new RelationshipEventResponse(
                 relationshipEvent.getId(),
@@ -33,7 +37,15 @@ public class RelationshipEventResponse extends BaseCalendarEventResponse {
                 relationshipEvent.getLocation(),
                 MemberResponse.from(relationshipEvent.getMember()),
                 relationshipEvent.getCreateDate(),
-                MemberResponse.from(relationshipEvent.getRelationship().getRelatedMember())
+                MemberResponse.from(relationshipEvent.getRelationship().getRelatedMember()),
+                dday
         );
+    }
+
+    private static Integer calculateDday(LocalDateTime eventDateTime) {
+        LocalDate today = LocalDate.now();
+        LocalDate eventDate = eventDateTime.toLocalDate();
+
+        return (int) ChronoUnit.DAYS.between(today, eventDate);
     }
 }

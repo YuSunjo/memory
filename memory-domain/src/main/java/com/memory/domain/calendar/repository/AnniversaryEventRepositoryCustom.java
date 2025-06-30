@@ -10,4 +10,6 @@ public interface AnniversaryEventRepositoryCustom {
 
     List<AnniversaryEvent> findByMemberAndStartDateTimeBetween(Member member, LocalDateTime startDate, LocalDateTime endDate);
 
+    List<AnniversaryEvent> findByMemberAndIsDdayTrue(Member member);
+
 }

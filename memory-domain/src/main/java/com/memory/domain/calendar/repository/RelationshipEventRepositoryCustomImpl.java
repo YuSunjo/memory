@@ -28,5 +28,19 @@ public class RelationshipEventRepositoryCustomImpl implements RelationshipEventR
                 .orderBy(relationshipEvent.startDateTime.asc())
                 .fetch();
     }
-    
+
+    @Override
+    public List<RelationshipEvent> findByMemberAndFutureEvents(Member member) {
+        return queryFactory.selectFrom(relationshipEvent)
+                .where(
+                        relationshipEvent.member.eq(member)
+                        .or(relationshipEvent.relationship.member.eq(member))
+                        .or(relationshipEvent.relationship.relatedMember.eq(member)),
+                        relationshipEvent.startDateTime.goe(LocalDateTime.now()),
+                        relationshipEvent.deleteDate.isNull()
+                )
+                .orderBy(relationshipEvent.startDateTime.asc())
+                .fetch();
+    }
+
 }

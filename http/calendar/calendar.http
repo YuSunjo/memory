@@ -19,8 +19,8 @@ Authorization: Bearer {{access_token}}
 {
   "title": "개인 일정",
   "description": "중요한 미팅",
-  "startDateTime": "2025-06-15T10:00:00",
-  "endDateTime": "2025-06-15T11:00:00",
+  "startDateTime": "2025-07-15T10:00:00",
+  "endDateTime": "2025-07-15T11:00:00",
   "location": "회사 회의실",
   "eventType": "PERSONAL"
 }
@@ -134,4 +134,8 @@ Authorization: Bearer {{access_token}}
 
 ### Get calendar events for a specific day
 GET {{memory_api}}/api/v1/calendar/events?startDate=2023-12-25&endDate=2023-12-25
+Authorization: Bearer {{access_token}}
+
+### Get calendar events with D-day information
+GET {{memory_api}}/api/v1/calendar/events/dday
 Authorization: Bearer {{access_token}}

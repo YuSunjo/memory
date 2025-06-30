@@ -89,4 +89,21 @@ public class AnniversaryEventService implements CalendarEventFactoryService {
                 .map(BaseCalendarEventResponse::from)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<BaseCalendarEventResponse> getCalendarEventsWithDday(Long memberId) {
+        Member member = memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+
+        List<Relationship> relationshipList = relationshipRepository.findByMemberOrRelatedMemberAndStatus(member, RelationshipStatus.ACCEPTED);
+        if (relationshipList.isEmpty()) {
+            return List.of();
+        }
+
+        List<AnniversaryEvent> events = anniversaryEventRepository.findByMemberAndIsDdayTrue(member);
+
+        return events.stream()
+                .map(BaseCalendarEventResponse::from)
+                .collect(Collectors.toList());
+    }
 }

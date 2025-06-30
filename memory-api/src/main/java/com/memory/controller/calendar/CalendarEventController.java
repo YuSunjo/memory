@@ -64,4 +64,16 @@ public class CalendarEventController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         return ServerResponse.success(calendarEventService.getCalendarEventsByDateRange(memberId, startDate, endDate));
     }
+
+    @ApiOperations.SecuredApi(
+        summary = "D-day 조회",
+        description = "D-day 정보가 있는 일정을 조회합니다. AnniversaryEvent는 모든 경우에, PersonalEvent와 RelationshipEvent는 미래 날짜인 경우에만 D-day 정보가 포함됩니다.",
+        response = BaseCalendarEventResponse.class
+    )
+    @Auth
+    @GetMapping("api/v1/calendar/events/dday")
+    public ServerResponse<List<BaseCalendarEventResponse>> getCalendarEventsWithDday(
+            @Parameter(hidden = true) @MemberId Long memberId) {
+        return ServerResponse.success(calendarEventService.getCalendarEventsWithDday(memberId));
+    }
 }

@@ -14,4 +14,5 @@ public interface CalendarEventFactoryService {
 
     List<BaseCalendarEventResponse> getCalendarEventsByDateRange(Long memberId, LocalDateTime startDate, LocalDateTime endDate);
 
+    List<BaseCalendarEventResponse> getCalendarEventsWithDday(Long memberId);
 }

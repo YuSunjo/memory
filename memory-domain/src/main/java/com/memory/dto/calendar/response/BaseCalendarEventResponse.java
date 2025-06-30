@@ -16,10 +16,12 @@ public abstract class BaseCalendarEventResponse {
     private final String location;
     private final MemberResponse member;
     private final LocalDateTime createDate;
+    private final Integer dday;
 
     protected BaseCalendarEventResponse(Long id, String title, String description, 
                                       LocalDateTime startDateTime, LocalDateTime endDateTime, 
-                                      String location, MemberResponse member, LocalDateTime createDate) {
+                                      String location, MemberResponse member, LocalDateTime createDate,
+                                      Integer dday) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -28,6 +30,7 @@ public abstract class BaseCalendarEventResponse {
         this.location = location;
         this.member = member;
         this.createDate = createDate;
+        this.dday = dday;
     }
 
     public static BaseCalendarEventResponse from(BaseCalendarEvent event) {

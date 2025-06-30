@@ -26,5 +26,17 @@ public class PersonalEventRepositoryCustomImpl implements PersonalEventRepositor
                 .orderBy(personalEvent.startDateTime.asc())
                 .fetch();
     }
-    
+
+    @Override
+    public List<PersonalEvent> findByMemberAndFutureEvents(Member member) {
+        return queryFactory.selectFrom(personalEvent)
+                .where(
+                        personalEvent.member.eq(member),
+                        personalEvent.startDateTime.goe(LocalDateTime.now()),
+                        personalEvent.deleteDate.isNull()
+                )
+                .orderBy(personalEvent.startDateTime.asc())
+                .fetch();
+    }
+
 }

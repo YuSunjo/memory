@@ -26,4 +26,15 @@ public class AnniversaryEventRepositoryCustomImpl implements AnniversaryEventRep
                 .fetch();
     }
 
+    @Override
+    public List<AnniversaryEvent> findByMemberAndIsDdayTrue(Member member) {
+        return queryFactory.selectFrom(anniversaryEvent)
+                .where(
+                        anniversaryEvent.member.eq(member),
+                        anniversaryEvent.isDday.isTrue(),
+                        anniversaryEvent.deleteDate.isNull()
+                )
+                .fetch();
+    }
+
 }

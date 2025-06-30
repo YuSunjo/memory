@@ -9,5 +9,7 @@ import java.util.List;
 public interface PersonalEventRepositoryCustom {
 
     List<PersonalEvent> findByMemberAndStartDateTimeBetween(Member member, LocalDateTime startDate, LocalDateTime endDate);
-    
+
+    List<PersonalEvent> findByMemberAndFutureEvents(Member member);
+
 }

@@ -12,7 +12,7 @@ phases:
 
       # .env 파일 생성
       - |
-        cat << 'EOF' > memory-infra/docker/prod/ec2/.env
+        cat << EOF > memory-infra/docker/prod/ec2/.env
         DB_URL=$(echo $SECRET_VALUES | jq -r '.DB_URL')
         DB_USERNAME=$(echo $SECRET_VALUES | jq -r '.DB_USERNAME')
         DB_PASSWORD=$(echo $SECRET_VALUES | jq -r '.DB_PASSWORD')

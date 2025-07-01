@@ -32,6 +32,13 @@ cloud:
   aws:
     enabled: true
 
+cors:
+  allowed-origins:
+    - "http://144.24.78.166"
+    - "https://144.24.78.166"
+    - "http://my-memory-front.s3-website.ap-northeast-2.amazonaws.com"
+    - "https://my-memory-front.s3-website.ap-northeast-2.amazonaws.com"
+
 ---
 
 spring:

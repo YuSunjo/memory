@@ -1,6 +1,7 @@
 package com.memory.config.security;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.memory.component.security.SecurityComponent;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,10 +20,10 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${cors.allowed-origins}")
-    private List<String> allowedOrigins;
+    private final SecurityComponent securityComponent;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -41,7 +42,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // 환경별 도메인 설정
-        configuration.setAllowedOriginPatterns(allowedOrigins);
+        configuration.setAllowedOriginPatterns(securityComponent.getAllowedOrigins());
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

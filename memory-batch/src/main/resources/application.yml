@@ -22,6 +22,9 @@ cloud:
   aws:
     enabled: false
 
+cors:
+  enabled: false
+
 ---
 spring:
   profiles:

@@ -3,6 +3,7 @@ package com.memory.domain.member;
 import com.memory.domain.BaseTimeEntity;
 import com.memory.domain.file.File;
 import com.memory.domain.map.Map;
+import com.memory.domain.memberlink.MemberLink;
 import com.memory.domain.relationship.Relationship;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,6 +43,9 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Map> maps = List.of();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberLink> memberLinks = List.of();
+
     public Member(String name, String nickname, String email, String password) {
         this.name = name;
         this.nickname = nickname;
@@ -76,5 +80,10 @@ public class Member extends BaseTimeEntity {
         if (password != null) {
             this.password = password;
         }
+    }
+
+    // MemberLink 연관관계 편의 메서드
+    public void addMemberLink(MemberLink memberLink) {
+        this.memberLinks.add(memberLink);
     }
 }

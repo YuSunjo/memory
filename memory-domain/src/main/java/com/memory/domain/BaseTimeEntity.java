@@ -27,4 +27,8 @@ public class BaseTimeEntity {
     public void updateDelete() {
         this.deleteDate = LocalDateTime.now();
     }
+
+    public boolean isDeleted() {
+        return deleteDate != null;
+    }
 }

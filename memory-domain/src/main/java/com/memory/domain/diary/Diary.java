@@ -22,7 +22,7 @@ public class Diary extends BaseTimeEntity {
 
     private String title;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private LocalDate date;

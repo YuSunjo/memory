@@ -67,18 +67,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(
-                        cors -> cors.configurationSource(corsConfigurationSource())
-                )
-                .csrf(
-                        AbstractHttpConfigurer::disable // CSRF 보호 비활성화
-                )
-                .formLogin(
-                        AbstractHttpConfigurer::disable
-                )
-        ;
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
+            );
 
         return http.build();
     }
-
 }

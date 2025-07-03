@@ -87,6 +87,8 @@ spring:
     baseline-on-migrate: true
     clean-disabled: true  # 개발환경에서는 clean 비활성화
     validate-on-migrate: false
+    baseline-version: 0
+    baseline-description: "Initial baseline"
 
 ---
 

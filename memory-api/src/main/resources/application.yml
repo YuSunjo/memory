@@ -84,9 +84,9 @@ spring:
       - swagger
   flyway:
     enabled: true
-    baseline-on-migrate: true
+    baseline-on-migrate: false
     clean-disabled: true  # 개발환경에서는 clean 비활성화
-    validate-on-migrate: false
+    validate-on-migrate: true
     baseline-version: 0
     baseline-description: "Initial baseline"
 

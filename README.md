@@ -53,7 +53,7 @@ memory/
 
 ## Technology Stack
 - **Java 17**: Programming language
-- **Spring Boot 3.5.0**: Application framework
+- **Spring Boot 3.5.x**: Application framework
 - **Spring Data JPA**: Data access
 - **PostgreSQL**: Database
 - **PostGIS**: Geospatial data support

@@ -46,14 +46,14 @@ cloud:
 
 cors:
   allowed-origins:
-    - http://localhost:4173
-    - http://localhost:5173
-    - http://dev.mymemory.co.kr
-    - https://dev.mymemory.co.kr
-    - http://www.mymemory.co.kr
-    - https://www.mymemory.co.kr
-    - http://mymemory.co.kr
-    - https://mymemory.co.kr
+    - "http://localhost:4173"
+    - "http://localhost:5173"
+    - "http://dev.mymemory.co.kr"
+    - "https://dev.mymemory.co.kr"
+    - "http://www.mymemory.co.kr"
+    - "https://www.mymemory.co.kr"
+    - "http://mymemory.co.kr"
+    - "https://mymemory.co.kr"
   enabled: true
 
 ---

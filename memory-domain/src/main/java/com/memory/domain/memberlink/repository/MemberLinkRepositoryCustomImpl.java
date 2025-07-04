@@ -22,7 +22,6 @@ public class MemberLinkRepositoryCustomImpl implements MemberLinkRepositoryCusto
                 .selectFrom(memberLink)
                 .where(
                         memberLink.member.id.eq(memberId),
-                        memberLink.isActive.isTrue(),
                         memberLink.deleteDate.isNull()
                 )
                 .orderBy(memberLink.displayOrder.asc())

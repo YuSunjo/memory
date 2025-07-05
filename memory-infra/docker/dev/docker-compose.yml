@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: kartoza/postgis:15-3.3
+    image: kartoza/postgis:17-3.5
     container_name: memory-postgres-dev
     ports:
       - "5433:5432"
@@ -11,6 +11,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST_AUTH_METHOD: md5
+      PGUSER: ${POSTGRES_USER}          # 기본 사용자
+      PGPASSWORD: ${POSTGRES_PASSWORD}  # 기본 비밀번호
+      PGDATABASE: ${POSTGRES_DB}        # 기본 데이터베이스
     volumes:
       - ./data/postgres-data:/var/lib/postgresql
     networks:

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgis/postgis:15-3.3
+    image: kartoza/postgis:17-3.5
     container_name: memory-postgres-local
     ports:
       - "5433:5432"
@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: memory
       POSTGRES_DB: memory
     volumes:
-      - ./data/postgres-data:/var/lib/postgresql/data
+      - ./data/postgres-data:/var/lib/postgresql
     networks:
       - memory-network
 

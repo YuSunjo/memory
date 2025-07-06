@@ -2,6 +2,7 @@ package com.memory.config.security;
 
 import com.memory.component.security.SecurityComponent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +22,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final SecurityComponent securityComponent;
@@ -42,6 +44,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // 환경별 도메인 설정
+        log.info("Allowed origins: {}", securityComponent.getAllowedOrigins());
         configuration.setAllowedOriginPatterns(securityComponent.getAllowedOrigins());
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

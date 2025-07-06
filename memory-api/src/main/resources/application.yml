@@ -63,6 +63,11 @@ cors:
     - "https://mymemory.co.kr"
   enabled: true
 
+logging:
+  level:
+    root: INFO
+    org.springframework.jdbc.core.JdbcTemplate: DEBUG
+
 ---
 
 spring:

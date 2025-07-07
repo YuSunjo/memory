@@ -18,9 +18,21 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Docker Compose 명령어 확인
+if docker compose version &> /dev/null; then
+    DOCKER_COMPOSE="docker compose"
+elif command -v docker-compose &> /dev/null && docker-compose --version &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+else
+    echo -e "${RED}ERROR: Docker Compose not found or corrupted!${NC}"
+    echo -e "${YELLOW}Please reinstall Docker Compose${NC}"
+    exit 1
+fi
+
 echo -e "${GREEN}=== Memory API HTTPS Setup with Let's Encrypt ===${NC}"
 echo -e "${YELLOW}Domain: ${domains[0]}${NC}"
 echo -e "${YELLOW}Email: $email${NC}"
+echo -e "${YELLOW}Using Docker Compose: $DOCKER_COMPOSE${NC}"
 
 # 이메일 확인
 if [ -z "$email" ]; then
@@ -52,7 +64,7 @@ fi
 echo -e "${GREEN}### Creating dummy certificate for ${domains[0]} ...${NC}"
 path="/etc/letsencrypt/live/${domains[0]}"
 mkdir -p "$data_path/conf/live/${domains[0]}"
-docker-compose run --rm --entrypoint "\
+$DOCKER_COMPOSE run --rm --entrypoint "\
   openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
     -keyout '$path/privkey.pem' \
     -out '$path/fullchain.pem' \
@@ -61,7 +73,7 @@ echo
 
 # nginx 시작
 echo -e "${GREEN}### Starting nginx ...${NC}"
-docker-compose up --force-recreate -d nginx
+$DOCKER_COMPOSE up --force-recreate -d nginx
 echo
 
 # nginx가 시작될 때까지 대기
@@ -70,7 +82,7 @@ sleep 10
 
 # 더미 인증서 삭제
 echo -e "${GREEN}### Deleting dummy certificate for ${domains[0]} ...${NC}"
-docker-compose run --rm --entrypoint "\
+$DOCKER_COMPOSE run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/${domains[0]} && \
   rm -Rf /etc/letsencrypt/archive/${domains[0]} && \
   rm -Rf /etc/letsencrypt/renewal/${domains[0]}.conf" certbot
@@ -93,7 +105,7 @@ esac
 # 스테이징 모드 활성화 여부
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-docker-compose run --rm --entrypoint "\
+$DOCKER_COMPOSE run --rm --entrypoint "\
   certbot certonly --webroot -w /var/www/certbot \
     $staging_arg \
     $email_arg \
@@ -114,7 +126,7 @@ echo
 
 # nginx 재로드
 echo -e "${GREEN}### Reloading nginx ...${NC}"
-docker-compose exec nginx nginx -s reload
+$DOCKER_COMPOSE exec nginx nginx -s reload
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}=== Setup completed successfully! ===${NC}"

@@ -55,22 +55,22 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=local
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/memory
-      - SPRING_DATASOURCE_USERNAME=memory
-      - SPRING_DATASOURCE_PASSWORD=memory
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - CLOUD_AWS_CREDENTIALS_ACCESS-KEY=minioadmin
-      - CLOUD_AWS_CREDENTIALS_SECRET-KEY=minioadmin
-      - CLOUD_AWS_S3_BUCKET=memory
-      - CLOUD_AWS_REGION_STATIC=ap-northeast-2
-      - CLOUD_AWS_S3_ENDPOINT=http://minio:9000
-      - JWT_TOKEN_SECRET=secure_enough_for_the_HS256_algorithm_memory_secret_key_v1
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/memory
+      SPRING_DATASOURCE_USERNAME: memory
+      SPRING_DATASOURCE_PASSWORD: memory
+      CLOUD_AWS_CREDENTIALS_ACCESS-KEY: minioadmin
+      CLOUD_AWS_CREDENTIALS_SECRET-KEY: minioadmin
+      CLOUD_AWS_S3_BUCKET: memory
+      CLOUD_AWS_REGION_STATIC: ap-northeast-2
+      CLOUD_AWS_S3_ENDPOINT: http://minio:9000
+      JWT_TOKEN_SECRET: secure_enough_for_the_HS256_algorithm_memory_secret_key_v1
     depends_on:
       - postgres
       - minio
     networks:
       - memory-network
+    restart: always
 
   nginx:
     image: nginx:latest

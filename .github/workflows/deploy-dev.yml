@@ -44,6 +44,7 @@ jobs:
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }}
+          LETSENCRYPT_EMAIL=my.memory.world2025@gmail.com
           EOF
           
           # 기존 컨테이너 중지 및 제거

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.memory.domain.memory.QMemory.memory;
+import static com.memory.domain.file.QFile.file;
 
 @RequiredArgsConstructor
 public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
@@ -78,6 +79,34 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
                 )
                 .orderBy(memory.id.desc())
                 .limit(size)
+                .fetch();
+    }
+
+    @Override
+    public List<Memory> findMemoriesWithImagesByMember(Member member) {
+        return queryFactory.selectFrom(memory)
+                .join(memory.files, file)
+                .where(
+                        memory.member.eq(member),
+                        memory.deleteDate.isNull(),
+                        file.deleteDate.isNull(),
+                        file.fileType.stringValue().like("IMAGE%")
+                )
+                .distinct()
+                .fetch();
+    }
+
+    @Override
+    public List<Memory> findMemoriesWithImagesByMemoryType(MemoryType memoryType) {
+        return queryFactory.selectFrom(memory)
+                .join(memory.files, file)
+                .where(
+                        memory.memoryType.eq(memoryType),
+                        memory.deleteDate.isNull(),
+                        file.deleteDate.isNull(),
+                        file.fileType.stringValue().like("IMAGE%")
+                )
+                .distinct()
                 .fetch();
     }
 

@@ -2,15 +2,14 @@ package com.memory.service.game;
 
 import com.memory.domain.game.*;
 import com.memory.domain.game.repository.GameSessionRepository;
-import com.memory.domain.game.repository.GameSettingRepository;
 import com.memory.domain.member.Member;
 import com.memory.domain.member.repository.MemberRepository;
 import com.memory.dto.game.GameSessionRequest;
 import com.memory.dto.game.response.GameSessionResponse;
 import com.memory.exception.customException.NotFoundException;
 import com.memory.exception.customException.ValidationException;
-import com.memory.service.game.factory.GameSessionFactory;
-import com.memory.service.game.factory.GameSessionFactoryService;
+import com.memory.service.game.factory.GameFactory;
+import com.memory.service.game.factory.GameFactoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,11 +25,11 @@ public class GameSessionService {
 
     private final GameSessionRepository gameSessionRepository;
     private final MemberRepository memberRepository;
-    private final GameSessionFactory gameSessionFactory;
+    private final GameFactory gameFactory;
 
     @Transactional
     public GameSessionResponse createGameSession(Long memberId, GameSessionRequest.Create request) {
-        GameSessionFactoryService gameSessionService = gameSessionFactory.getGameSessionService(request.getGameMode());
+        GameFactoryService gameSessionService = gameFactory.getGameService(request.getGameMode());
         GameSession gameSession = gameSessionService.createGameSession(memberId, request);
 
         GameSession savedSession = gameSessionRepository.save(gameSession);

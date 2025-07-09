@@ -84,4 +84,8 @@ public class GameSession extends BaseTimeEntity {
     public boolean isInProgress() {
         return status == GameSessionStatus.IN_PROGRESS;
     }
+
+    public boolean isOwner(Member member) {
+        return this.member.getId().equals(member.getId());
+    }
 }

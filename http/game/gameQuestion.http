@@ -1,0 +1,101 @@
+### Login first to get access token
+POST {{memory_api}}/api/v1/member/login
+Content-Type: application/json
+
+{
+  "email": "tnswh2023@naver.com",
+  "password": "1234"
+}
+
+> {%
+    client.global.set("access_token", response.body.data.accessToken);
+%}
+
+### 게임 세션 생성 (문제 출제를 위해 필요)
+POST {{memory_api}}/api/v1/game/sessions
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "gameMode": "RANDOM"
+}
+
+> {%
+    client.global.set("session_id", response.body.data.id);
+%}
+
+### ==============================================
+### GameQuestion API Tests
+### ==============================================
+
+### 1. 첫 번째 문제 요청
+GET {{memory_api}}/api/v1/game/sessions/{{session_id}}/next-question
+Authorization: Bearer {{access_token}}
+
+> {%
+    client.global.set("question_id", response.body.data.id);
+%}
+
+### 2. 첫 번째 문제 답안 제출 (정확한 위치)
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 37.5665,
+  "playerLongitude": 126.9780,
+  "timeTakenSeconds": 15
+}
+
+### 3. 두 번째 문제 요청
+GET {{memory_api}}/api/v1/game/sessions/{{session_id}}/next-question
+Authorization: Bearer {{access_token}}
+
+> {%
+    client.global.set("question_id_2", response.body.data.id);
+%}
+
+### 4. 두 번째 문제 답안 제출 (부정확한 위치)
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id_2}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 37.5000,
+  "playerLongitude": 127.0000,
+  "timeTakenSeconds": 45
+}
+
+### 5. 세션의 모든 문제 조회
+GET {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions
+Authorization: Bearer {{access_token}}
+
+### ==============================================
+### Error Test Cases
+### ==============================================
+
+### 존재하지 않는 세션에서 문제 요청
+GET {{memory_api}}/api/v1/game/sessions/99999/next-question
+Authorization: Bearer {{access_token}}
+
+### 이미 답안 제출된 문제에 다시 답안 제출
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 37.5665,
+  "playerLongitude": 126.9780,
+  "timeTakenSeconds": 15
+}
+
+### 잘못된 위도 값으로 답안 제출
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 91.0,
+  "playerLongitude": 126.9780,
+  "timeTakenSeconds": 15
+}

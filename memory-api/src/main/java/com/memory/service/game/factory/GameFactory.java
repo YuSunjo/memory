@@ -14,9 +14,9 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class GameSessionFactory {
+public class GameFactory {
 
-    private final Map<GameMode, GameSessionFactoryService> gameSessionServiceMap = new HashMap<>();
+    private final Map<GameMode, GameFactoryService> gameServiceMap = new HashMap<>();
 
     private final MyMemoriesGameService myMemoriesGameService;
     private final MemoriesRandomGameService memoriesRandomGameService;
@@ -24,13 +24,13 @@ public class GameSessionFactory {
 
     @PostConstruct
     public void init() {
-        gameSessionServiceMap.put(GameMode.MY_MEMORIES, myMemoriesGameService);
-        gameSessionServiceMap.put(GameMode.RANDOM, randomGameService);
-        gameSessionServiceMap.put(GameMode.MEMORIES_RANDOM, memoriesRandomGameService);
+        gameServiceMap.put(GameMode.MY_MEMORIES, myMemoriesGameService);
+        gameServiceMap.put(GameMode.RANDOM, randomGameService);
+        gameServiceMap.put(GameMode.MEMORIES_RANDOM, memoriesRandomGameService);
     }
 
-    public GameSessionFactoryService getGameSessionService(GameMode gameMode) {
-        GameSessionFactoryService service = gameSessionServiceMap.get(gameMode);
+    public GameFactoryService getGameService(GameMode gameMode) {
+        GameFactoryService service = gameServiceMap.get(gameMode);
         if (service == null) {
             throw new ValidationException("지원하지 않는 게임 모드입니다: " + gameMode);
         }

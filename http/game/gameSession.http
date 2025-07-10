@@ -71,7 +71,7 @@ GET {{memory_api}}/api/v1/game/sessions?gameMode=RANDOM
 Authorization: Bearer {{access_token}}
 
 ### 10. 게임 세션 포기 (진행중인 게임만 가능)
-PATCH {{memory_api}}/api/v1/game/sessions/4/give-up
+PATCH {{memory_api}}/api/v1/game/sessions/{{current_session_id}}/give-up
 Authorization: Bearer {{access_token}}
 
 ### ==============================================

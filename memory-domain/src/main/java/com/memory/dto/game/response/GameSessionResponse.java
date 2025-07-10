@@ -2,6 +2,7 @@ package com.memory.dto.game.response;
 
 import com.memory.domain.game.GameMode;
 import com.memory.domain.game.GameSession;
+import com.memory.domain.game.GameSetting;
 import com.memory.domain.game.GameSessionStatus;
 import lombok.Getter;
 
@@ -21,9 +22,10 @@ public class GameSessionResponse {
     private final Double accuracy;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
+    private final GameSettingResponse gameSetting;
     private final LocalDateTime createDate;
 
-    public GameSessionResponse(GameSession gameSession) {
+    public GameSessionResponse(GameSession gameSession, GameSetting gameSetting) {
         this.id = gameSession.getId();
         this.memberId = gameSession.getMember().getId();
         this.targetMemberId = gameSession.getTargetMember() != null ? gameSession.getTargetMember().getId() : null;
@@ -35,10 +37,12 @@ public class GameSessionResponse {
         this.accuracy = gameSession.getAccuracy();
         this.startTime = gameSession.getStartTime();
         this.endTime = gameSession.getEndTime();
+        this.gameSetting = gameSetting != null ? GameSettingResponse.from(gameSetting) : null;
         this.createDate = gameSession.getCreateDate();
     }
 
-    public static GameSessionResponse from(GameSession gameSession) {
-        return new GameSessionResponse(gameSession);
+    public static GameSessionResponse from(GameSession gameSession, GameSetting gameSetting) {
+        return new GameSessionResponse(gameSession, gameSetting);
     }
+
 }

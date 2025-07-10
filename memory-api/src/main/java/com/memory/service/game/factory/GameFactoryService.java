@@ -8,7 +8,7 @@ import com.memory.dto.game.response.GameQuestionResponse;
 
 public interface GameFactoryService {
 
-    GameSession createGameSession(Long memberId, GameSessionRequest.Create request);
+    GameSession createGameSession(Member member, GameSetting gameSetting, GameSessionRequest.Create request);
 
     GameQuestionResponse getNextQuestion(Member member, GameSession gameSession, GameSetting gameSetting, Integer nextOrder);
 }

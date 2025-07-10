@@ -3,16 +3,12 @@ package com.memory.service.game;
 import com.memory.domain.file.File;
 import com.memory.domain.game.*;
 import com.memory.domain.game.repository.GameQuestionRepository;
-import com.memory.domain.game.repository.GameSessionRepository;
-import com.memory.domain.game.repository.GameSettingRepository;
 import com.memory.domain.member.Member;
-import com.memory.domain.member.repository.MemberRepository;
 import com.memory.domain.memory.Memory;
 import com.memory.domain.memory.MemoryType;
 import com.memory.domain.memory.repository.MemoryRepository;
 import com.memory.dto.game.GameSessionRequest;
 import com.memory.dto.game.response.GameQuestionResponse;
-import com.memory.exception.customException.ConflictException;
 import com.memory.exception.customException.NotFoundException;
 import com.memory.service.game.factory.GameFactoryService;
 import lombok.RequiredArgsConstructor;
@@ -31,28 +27,13 @@ import static com.memory.domain.game.GameSession.gameSessionInit;
 @RequiredArgsConstructor
 public class MemoriesRandomGameService implements GameFactoryService {
 
-    private final MemberRepository memberRepository;
-    private final GameSessionRepository gameSessionRepository;
-    private final GameSettingRepository gameSettingRepository;
     private final GameQuestionRepository gameQuestionRepository;
     private final MemoryRepository memoryRepository;
     
     private static final int MIN_MEMORIES_FOR_GAME = 3;
 
     @Override
-    public GameSession createGameSession(Long memberId, GameSessionRequest.Create request) {
-
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
-
-        gameSessionRepository.findByMemberAndStatus(member, GameSessionStatus.IN_PROGRESS)
-                .ifPresent(session -> {
-                    throw new ConflictException("이미 진행중인 게임이 있습니다. 먼저 완료하거나 포기해주세요.");
-                });
-
-        gameSettingRepository.findByGameModeAndIsActiveTrue(request.getGameMode())
-                .orElseThrow(() -> new NotFoundException("해당 게임 모드의 설정을 찾을 수 없습니다."));
-
+    public GameSession createGameSession(Member member, GameSetting gameSetting, GameSessionRequest.Create request) {
         List<Memory> availableMemories = memoryRepository.findMemoriesWithImagesByMemoryType(MemoryType.PUBLIC);
         if (availableMemories.size() < MIN_MEMORIES_FOR_GAME) {
             throw new IllegalStateException(

@@ -26,7 +26,7 @@ public class GameQuestionController {
         response = GameQuestionResponse.class
     )
     @Auth
-    @GetMapping("api/v1/game/sessions/{sessionId}/next-question")
+    @PostMapping("api/v1/game/sessions/{sessionId}/next-question")
     public ServerResponse<GameQuestionResponse> getNextQuestion(
             @Parameter(hidden = true) @MemberId Long memberId,
             @PathVariable Long sessionId) {

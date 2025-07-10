@@ -21,7 +21,7 @@ Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
 {
-  "gameMode": "RANDOM"
+  "gameMode": "MY_MEMORIES"
 }
 
 > {%

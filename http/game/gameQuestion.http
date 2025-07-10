@@ -29,7 +29,7 @@ Authorization: Bearer {{access_token}}
 ### ==============================================
 
 ### 1. 첫 번째 문제 요청
-GET {{memory_api}}/api/v1/game/sessions/{{session_id}}/next-question
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/next-question
 Authorization: Bearer {{access_token}}
 
 > {%
@@ -48,7 +48,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 3. 두 번째 문제 요청
-GET {{memory_api}}/api/v1/game/sessions/{{session_id}}/next-question
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/next-question
 Authorization: Bearer {{access_token}}
 
 > {%
@@ -67,7 +67,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 5. 세 번째 문제 요청
-GET {{memory_api}}/api/v1/game/sessions/{{session_id}}/next-question
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/next-question
 Authorization: Bearer {{access_token}}
 
 > {%
@@ -99,7 +99,7 @@ Authorization: Bearer {{access_token}}
 %}
 
 ### 8. MY_MEMORIES 첫 번째 문제 요청
-GET {{memory_api}}/api/v1/game/sessions/{{my_memories_session_id}}/next-question
+POST {{memory_api}}/api/v1/game/sessions/{{my_memories_session_id}}/next-question
 Authorization: Bearer {{access_token}}
 
 > {%
@@ -126,7 +126,7 @@ Authorization: Bearer {{access_token}}
 ### ==============================================
 
 ### 존재하지 않는 세션에서 문제 요청
-GET {{memory_api}}/api/v1/game/sessions/99999/next-question
+POST {{memory_api}}/api/v1/game/sessions/99999/next-question
 Authorization: Bearer {{access_token}}
 
 ### 존재하지 않는 문제에 답안 제출

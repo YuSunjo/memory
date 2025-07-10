@@ -81,9 +81,10 @@ public class GameSessionController {
     @Auth
     @PatchMapping("api/v1/game/sessions/{sessionId}/give-up")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void giveUpGameSession(
+    public ServerResponse<String> giveUpGameSession(
             @Parameter(hidden = true) @MemberId Long memberId,
             @PathVariable Long sessionId) {
         gameSessionService.giveUpGameSession(memberId, sessionId);
+        return ServerResponse.OK;
     }
 }

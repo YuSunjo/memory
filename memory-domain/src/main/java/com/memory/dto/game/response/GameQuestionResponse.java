@@ -30,6 +30,7 @@ public class GameQuestionResponse {
     private final BigDecimal correctLatitude;
     private final BigDecimal correctLongitude;
     private final String correctLocationName;
+    private final boolean isGameSessionCompleted;
     
     private final LocalDateTime createDate;
 
@@ -56,12 +57,13 @@ public class GameQuestionResponse {
         this.correctLatitude = null;
         this.correctLongitude = null;
         this.correctLocationName = null;
+        this.isGameSessionCompleted = false;
         
         this.createDate = gameQuestion.getCreateDate();
     }
 
     // 답안 제출 후 전체 정보 포함 생성자
-    public GameQuestionResponse(GameQuestion gameQuestion, List<String> memoryImageUrls, boolean includeAnswer) {
+    public GameQuestionResponse(GameQuestion gameQuestion, List<String> memoryImageUrls, boolean includeAnswer, boolean isGameSessionCompleted) {
         this.id = gameQuestion.getId();
         this.sessionId = gameQuestion.getGameSession().getId();
         this.memoryId = gameQuestion.getMemory() != null ? gameQuestion.getMemory().getId() : null;
@@ -84,6 +86,7 @@ public class GameQuestionResponse {
         this.correctLatitude = includeAnswer ? gameQuestion.getCorrectLatitude() : null;
         this.correctLongitude = includeAnswer ? gameQuestion.getCorrectLongitude() : null;
         this.correctLocationName = includeAnswer ? gameQuestion.getCorrectLocationName() : null;
+        this.isGameSessionCompleted = isGameSessionCompleted;
         
         this.createDate = gameQuestion.getCreateDate();
     }
@@ -92,7 +95,7 @@ public class GameQuestionResponse {
         return new GameQuestionResponse(gameQuestion, memoryImageUrls);
     }
 
-    public static GameQuestionResponse forAnsweredQuestion(GameQuestion gameQuestion, List<String> memoryImageUrls) {
-        return new GameQuestionResponse(gameQuestion, memoryImageUrls, true);
+    public static GameQuestionResponse forAnsweredQuestion(GameQuestion gameQuestion, List<String> memoryImageUrls, boolean isGameSessionCompleted) {
+        return new GameQuestionResponse(gameQuestion, memoryImageUrls, true, isGameSessionCompleted);
     }
 }

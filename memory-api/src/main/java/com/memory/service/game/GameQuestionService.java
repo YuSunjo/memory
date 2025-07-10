@@ -118,15 +118,17 @@ public class GameQuestionService {
             gameSession.incrementCorrectAnswers();
         }
 
+        boolean isGameSessionCompleted = false;
         // 모든 문제 완료 시 게임 완료 처리
         if (gameSession.isAnsweredAllQuestions(gameSetting.getMaxQuestions())) {
             gameSession.completeGame();
+            isGameSessionCompleted = true;
         }
 
         log.info("답안 제출 완료 - memberId: {}, sessionId: {}, questionId: {}, score: {}, distance: {}km",
                 member.getId(), gameSession.getId(), questionId, score, distanceKm);
 
-        return GameQuestionResponse.forAnsweredQuestion(gameQuestion, null);
+        return GameQuestionResponse.forAnsweredQuestion(gameQuestion, null, isGameSessionCompleted);
     }
 
     private Integer validateQuestionGeneration(GameSession gameSession, GameSetting gameSetting) {

@@ -88,4 +88,22 @@ public class GameSession extends BaseTimeEntity {
     public boolean isOwner(Member member) {
         return this.member.getId().equals(member.getId());
     }
+
+    public void updateScore(Integer questionScore) {
+        this.totalScore += questionScore;
+    }
+
+    public void incrementCorrectAnswers() {
+        this.correctAnswers++;
+    }
+
+    public void completeGame() {
+        this.status = GameSessionStatus.COMPLETED;
+        this.endTime = LocalDateTime.now();
+    }
+
+    public boolean isAnsweredAllQuestions(Integer maxQuestions) {
+        return this.gameQuestions.size() >= maxQuestions &&
+                this.gameQuestions.stream().allMatch(q -> q.getAnsweredAt() != null);
+    }
 }

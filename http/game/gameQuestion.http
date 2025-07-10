@@ -37,7 +37,7 @@ Authorization: Bearer {{access_token}}
 %}
 
 ### 2. 첫 번째 문제 답안 제출 (정확한 위치)
-POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id}}/answer
+POST {{memory_api}}/api/v1/game/sessions/2/questions/4/answer
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -66,8 +66,59 @@ Authorization: Bearer {{access_token}}
   "timeTakenSeconds": 45
 }
 
-### 5. 세션의 모든 문제 조회
-GET {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions
+### 5. 세 번째 문제 요청
+GET {{memory_api}}/api/v1/game/sessions/{{session_id}}/next-question
+Authorization: Bearer {{access_token}}
+
+> {%
+    client.global.set("question_id_3", response.body.data.id);
+%}
+
+### 6. 세 번째 문제 답안 제출 (매우 부정확한 위치)
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id_3}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 35.1796,
+  "playerLongitude": 129.0756,
+  "timeTakenSeconds": 30
+}
+
+### 7. MY_MEMORIES 게임 테스트
+POST {{memory_api}}/api/v1/game/sessions
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "gameMode": "MY_MEMORIES"
+}
+
+> {%
+    client.global.set("my_memories_session_id", response.body.data.id);
+%}
+
+### 8. MY_MEMORIES 첫 번째 문제 요청
+GET {{memory_api}}/api/v1/game/sessions/{{my_memories_session_id}}/next-question
+Authorization: Bearer {{access_token}}
+
+> {%
+    client.global.set("my_memories_question_id", response.body.data.id);
+%}
+
+### 9. MY_MEMORIES 첫 번째 문제 답안 제출
+POST {{memory_api}}/api/v1/game/sessions/{{my_memories_session_id}}/questions/{{my_memories_question_id}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 37.5665,
+  "playerLongitude": 126.9780,
+  "timeTakenSeconds": 20
+}
+
+### 10. 게임 완료 후 세션 상태 확인
+GET {{memory_api}}/api/v1/game/sessions/{{session_id}}
 Authorization: Bearer {{access_token}}
 
 ### ==============================================
@@ -77,6 +128,17 @@ Authorization: Bearer {{access_token}}
 ### 존재하지 않는 세션에서 문제 요청
 GET {{memory_api}}/api/v1/game/sessions/99999/next-question
 Authorization: Bearer {{access_token}}
+
+### 존재하지 않는 문제에 답안 제출
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/99999/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 37.5665,
+  "playerLongitude": 126.9780,
+  "timeTakenSeconds": 15
+}
 
 ### 이미 답안 제출된 문제에 다시 답안 제출
 POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id}}/answer
@@ -89,8 +151,8 @@ Authorization: Bearer {{access_token}}
   "timeTakenSeconds": 15
 }
 
-### 잘못된 위도 값으로 답안 제출
-POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id}}/answer
+### 잘못된 위도 값으로 답안 제출 (위도 범위 초과)
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id_2}}/answer
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -98,4 +160,86 @@ Authorization: Bearer {{access_token}}
   "playerLatitude": 91.0,
   "playerLongitude": 126.9780,
   "timeTakenSeconds": 15
+}
+
+### 잘못된 경도 값으로 답안 제출 (경도 범위 초과)
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id_2}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 37.5665,
+  "playerLongitude": 181.0,
+  "timeTakenSeconds": 15
+}
+
+### 음수 시간으로 답안 제출
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id_2}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 37.5665,
+  "playerLongitude": 126.9780,
+  "timeTakenSeconds": -5
+}
+
+### 필수 필드 누락 (위도 누락)
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id_2}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLongitude": 126.9780,
+  "timeTakenSeconds": 15
+}
+
+### 인증 토큰 없이 답안 제출
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id}}/answer
+Content-Type: application/json
+
+{
+  "playerLatitude": 37.5665,
+  "playerLongitude": 126.9780,
+  "timeTakenSeconds": 15
+}
+
+### ==============================================
+### Performance Test Cases  
+### ==============================================
+
+### 여러 문제 연속 답안 제출 테스트
+### (위에서 생성한 question_id들을 사용)
+
+### 정확도 테스트 - 매우 가까운 위치 (1km 이내)
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 37.5670,
+  "playerLongitude": 126.9785,
+  "timeTakenSeconds": 10
+}
+
+### 중간 거리 테스트 (5km 정도)
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 37.6000,
+  "playerLongitude": 127.0000,
+  "timeTakenSeconds": 25
+}
+
+### 장거리 테스트 (100km 이상)
+POST {{memory_api}}/api/v1/game/sessions/{{session_id}}/questions/{{question_id}}/answer
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "playerLatitude": 36.5000,
+  "playerLongitude": 127.5000,
+  "timeTakenSeconds": 60
 }

@@ -88,4 +88,12 @@ public class GameQuestion extends BaseTimeEntity {
         this.gameSession = gameSession;
     }
 
+    public boolean isAnswered() {
+        return this.answeredAt != null;
+    }
+
+    public boolean isCorrectAnswer(Integer maxDistanceForFullScore) {
+        return this.distanceKm != null && 
+               this.distanceKm.doubleValue() <= maxDistanceForFullScore;
+    }
 }

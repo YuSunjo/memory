@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.memory.domain.game.QGameQuestion.*;
 
@@ -32,5 +33,18 @@ public class GameQuestionRepositoryCustomImpl implements GameQuestionRepositoryC
                 .where(gameQuestion.gameSession.eq(gameSession))
                 .orderBy(gameQuestion.questionOrder.asc())
                 .fetch();
+    }
+
+    @Override
+    public Optional<GameQuestion> findByIdAndGameSession(Long questionId, GameSession gameSession) {
+        GameQuestion result = queryFactory
+                .selectFrom(gameQuestion)
+                .where(
+                    gameQuestion.id.eq(questionId),
+                    gameQuestion.gameSession.eq(gameSession)
+                )
+                .fetchOne();
+        
+        return Optional.ofNullable(result);
     }
 }

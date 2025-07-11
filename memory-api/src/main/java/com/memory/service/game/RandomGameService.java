@@ -1,10 +1,13 @@
 package com.memory.service.game;
 
+import com.memory.domain.cities.Cities;
+import com.memory.domain.cities.repository.CitiesRepository;
 import com.memory.domain.game.*;
 import com.memory.domain.game.repository.GameQuestionRepository;
 import com.memory.domain.member.Member;
 import com.memory.dto.game.GameSessionRequest;
 import com.memory.dto.game.response.GameQuestionResponse;
+import com.memory.exception.customException.NotFoundException;
 import com.memory.service.game.factory.GameFactoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Random;
 
 import static com.memory.domain.game.GameSession.gameSessionInit;
 
@@ -21,6 +23,7 @@ import static com.memory.domain.game.GameSession.gameSessionInit;
 @RequiredArgsConstructor
 public class RandomGameService implements GameFactoryService {
 
+    private final CitiesRepository citiesRepository;
     private final GameQuestionRepository gameQuestionRepository;
 
     @Override
@@ -55,22 +58,14 @@ public class RandomGameService implements GameFactoryService {
     }
 
     private RandomLocation generateRandomWorldLocation() {
-        Random random = new Random();
-        // 전세계 랜덤 좌표 생성
-        // 위도: -90.0 ~ 90.0 (남극 ~ 북극)
-        // 경도: -180.0 ~ 180.0 (서경 ~ 동경)
-        double minLat = -90.0;
-        double maxLat = 90.0;
-        double minLon = -180.0;
-        double maxLon = 180.0;
 
-        double latitude = minLat + (maxLat - minLat) * random.nextDouble();
-        double longitude = minLon + (maxLon - minLon) * random.nextDouble();
+        Cities cities = citiesRepository.findRandomCities()
+                .orElseThrow(() -> new NotFoundException("도시 데이터가 비어 있습니다."));
 
         return new RandomLocation(
-                BigDecimal.valueOf(latitude).setScale(8, RoundingMode.HALF_UP),
-                BigDecimal.valueOf(longitude).setScale(8, RoundingMode.HALF_UP),
-                "랜덤 위치 " + random.nextInt(10000)
+                BigDecimal.valueOf(cities.getLatitude()).setScale(8, RoundingMode.HALF_UP),
+                BigDecimal.valueOf(cities.getLongitude()).setScale(8, RoundingMode.HALF_UP),
+                cities.getName()
         );
     }
 

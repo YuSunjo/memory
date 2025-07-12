@@ -4,10 +4,7 @@ import com.memory.domain.BaseTimeEntity;
 import com.memory.domain.common.repeat.RepeatSetting;
 import com.memory.domain.member.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -36,6 +33,7 @@ public class Todo extends BaseTimeEntity {
     @Embedded
     private RepeatSetting repeatSetting;
 
+    @Builder
     private Todo(String title, String content, LocalDateTime dueDate, Member member, RepeatSetting repeatSetting) {
         this.title = title;
         this.content = content;

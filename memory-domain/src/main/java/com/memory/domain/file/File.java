@@ -4,10 +4,7 @@ import com.memory.domain.BaseTimeEntity;
 import com.memory.domain.member.Member;
 import com.memory.domain.memory.Memory;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @ToString
 @Entity
@@ -38,6 +35,7 @@ public class File extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder
     public File(String originalFileName, String fileName, String fileUrl, FileType fileType, Long fileSize) {
         this.originalFileName = originalFileName;
         this.fileName = fileName;

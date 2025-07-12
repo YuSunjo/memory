@@ -3,10 +3,7 @@ package com.memory.domain.diary;
 import com.memory.domain.BaseTimeEntity;
 import com.memory.domain.member.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -35,6 +32,7 @@ public class Diary extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder
     private Diary(String title, String content, LocalDate date, String mood, String weather, Member member) {
         this.title = title;
         this.content = content;

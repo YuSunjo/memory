@@ -88,8 +88,7 @@ public class MemberLink extends BaseTimeEntity {
     }
 
     public boolean isAccessible() {
-        return !this.isActive || !this.isVisible;
-
+        return this.isActive && this.isVisible;
     }
 
 }

@@ -8,6 +8,7 @@ import com.memory.domain.relationship.Relationship;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @ToString
@@ -41,10 +42,10 @@ public class Member extends BaseTimeEntity {
     private MemberType memberType;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Map> maps = List.of();
+    private List<Map> maps = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MemberLink> memberLinks = List.of();
+    private List<MemberLink> memberLinks = new ArrayList<>();
 
     public Member(String name, String nickname, String email, String password) {
         this.name = name;

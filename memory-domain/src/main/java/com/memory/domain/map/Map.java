@@ -3,10 +3,7 @@ package com.memory.domain.map;
 import com.memory.domain.BaseTimeEntity;
 import com.memory.domain.member.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -40,6 +37,7 @@ public class Map extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder
     public Map(String name, String description, String address, String latitude, String longitude, MapType mapType, Member member) {
         this.name = name;
         this.description = description;

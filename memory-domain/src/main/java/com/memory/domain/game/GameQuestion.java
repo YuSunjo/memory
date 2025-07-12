@@ -3,10 +3,7 @@ package com.memory.domain.game;
 import com.memory.domain.BaseTimeEntity;
 import com.memory.domain.memory.Memory;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -57,6 +54,7 @@ public class GameQuestion extends BaseTimeEntity {
 
     private LocalDateTime answeredAt;
 
+    @Builder
     public GameQuestion(GameSession gameSession, Memory memory, Integer questionOrder, 
                        BigDecimal correctLatitude, BigDecimal correctLongitude, 
                        String correctLocationName) {

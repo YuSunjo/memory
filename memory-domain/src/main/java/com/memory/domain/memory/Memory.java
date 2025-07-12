@@ -5,10 +5,7 @@ import com.memory.domain.file.File;
 import com.memory.domain.map.Map;
 import com.memory.domain.member.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +41,7 @@ public class Memory extends BaseTimeEntity {
     @OneToMany(mappedBy = "memory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files = new ArrayList<>();
 
+    @Builder
     public Memory(String title, String content, String locationName, MemoryType memoryType, Member member, Map map) {
         this.title = title;
         this.content = content;

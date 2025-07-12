@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -79,11 +78,11 @@ public class MemoryController {
     )
     @Auth
     @DeleteMapping("api/v1/memories/{memoryId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMemory(
+    public ServerResponse<String> deleteMemory(
             @Parameter(hidden = true) @MemberId Long memberId,
             @PathVariable Long memoryId) {
         memoryService.deleteMemory(memberId, memoryId);
+        return ServerResponse.OK;
     }
 
     @ApiOperations.BasicApi(

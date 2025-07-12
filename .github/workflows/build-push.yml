@@ -42,8 +42,6 @@ jobs:
           file: memory-infra/docker/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           tags: |
             ghcr.io/${{ steps.string.outputs.lowercase }}/memory-app:${{ github.sha }}
             ${{ github.ref == 'refs/heads/main' && format('ghcr.io/{0}/memory-app:latest', steps.string.outputs.lowercase) || format('ghcr.io/{0}/memory-app:dev', steps.string.outputs.lowercase) }}

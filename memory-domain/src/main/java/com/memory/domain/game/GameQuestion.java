@@ -26,7 +26,7 @@ public class GameQuestion extends BaseTimeEntity {
     private GameSession gameSession;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memory_id", nullable = false)
+    @JoinColumn(name = "memory_id")
     private Memory memory;
 
     @Column(nullable = false)
@@ -68,6 +68,12 @@ public class GameQuestion extends BaseTimeEntity {
         this.correctLocationName = correctLocationName;
     }
 
+    public static GameQuestion init(GameSession gameSession, Memory memory, Integer questionOrder,
+                                    BigDecimal correctLatitude, BigDecimal correctLongitude,
+                                    String correctLocationName) {
+        return new GameQuestion(gameSession, memory, questionOrder, correctLatitude, correctLongitude, correctLocationName);
+    }
+
     public void submitAnswer(BigDecimal playerLatitude, BigDecimal playerLongitude, 
                            BigDecimal distanceKm, Integer score, Integer timeTakenSeconds) {
         this.playerLatitude = playerLatitude;
@@ -82,4 +88,12 @@ public class GameQuestion extends BaseTimeEntity {
         this.gameSession = gameSession;
     }
 
+    public boolean isAnswered() {
+        return this.answeredAt != null;
+    }
+
+    public boolean isCorrectAnswer(Integer maxDistanceForFullScore) {
+        return this.distanceKm != null && 
+               this.distanceKm.doubleValue() <= maxDistanceForFullScore;
+    }
 }

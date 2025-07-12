@@ -89,8 +89,7 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
                 .where(
                         memory.member.eq(member),
                         memory.deleteDate.isNull(),
-                        file.deleteDate.isNull(),
-                        file.fileType.stringValue().like("IMAGE%")
+                        file.deleteDate.isNull()
                 )
                 .distinct()
                 .fetch();

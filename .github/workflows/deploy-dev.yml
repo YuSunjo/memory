@@ -50,6 +50,8 @@ jobs:
           # 기존 컨테이너 중지 및 제거
           docker compose down
           
+          sleep 10
+          
           # 기존 이미지 제거 (추가)
           docker compose pull
   

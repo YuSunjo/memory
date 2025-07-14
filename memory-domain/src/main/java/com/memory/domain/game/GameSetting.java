@@ -28,10 +28,10 @@ public class GameSetting extends BaseTimeEntity {
     private Integer timeLimitSeconds = 60; // 문제당 제한시간
 
     @Column(nullable = false)
-    private Integer maxDistanceForFullScoreKm = 1; // 만점 기준 거리
+    private Integer maxDistanceForFullScoreKm = 100; // 만점 기준 거리
 
     @Column(length = 500)
-    private String scoringFormula = "MAX(0, 1000 - (distance_km * 100))"; // 점수 계산 공식
+    private String scoringFormula = "MAX(1000 - floor((distance_km - 100) / 10))"; // 점수 계산 공식
 
     @Column(nullable = false)
     private Boolean isActive = true;

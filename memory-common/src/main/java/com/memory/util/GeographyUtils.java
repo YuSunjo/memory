@@ -44,26 +44,28 @@ public class GeographyUtils {
 
     /**
      * 거리 기반으로 점수를 계산합니다.
-     * 기본 공식: MAX(0, 1000 - (distance_km * 100))
-     * 
+     * maxDistanceForFullScore 이내: 1000점
+     * 이후 10km당 1점씩 감점
+     *
      * @param distanceKm 거리 (킬로미터)
      * @param maxDistanceForFullScore 만점을 받을 수 있는 최대 거리 (킬로미터)
      * @return 계산된 점수
      */
-    public static Integer calculateScore(BigDecimal distanceKm, Integer maxDistanceForFullScore) {
+    public static Integer calculateScore(BigDecimal distanceKm, int maxDistanceForFullScore) {
         if (distanceKm == null) {
             return 0;
         }
 
-        // 거리 기반 점수 계산
-        // 1km 이내: 1000점, 거리가 멀어질수록 점수 감소
         double distance = distanceKm.doubleValue();
-        
+
         if (distance <= maxDistanceForFullScore) {
-            return 1000; // 만점
+            return 1000;
         }
-        
-        // 기본 공식: 1000 - (거리 * 100)
-        return (int) Math.max(0, 1000 - (distance * 100));
+
+        // 10km 당 1점 감점
+        double overDistance = distance - maxDistanceForFullScore;
+        int penalty = (int) Math.floor(overDistance / 10.0);
+
+        return Math.max(0, 1000 - penalty);
     }
 }

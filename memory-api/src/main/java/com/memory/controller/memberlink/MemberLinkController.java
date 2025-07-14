@@ -5,6 +5,7 @@ import com.memory.annotation.MemberId;
 import com.memory.annotation.swagger.ApiOperations;
 import com.memory.dto.memberlink.MemberLinkRequest;
 import com.memory.dto.memberlink.response.MemberLinkResponse;
+import com.memory.dto.memberlink.response.MemberPublicLinkResponse;
 import com.memory.response.ServerResponse;
 import com.memory.service.memberlink.MemberLinkService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -87,10 +88,9 @@ public class MemberLinkController {
             response = MemberLinkResponse.class
     )
     @GetMapping("/api/v1/members/{memberId}/links")
-    public ServerResponse<List<MemberLinkResponse>> getPublicMemberLinks(
+    public ServerResponse<MemberPublicLinkResponse> getPublicMemberLinks(
             @PathVariable Long memberId) {
-        List<MemberLinkResponse> response = memberLinkService.getPublicMemberLinks(memberId);
-        return ServerResponse.success(response);
+        return ServerResponse.success(memberLinkService.getPublicMemberLinks(memberId));
     }
 
     @ApiOperations.SecuredApi(
@@ -102,9 +102,6 @@ public class MemberLinkController {
     public ServerResponse<String> deleteMemberLink(
             @Parameter(hidden = true) @MemberId Long memberId,
             @PathVariable Long linkId) {
-        
-        log.info("Request to delete member link for member: {}, linkId: {}", memberId, linkId);
-        
         memberLinkService.deleteMemberLink(memberId, linkId);
         return ServerResponse.OK;
     }

@@ -4,8 +4,10 @@ import com.memory.domain.member.Member;
 import com.memory.domain.member.repository.MemberRepository;
 import com.memory.domain.memberlink.MemberLink;
 import com.memory.domain.memberlink.repository.MemberLinkRepository;
+import com.memory.dto.member.response.MemberResponse;
 import com.memory.dto.memberlink.MemberLinkRequest;
 import com.memory.dto.memberlink.response.MemberLinkResponse;
+import com.memory.dto.memberlink.response.MemberPublicLinkResponse;
 import com.memory.exception.customException.NotFoundException;
 import com.memory.exception.customException.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -104,15 +106,16 @@ public class MemberLinkService {
     }
 
     @Transactional(readOnly = true)
-    public List<MemberLinkResponse> getPublicMemberLinks(Long memberId) {
-        memberRepository.findMemberById(memberId)
+    public MemberPublicLinkResponse getPublicMemberLinks(Long memberId) {
+        Member member = memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
 
         List<MemberLink> publicLinks = memberLinkRepository.findPublicByMemberIdOrderByDisplayOrder(memberId);
 
-        return publicLinks.stream()
+        List<MemberLinkResponse> linkResponses = publicLinks.stream()
                 .map(MemberLinkResponse::forPublic)
                 .toList();
+        return MemberPublicLinkResponse.of(linkResponses, MemberResponse.from(member));
     }
 
     @Transactional

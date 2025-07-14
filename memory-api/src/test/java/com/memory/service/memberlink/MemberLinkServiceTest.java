@@ -6,6 +6,7 @@ import com.memory.domain.memberlink.MemberLink;
 import com.memory.domain.memberlink.repository.MemberLinkRepository;
 import com.memory.dto.memberlink.MemberLinkRequest;
 import com.memory.dto.memberlink.response.MemberLinkResponse;
+import com.memory.dto.memberlink.response.MemberPublicLinkResponse;
 import com.memory.exception.customException.NotFoundException;
 import com.memory.exception.customException.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -339,11 +340,10 @@ class MemberLinkServiceTest {
         when(memberLinkRepository.findPublicByMemberIdOrderByDisplayOrder(memberId)).thenReturn(publicLinks);
 
         // When
-        List<MemberLinkResponse> responses = memberLinkService.getPublicMemberLinks(memberId);
+        MemberPublicLinkResponse response = memberLinkService.getPublicMemberLinks(memberId);
 
         // Then
-        assertNotNull(responses);
-        assertEquals(1, responses.size());
+        assertNotNull(response);
         verify(memberRepository).findMemberById(memberId);
         verify(memberLinkRepository).findPublicByMemberIdOrderByDisplayOrder(memberId);
     }

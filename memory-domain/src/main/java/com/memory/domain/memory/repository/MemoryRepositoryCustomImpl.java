@@ -110,6 +110,16 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
                 .fetch();
     }
 
+    @Override
+    public Optional<Memory> findMemoryById(Long memoryId) {
+        return Optional.ofNullable(queryFactory.selectFrom(memory)
+                .where(
+                        memory.id.eq(memoryId),
+                        memory.deleteDate.isNull()
+                )
+                .fetchOne());
+    }
+
     private BooleanExpression gtMemoryId(Long memoryId) {
         return memoryId != null ? memory.id.gt(memoryId) : null;
     }

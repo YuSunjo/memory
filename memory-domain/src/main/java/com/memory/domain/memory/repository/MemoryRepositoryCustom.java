@@ -17,4 +17,6 @@ public interface MemoryRepositoryCustom {
     // 게임용 메서드들
     List<Memory> findMemoriesWithImagesByMember(Member member);
     List<Memory> findMemoriesWithImagesByMemoryType(MemoryType memoryType);
+
+    Optional<Memory> findMemoryById(Long memoryId);
 }

@@ -51,6 +51,19 @@ public class CommentController {
     }
 
     @ApiOperations.SecuredApi(
+            summary = "로그인 안되어 있을 경우 메모리의 최상위 댓글 목록 조회 (페이징)",
+            description = "메모리의 최상위 댓글만 페이징으로 조회합니다.",
+            response = CommentListResponse.class
+    )
+    @GetMapping("api/v1/comments/memory/public/{memoryId}/top-level")
+    public ServerResponse<CommentListResponse> getTopLevelCommentsByPublicMemory(
+            @PathVariable Long memoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ServerResponse.success(commentService.getTopLevelCommentsByPublicMemory(memoryId, page, size));
+    }
+
+    @ApiOperations.SecuredApi(
         summary = "특정 댓글의 대댓글 목록 조회",
         description = "특정 댓글에 달린 대댓글 목록을 조회합니다.",
         response = CommentListResponse.class

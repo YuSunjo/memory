@@ -75,6 +75,19 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
+    public CommentListResponse getTopLevelCommentsByPublicMemory(Long memoryId, int page, int size) {
+        Memory memory = findMemoryById(memoryId);
+        List<Comment> comments = commentRepository.findTopLevelCommentsByMemory(memory, page, size);
+        List<CommentResponse> commentResponses = CommentResponse.fromList(comments, null);
+
+        long totalCount = commentRepository.countActiveCommentsByMemory(memory);
+        long topLevelCount = memory.getTopLevelCommentsCount();
+        boolean hasNext = comments.size() == size;
+
+        return CommentListResponse.of(commentResponses, totalCount, topLevelCount, page, size, hasNext);
+    }
+
+    @Transactional(readOnly = true)
     public CommentListResponse getRepliesByComment(Long commentId, Long memberId) {
         findMemberById(memberId);
         Comment parentComment = findCommentById(commentId);

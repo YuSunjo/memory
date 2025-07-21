@@ -58,6 +58,18 @@ public class MemoryService {
     }
 
     @Transactional(readOnly = true)
+    public MemoryResponse findPublicMemoryById(Long memoryId) {
+        Memory memory = memoryRepository.findById(memoryId)
+                .orElseThrow(() -> new NotFoundException("메모리를 찾을 수 없습니다."));
+
+        if (!memory.isPublic()) {
+            throw new NotFoundException("해당 메모리는 공개되지 않았습니다.");
+        }
+
+        return MemoryResponse.from(memory);
+    }
+
+    @Transactional(readOnly = true)
     public List<MemoryResponse> findMemoriesByMember(Long memberId, Long lastMemoryId, Integer size, MemoryType memoryType) {
         Member member = memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
@@ -128,4 +140,5 @@ public class MemoryService {
                 .map(MemoryResponse::from)
                 .collect(Collectors.toList());
     }
+
 }

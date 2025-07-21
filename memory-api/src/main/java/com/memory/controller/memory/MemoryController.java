@@ -48,6 +48,17 @@ public class MemoryController {
     }
 
     @ApiOperations.SecuredApi(
+            summary = "퍼블릭 메모리 조회",
+            description = "메모리 ID로 메모리를 조회합니다.",
+            response = MemoryResponse.class
+    )
+    @GetMapping("api/v1/memories/public/{memoryId}")
+    public ServerResponse<MemoryResponse> findPublicMemoryById(
+            @PathVariable Long memoryId) {
+        return ServerResponse.success(memoryService.findPublicMemoryById(memoryId));
+    }
+
+    @ApiOperations.SecuredApi(
         summary = "회원의 메모리 목록 조회",
         description = "회원의 메모리 목록을 조회합니다. lastMemoryId를 통해 페이징 처리할 수 있습니다. memoryType을 통해 메모리 타입별로 조회할 수 있습니다.",
         response = MemoryResponse.class

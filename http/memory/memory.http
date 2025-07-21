@@ -41,6 +41,10 @@ Authorization: Bearer {{access_token}}
 
 ### Get memory by ID
 GET {{memory_api}}/api/v1/memories/1
+Authorization: Bearer {{access_token}}
+
+### Get memory by ID without authentication
+GET {{memory_api}}/api/v1/memories/public/2
 
 ### Get memories for current member (requires JWT token)
 GET {{memory_api}}/api/v1/memories/member

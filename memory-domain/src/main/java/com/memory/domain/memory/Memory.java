@@ -85,4 +85,8 @@ public class Memory extends BaseTimeEntity {
                 .filter(comment -> !comment.isDeleted() && comment.isTopLevel())
                 .count();
     }
+
+    public boolean isPublic() {
+        return memoryType == MemoryType.PUBLIC;
+    }
 }

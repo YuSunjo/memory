@@ -12,7 +12,6 @@ import java.util.List;
 @ToString(exclude = {"memory", "member", "parent", "children"})
 @Entity
 @Getter
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends BaseTimeEntity {
@@ -40,10 +39,8 @@ public class Comment extends BaseTimeEntity {
     private Comment parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Comment> children = new ArrayList<>();
 
-    @Builder
     private Comment(String content, Memory memory, Member member, Comment parent) {
         this.content = content;
         this.memory = memory;
@@ -107,5 +104,9 @@ public class Comment extends BaseTimeEntity {
 
     private boolean hasActiveChildren() {
         return getActiveChildrenCount() > 0;
+    }
+
+    public static Comment create(String content, Memory memory, Member member, Comment parent) {
+        return new Comment(content, memory, member, parent);
     }
 }

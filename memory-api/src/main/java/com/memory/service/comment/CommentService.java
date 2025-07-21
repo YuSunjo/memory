@@ -51,30 +51,11 @@ public class CommentService {
             }
         }
 
-        Comment comment = Comment.builder()
-                .content(request.getContent())
-                .memory(memory)
-                .member(member)
-                .parent(parentComment)
-                .build();
-
+        Comment comment = request.toEntity(member, memory, parentComment);
         Comment savedComment = commentRepository.save(comment);
         memory.addComment(savedComment);
-        return CommentResponse.from(savedComment, memberId);
-    }
 
-    @Transactional(readOnly = true)
-    public CommentListResponse getCommentsByMemory(Long memoryId, Long memberId) {
-        findMemberById(memberId);
-        Memory memory = findMemoryById(memoryId);
-        
-        List<Comment> comments = commentRepository.findCommentsByMemoryWithHierarchy(memory);
-        List<CommentResponse> commentResponses = CommentResponse.fromList(comments, memberId);
-        
-        long totalCount = commentRepository.countActiveCommentsByMemory(memory);
-        long topLevelCount = memory.getTopLevelCommentsCount();
-        
-        return CommentListResponse.of(commentResponses, totalCount, topLevelCount, 0, commentResponses.size(), false);
+        return CommentResponse.from(savedComment, memberId, false);
     }
 
     @Transactional(readOnly = true)
@@ -83,6 +64,7 @@ public class CommentService {
         Memory memory = findMemoryById(memoryId);
         
         List<Comment> comments = commentRepository.findTopLevelCommentsByMemory(memory, page, size);
+        System.out.println("comments = " + comments);
         List<CommentResponse> commentResponses = CommentResponse.fromList(comments, memberId);
         
         long totalCount = commentRepository.countActiveCommentsByMemory(memory);
@@ -114,11 +96,10 @@ public class CommentService {
 
     @Transactional
     public CommentResponse updateComment(Long commentId, CommentUpdateRequest request, Long memberId) {
-        findMemberById(memberId);
+        Member member = findMemberById(memberId);
         Comment comment = findCommentById(commentId);
         
-        // 작성자 권한 확인
-        if (!comment.isAuthor(findMemberById(memberId))) {
+        if (!comment.isAuthor(member)) {
             throw new ValidationException("댓글을 수정할 권한이 없습니다.");
         }
         
@@ -129,7 +110,7 @@ public class CommentService {
         
         comment.updateContent(request.getContent());
         
-        return CommentResponse.from(comment, memberId);
+        return CommentResponse.from(comment, memberId, !comment.getChildren().isEmpty());
     }
 
     @Transactional
@@ -137,7 +118,6 @@ public class CommentService {
         Member member = findMemberById(memberId);
         Comment comment = findCommentById(commentId);
         
-        // 작성자 권한 확인
         if (!comment.isAuthor(member)) {
             throw new ValidationException("댓글을 삭제할 권한이 없습니다.");
         }

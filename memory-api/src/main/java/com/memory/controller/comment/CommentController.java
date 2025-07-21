@@ -36,19 +36,6 @@ public class CommentController {
     }
 
     @ApiOperations.SecuredApi(
-        summary = "메모리의 댓글 목록 조회 (계층 구조)",
-        description = "메모리의 모든 댓글을 계층 구조로 조회합니다. 최상위 댓글과 대댓글을 함께 반환합니다.",
-        response = CommentListResponse.class
-    )
-    @Auth
-    @GetMapping("api/v1/comments/memory/{memoryId}")
-    public ServerResponse<CommentListResponse> getCommentsByMemory(
-            @PathVariable Long memoryId,
-            @Parameter(hidden = true) @MemberId Long memberId) {
-        return ServerResponse.success(commentService.getCommentsByMemory(memoryId, memberId));
-    }
-
-    @ApiOperations.SecuredApi(
         summary = "메모리의 최상위 댓글 목록 조회 (페이징)",
         description = "메모리의 최상위 댓글만 페이징으로 조회합니다.",
         response = CommentListResponse.class

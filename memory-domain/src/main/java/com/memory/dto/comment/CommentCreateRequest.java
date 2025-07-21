@@ -1,5 +1,8 @@
 package com.memory.dto.comment;
 
+import com.memory.domain.comment.Comment;
+import com.memory.domain.member.Member;
+import com.memory.domain.memory.Memory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -19,4 +22,8 @@ public class CommentCreateRequest {
     private String content;
 
     private Long parentCommentId;
+
+    public Comment toEntity(Member member, Memory memory, Comment parentComment) {
+        return Comment.create(content, memory, member, parentComment);
+    }
 }

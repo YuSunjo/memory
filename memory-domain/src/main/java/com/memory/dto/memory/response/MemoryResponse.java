@@ -19,7 +19,8 @@ public record MemoryResponse(
         MapResponse map,
         MemoryType memoryType,
         List<FileResponse> files,
-        LocalDateTime createDate
+        LocalDateTime createDate,
+        Long commentsCount
 ) {
 
     public static MemoryResponse from(Memory memory) {
@@ -37,7 +38,8 @@ public record MemoryResponse(
                 MapResponse.from(memory.getMap()),
                 memory.getMemoryType(),
                 fileResponses,
-                memory.getCreateDate()
+                memory.getCreateDate(),
+                memory.getCommentsCount()
         );
     }
 }

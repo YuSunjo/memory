@@ -4,9 +4,11 @@ import com.memory.annotation.Auth;
 import com.memory.annotation.MemberId;
 import com.memory.annotation.swagger.ApiOperations;
 import com.memory.dto.todo.TodoRequest;
+import com.memory.dto.todo.response.CombinedTodoResponse;
 import com.memory.dto.todo.response.TodoResponse;
 import com.memory.response.ServerResponse;
 import com.memory.service.todo.TodoService;
+import com.memory.useCase.TodoUseCase;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,6 +24,7 @@ import java.util.List;
 @Tag(name = "Todo", description = "Todo API")
 public class TodoController {
 
+    private final TodoUseCase todoUseCase;
     private final TodoService todoService;
 
     @ApiOperations.SecuredApi(
@@ -31,7 +34,9 @@ public class TodoController {
     )
     @Auth
     @PostMapping("api/v1/todos")
-    public ServerResponse<TodoResponse> createTodo(@Parameter(hidden = true) @MemberId Long memberId, @RequestBody @Valid TodoRequest.Create request) {
+    public ServerResponse<TodoResponse> createTodo(
+            @Parameter(hidden = true) @MemberId Long memberId, 
+            @RequestBody @Valid TodoRequest.Create request) {
         return ServerResponse.success(todoService.createTodo(memberId, request));
     }
 
@@ -69,7 +74,9 @@ public class TodoController {
     )
     @Auth
     @DeleteMapping("api/v1/todos/{todoId}")
-    public ServerResponse<String> deleteTodo(@Parameter(hidden = true) @MemberId Long memberId, @PathVariable Long todoId) {
+    public ServerResponse<String> deleteTodo(
+            @Parameter(hidden = true) @MemberId Long memberId, 
+            @PathVariable Long todoId) {
         todoService.deleteTodo(memberId, todoId);
         return ServerResponse.OK;
     }
@@ -86,5 +93,32 @@ public class TodoController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         return ServerResponse.success(todoService.getTodosByDateRange(memberId, startDate, endDate));
+    }
+
+    @ApiOperations.SecuredApi(
+        summary = "Todo와 루틴 미리보기 조회",
+        description = "실제 Todo와 루틴 미리보기를 함께 조회합니다.",
+        response = CombinedTodoResponse.class
+    )
+    @Auth
+    @GetMapping("api/v1/todos/combined")
+    public ServerResponse<CombinedTodoResponse> getCombinedTodos(
+            @Parameter(hidden = true) @MemberId Long memberId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return ServerResponse.success(todoUseCase.getCombinedTodosByDateRange(memberId, startDate, endDate));
+    }
+
+    @ApiOperations.SecuredApi(
+        summary = "루틴을 Todo로 변환",
+        description = "루틴을 실제 Todo로 변환합니다.",
+        response = TodoResponse.class
+    )
+    @Auth
+    @PostMapping("api/v1/todos/convert-routine")
+    public ServerResponse<TodoResponse> convertRoutineToTodo(
+            @Parameter(hidden = true) @MemberId Long memberId,
+            @RequestBody TodoRequest.ConvertRoutine request) {
+        return ServerResponse.success(todoUseCase.convertRoutineToTodo(memberId, request.getRoutineId(), request.getTargetDate()));
     }
 }

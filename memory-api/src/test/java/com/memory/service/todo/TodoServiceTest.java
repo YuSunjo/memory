@@ -1,7 +1,5 @@
 package com.memory.service.todo;
 
-import com.memory.domain.common.repeat.RepeatSetting;
-import com.memory.domain.common.repeat.RepeatType;
 import com.memory.domain.member.Member;
 import com.memory.domain.member.repository.MemberRepository;
 import com.memory.domain.todo.Todo;
@@ -67,8 +65,7 @@ class TodoServiceTest {
         setId(otherMember, otherMemberId);
 
         // Todo 객체 생성
-        RepeatSetting repeatSetting = RepeatSetting.of(RepeatType.NONE, null, null);
-        todo = Todo.create(title, content, dueDate, member, repeatSetting);
+        todo = Todo.create(title, content, dueDate, member);
         setId(todo, todoId);
 
         // Request 객체들 생성
@@ -88,12 +85,11 @@ class TodoServiceTest {
     }
 
     private TodoRequest.Create createTodoCreateRequest() {
-        return new TodoRequest.Create(title, content, dueDate, RepeatType.NONE, null, null);
+        return new TodoRequest.Create(title, content, dueDate);
     }
 
     private TodoRequest.Update createTodoUpdateRequest() {
-        return new TodoRequest.Update("수정된 제목", "수정된 내용", dueDate.plusDays(1), 
-                RepeatType.WEEKLY, 1, null);
+        return new TodoRequest.Update("수정된 제목", "수정된 내용", dueDate.plusDays(1));
     }
 
     private TodoRequest.UpdateStatus createUpdateStatusRequest() {
@@ -188,7 +184,7 @@ class TodoServiceTest {
     void updateTodoFailNoPermission() {
         // Given
         Todo otherTodo = spy(todo);
-        when(otherTodo.isOwner(member)).thenReturn(true); // isOwner가 true면 권한 없음
+        when(otherTodo.isOwner(member)).thenReturn(false); // isOwner가 true면 권한 없음
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(todoRepository.findById(todoId)).thenReturn(Optional.of(otherTodo));
 
@@ -240,7 +236,7 @@ class TodoServiceTest {
     void updateTodoStatusFailNoPermission() {
         // Given
         Todo otherTodo = spy(todo);
-        when(otherTodo.isOwner(member)).thenReturn(true);
+        when(otherTodo.isOwner(member)).thenReturn(false);
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(todoRepository.findById(todoId)).thenReturn(Optional.of(otherTodo));
 
@@ -304,7 +300,7 @@ class TodoServiceTest {
     void deleteTodoFailNoPermission() {
         // Given
         Todo otherTodo = spy(todo);
-        when(otherTodo.isOwner(member)).thenReturn(true);
+        when(otherTodo.isOwner(member)).thenReturn(false);
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(todoRepository.findById(todoId)).thenReturn(Optional.of(otherTodo));
 
@@ -327,7 +323,7 @@ class TodoServiceTest {
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
 
         Todo todo2 = Todo.create("두 번째 할 일", "두 번째 내용", dueDate.plusDays(1), 
-                member, RepeatSetting.of(RepeatType.NONE, null, null));
+                member);
         setId(todo2, 2L);
 
         List<Todo> todos = Arrays.asList(todo, todo2);

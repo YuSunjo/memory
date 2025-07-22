@@ -1,14 +1,11 @@
 package com.memory.dto.todo;
 
-import com.memory.domain.common.repeat.RepeatSetting;
-import com.memory.domain.common.repeat.RepeatType;
 import com.memory.domain.member.Member;
 import com.memory.domain.todo.Todo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class TodoRequest {
@@ -23,30 +20,14 @@ public class TodoRequest {
         @NotNull(message = "마감일시는 필수 입력값입니다.")
         private LocalDateTime dueDate;
 
-        private final RepeatType repeatType;
-        private final Integer repeatInterval;
-        private final LocalDate repeatEndDate;
-
-        public Create(String title, String content, LocalDateTime dueDate,
-                     RepeatType repeatType, Integer repeatInterval, LocalDate repeatEndDate) {
+        public Create(String title, String content, LocalDateTime dueDate) {
             this.title = title;
             this.content = content;
             this.dueDate = dueDate;
-            this.repeatType = repeatType;
-            this.repeatInterval = repeatInterval;
-            this.repeatEndDate = repeatEndDate;
-        }
-
-        public RepeatSetting toRepeatSetting() {
-            return RepeatSetting.of(
-                    repeatType != null ? repeatType : RepeatType.NONE,
-                    repeatInterval,
-                    repeatEndDate
-            );
         }
 
         public Todo toEntity(Member member) {
-            return Todo.create(title, content, dueDate, member, toRepeatSetting());
+            return Todo.create(title, content, dueDate, member);
         }
     }
 
@@ -60,32 +41,10 @@ public class TodoRequest {
         @NotNull(message = "마감일시는 필수 입력값입니다.")
         private LocalDateTime dueDate;
 
-        private RepeatType repeatType;
-        private Integer repeatInterval;
-        private LocalDate repeatEndDate;
-
         public Update(String title, String content, LocalDateTime dueDate) {
             this.title = title;
             this.content = content;
             this.dueDate = dueDate;
-        }
-
-        public Update(String title, String content, LocalDateTime dueDate, 
-                     RepeatType repeatType, Integer repeatInterval, LocalDate repeatEndDate) {
-            this.title = title;
-            this.content = content;
-            this.dueDate = dueDate;
-            this.repeatType = repeatType;
-            this.repeatInterval = repeatInterval;
-            this.repeatEndDate = repeatEndDate;
-        }
-
-        public RepeatSetting toRepeatSetting() {
-            return RepeatSetting.of(
-                    repeatType != null ? repeatType : RepeatType.NONE,
-                    repeatInterval,
-                    repeatEndDate
-            );
         }
     }
 
@@ -96,6 +55,20 @@ public class TodoRequest {
 
         public UpdateStatus(Boolean completed) {
             this.completed = completed;
+        }
+    }
+
+    @Getter
+    public static class ConvertRoutine {
+        @NotNull(message = "루틴 ID는 필수 입력값입니다.")
+        private Long routineId;
+
+        @NotNull(message = "대상 날짜는 필수 입력값입니다.")
+        private java.time.LocalDate targetDate;
+
+        public ConvertRoutine(Long routineId, java.time.LocalDate targetDate) {
+            this.routineId = routineId;
+            this.targetDate = targetDate;
         }
     }
 }

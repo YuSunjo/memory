@@ -44,15 +44,14 @@ public class TodoService {
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new NotFoundException("할 일을 찾을 수 없습니다."));
 
-        if (todo.isOwner(member)) {
+        if (!todo.isOwner(member)) {
             throw new ValidationException("해당 할 일에 대한 권한이 없습니다.");
         }
 
         todo.update(
                 request.getTitle(),
                 request.getContent(),
-                request.getDueDate(),
-                request.toRepeatSetting()
+                request.getDueDate()
         );
 
         return TodoResponse.from(todo);
@@ -66,7 +65,7 @@ public class TodoService {
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new NotFoundException("할 일을 찾을 수 없습니다."));
 
-        if (todo.isOwner(member)) {
+        if (!todo.isOwner(member)) {
             throw new ValidationException("해당 할 일에 대한 권한이 없습니다.");
         }
 
@@ -87,8 +86,7 @@ public class TodoService {
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new NotFoundException("할 일을 찾을 수 없습니다."));
 
-        // 소유자 확인
-        if (todo.isOwner(member)) {
+        if (!todo.isOwner(member)) {
             throw new ValidationException("해당 할 일에 대한 권한이 없습니다.");
         }
 

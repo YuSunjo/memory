@@ -1,0 +1,71 @@
+### 루틴 생성
+POST {{memory_api}}/api/v1/routines
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "매일 물 마시기",
+  "content": "하루에 물 8잔 마시기",
+  "repeatType": "DAILY",
+  "interval": 1,
+  "startDate": "2025-07-22",
+  "endDate": null
+}
+
+### 주간 루틴 생성
+POST {{memory_api}}/api/v1/routines
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "매주 운동하기",
+  "content": "헬스장에서 1시간 운동",
+  "repeatType": "WEEKLY",
+  "interval": 1,
+  "startDate": "2025-07-22",
+  "endDate": "2025-12-31"
+}
+
+### 루틴 목록 조회
+GET {{memory_api}}/api/v1/routines
+Authorization: Bearer {{access_token}}
+
+### 루틴 미리보기 조회
+GET {{memory_api}}/api/v1/routines/preview?startDate=2025-07-22&endDate=2025-07-28
+Authorization: Bearer {{access_token}}
+
+### 루틴 수정
+PUT {{memory_api}}/api/v1/routines/1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "매일 물 마시기 (수정)",
+  "content": "하루에 물 10잔 마시기",
+  "repeatType": "DAILY",
+  "interval": 1,
+  "startDate": "2025-07-22",
+  "endDate": null
+}
+
+### 루틴 활성화/비활성화
+PATCH {{memory_api}}/api/v1/routines/1/toggle
+Authorization: Bearer {{access_token}}
+
+### 루틴 삭제
+DELETE {{memory_api}}/api/v1/routines/1
+Authorization: Bearer {{access_token}}
+
+### Todo와 루틴 미리보기 함께 조회
+GET {{memory_api}}/api/v1/todos/combined?startDate=2025-07-22&endDate=2025-07-28
+Authorization: Bearer {{access_token}}
+
+### 루틴을 Todo로 변환
+POST {{memory_api}}/api/v1/todos/convert-routine
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "routineId": 1,
+  "targetDate": "2025-07-22"
+}

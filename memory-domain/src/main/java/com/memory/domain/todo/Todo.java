@@ -1,8 +1,8 @@
 package com.memory.domain.todo;
 
 import com.memory.domain.BaseTimeEntity;
-import com.memory.domain.common.repeat.RepeatSetting;
 import com.memory.domain.member.Member;
+import com.memory.domain.routine.Routine;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,46 +26,40 @@ public class Todo extends BaseTimeEntity {
 
     private boolean completed;
 
+    private boolean isRoutine; // 루틴에서 생성된 Todo인지 여부
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Embedded
-    private RepeatSetting repeatSetting;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "routine_id")
+    private Routine routine; // 이 Todo가 어떤 루틴에서 생성되었는지 (nullable)
 
     @Builder
-    private Todo(String title, String content, LocalDateTime dueDate, Member member, RepeatSetting repeatSetting) {
+    private Todo(String title, String content, LocalDateTime dueDate, Member member, Routine routine, boolean isRoutine) {
         this.title = title;
         this.content = content;
         this.dueDate = dueDate;
         this.completed = false;
         this.member = member;
-        this.repeatSetting = repeatSetting != null ? repeatSetting : RepeatSetting.none();
-    }
-
-    public static Todo create(String title, String content, LocalDateTime dueDate, Member member, RepeatSetting repeatSetting) {
-        return new Todo(title, content, dueDate, member, repeatSetting);
+        this.routine = routine;
+        this.isRoutine = isRoutine;
     }
 
     public static Todo create(String title, String content, LocalDateTime dueDate, Member member) {
-        return new Todo(title, content, dueDate, member, RepeatSetting.none());
+        return new Todo(title, content, dueDate, member, null, false);
+    }
+
+    // 루틴에서 생성되는 Todo
+    public static Todo createFromRoutine(Routine routine, LocalDateTime dueDate, Member member) {
+        return new Todo(routine.getTitle(), routine.getContent(), dueDate, member, routine, true);
     }
 
     public void update(String title, String content, LocalDateTime dueDate) {
         this.title = title;
         this.content = content;
         this.dueDate = dueDate;
-    }
-
-    public void update(String title, String content, LocalDateTime dueDate, RepeatSetting repeatSetting) {
-        this.title = title;
-        this.content = content;
-        this.dueDate = dueDate;
-        updateRepeatSetting(repeatSetting);
-    }
-
-    public void updateRepeatSetting(RepeatSetting repeatSetting) {
-        this.repeatSetting = repeatSetting != null ? repeatSetting : RepeatSetting.none();
     }
 
     public void complete() {
@@ -78,8 +72,12 @@ public class Todo extends BaseTimeEntity {
 
     public boolean isOwner(Member member) {
         if (member == null || this.member == null) {
-            return true;
+            return false;
         }
-        return !this.member.getId().equals(member.getId());
+        return this.member.getId().equals(member.getId());
+    }
+
+    public boolean isFromRoutine() {
+        return isRoutine && routine != null;
     }
 }

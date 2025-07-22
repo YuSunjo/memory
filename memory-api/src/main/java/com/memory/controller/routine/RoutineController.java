@@ -1,0 +1,107 @@
+package com.memory.controller.routine;
+
+import com.memory.annotation.Auth;
+import com.memory.annotation.MemberId;
+import com.memory.annotation.swagger.ApiOperations;
+import com.memory.dto.routine.RoutineRequest;
+import com.memory.dto.routine.response.RoutinePreviewResponse;
+import com.memory.dto.routine.response.RoutineResponse;
+import com.memory.response.ServerResponse;
+import com.memory.service.routine.RoutineService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/routines")
+@RequiredArgsConstructor
+@Tag(name = "Routine", description = "Routine API")
+public class RoutineController {
+
+    private final RoutineService routineService;
+
+    @ApiOperations.SecuredApi(
+        summary = "루틴 생성",
+        description = "새로운 루틴을 생성합니다.",
+        response = RoutineResponse.class
+    )
+    @Auth
+    @PostMapping
+    public ServerResponse<RoutineResponse> createRoutine(
+            @Parameter(hidden = true) @MemberId Long memberId,
+            @RequestBody @Valid RoutineRequest.Create request) {
+        return ServerResponse.success(routineService.createRoutine(memberId, request));
+    }
+
+    @ApiOperations.SecuredApi(
+        summary = "루틴 수정",
+        description = "기존 루틴을 수정합니다.",
+        response = RoutineResponse.class
+    )
+    @Auth
+    @PutMapping("/{routineId}")
+    public ServerResponse<RoutineResponse> updateRoutine(
+            @Parameter(hidden = true) @MemberId Long memberId,
+            @PathVariable Long routineId,
+            @RequestBody @Valid RoutineRequest.Update request) {
+        return ServerResponse.success(routineService.updateRoutine(memberId, routineId, request));
+    }
+
+    @ApiOperations.SecuredApi(
+        summary = "루틴 삭제",
+        description = "루틴을 삭제합니다."
+    )
+    @Auth
+    @DeleteMapping("/{routineId}")
+    public ServerResponse<String> deleteRoutine(
+            @Parameter(hidden = true) @MemberId Long memberId,
+            @PathVariable Long routineId) {
+        routineService.deleteRoutine(memberId, routineId);
+        return ServerResponse.OK;
+    }
+
+    @ApiOperations.SecuredApi(
+        summary = "루틴 활성화/비활성화",
+        description = "루틴의 활성화 상태를 토글합니다."
+    )
+    @Auth
+    @PatchMapping("/{routineId}/toggle")
+    public ServerResponse<String> toggleRoutineActive(
+            @Parameter(hidden = true) @MemberId Long memberId,
+            @PathVariable Long routineId) {
+        routineService.toggleRoutineActive(memberId, routineId);
+        return ServerResponse.OK;
+    }
+
+    @ApiOperations.SecuredApi(
+        summary = "루틴 목록 조회",
+        description = "사용자의 모든 루틴을 조회합니다.",
+        response = RoutineResponse.class
+    )
+    @Auth
+    @GetMapping
+    public ServerResponse<List<RoutineResponse>> getRoutines(
+            @Parameter(hidden = true) @MemberId Long memberId) {
+        return ServerResponse.success(routineService.getRoutines(memberId));
+    }
+
+    @ApiOperations.SecuredApi(
+        summary = "루틴 미리보기 조회",
+        description = "특정 날짜 범위의 루틴 미리보기를 조회합니다.",
+        response = RoutinePreviewResponse.class
+    )
+    @Auth
+    @GetMapping("/preview")
+    public ServerResponse<List<RoutinePreviewResponse>> getRoutinePreviews(
+            @Parameter(hidden = true) @MemberId Long memberId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return ServerResponse.success(routineService.getRoutinePreviewsForDateRange(memberId, startDate, endDate));
+    }
+}

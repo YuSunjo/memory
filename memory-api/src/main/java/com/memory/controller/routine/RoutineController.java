@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/routines")
 @RequiredArgsConstructor
 @Tag(name = "Routine", description = "Routine API")
 public class RoutineController {
@@ -32,7 +31,7 @@ public class RoutineController {
         response = RoutineResponse.class
     )
     @Auth
-    @PostMapping
+    @PostMapping("/api/v1/routine")
     public ServerResponse<RoutineResponse> createRoutine(
             @Parameter(hidden = true) @MemberId Long memberId,
             @RequestBody @Valid RoutineRequest.Create request) {
@@ -45,7 +44,7 @@ public class RoutineController {
         response = RoutineResponse.class
     )
     @Auth
-    @PutMapping("/{routineId}")
+    @PutMapping("/api/v1/routine/{routineId}")
     public ServerResponse<RoutineResponse> updateRoutine(
             @Parameter(hidden = true) @MemberId Long memberId,
             @PathVariable Long routineId,
@@ -58,7 +57,7 @@ public class RoutineController {
         description = "루틴을 삭제합니다."
     )
     @Auth
-    @DeleteMapping("/{routineId}")
+    @DeleteMapping("/api/v1/routine/{routineId}")
     public ServerResponse<String> deleteRoutine(
             @Parameter(hidden = true) @MemberId Long memberId,
             @PathVariable Long routineId) {
@@ -71,7 +70,7 @@ public class RoutineController {
         description = "루틴의 활성화 상태를 토글합니다."
     )
     @Auth
-    @PatchMapping("/{routineId}/toggle")
+    @PatchMapping("/api/v1/routine/{routineId}/toggle")
     public ServerResponse<String> toggleRoutineActive(
             @Parameter(hidden = true) @MemberId Long memberId,
             @PathVariable Long routineId) {
@@ -85,7 +84,7 @@ public class RoutineController {
         response = RoutineResponse.class
     )
     @Auth
-    @GetMapping
+    @GetMapping("/api/v1/routine")
     public ServerResponse<List<RoutineResponse>> getRoutines(
             @Parameter(hidden = true) @MemberId Long memberId) {
         return ServerResponse.success(routineService.getRoutines(memberId));
@@ -97,7 +96,7 @@ public class RoutineController {
         response = RoutinePreviewResponse.class
     )
     @Auth
-    @GetMapping("/preview")
+    @GetMapping("/api/v1/routine/preview")
     public ServerResponse<List<RoutinePreviewResponse>> getRoutinePreviews(
             @Parameter(hidden = true) @MemberId Long memberId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,

@@ -93,8 +93,9 @@ public class RoutineService {
                 .collect(Collectors.toList());
     }
 
+    // 특정 날짜 범위에 대한 루틴 미리보기 조회
     @Transactional(readOnly = true)
-    public List<RoutinePreviewResponse> getRoutinePreviewsForDateRange(Long memberId, LocalDate startDate, LocalDate endDate) {
+    public List<RoutinePreviewResponse> getRoutineForDateRange(Long memberId, LocalDate startDate, LocalDate endDate) {
         Member member = memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
 

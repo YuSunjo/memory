@@ -4,7 +4,6 @@ import com.memory.annotation.Auth;
 import com.memory.annotation.MemberId;
 import com.memory.annotation.swagger.ApiOperations;
 import com.memory.dto.routine.RoutineRequest;
-import com.memory.dto.routine.response.RoutinePreviewResponse;
 import com.memory.dto.routine.response.RoutineResponse;
 import com.memory.response.ServerResponse;
 import com.memory.service.routine.RoutineService;
@@ -12,10 +11,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -90,17 +87,4 @@ public class RoutineController {
         return ServerResponse.success(routineService.getRoutines(memberId));
     }
 
-    @ApiOperations.SecuredApi(
-        summary = "루틴 미리보기 조회",
-        description = "특정 날짜 범위의 루틴 미리보기를 조회합니다.",
-        response = RoutinePreviewResponse.class
-    )
-    @Auth
-    @GetMapping("/api/v1/routine/preview")
-    public ServerResponse<List<RoutinePreviewResponse>> getRoutinePreviews(
-            @Parameter(hidden = true) @MemberId Long memberId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return ServerResponse.success(routineService.getRoutinePreviewsForDateRange(memberId, startDate, endDate));
-    }
 }

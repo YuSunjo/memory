@@ -29,11 +29,19 @@ public class TodoUseCase {
         List<TodoResponse> actualTodos  = todoService.getTodosByDateRange(memberId, startDate, endDate);
 
         // 루틴 미리보기 조회
-        List<RoutinePreviewResponse> routinePreviews = routineService.getRoutinePreviewsForDateRange(memberId, startDate, endDate);
+        List<RoutinePreviewResponse> routinePreviews = routineService.getRoutineForDateRange(memberId, startDate, endDate);
 
+        // 루틴에서 todo로 변환된 경우는 제외
+        List<RoutinePreviewResponse> routinesExcludingTodos = routinePreviews.stream()
+                .filter(routine -> actualTodos.stream()
+                        .noneMatch(todo -> todo.isConvertRoutine(routine)))
+                .toList();
+        System.out.println("routinesExcludingTodos = " + routinesExcludingTodos);
+        System.out.println("routinePreviews = " + routinePreviews);
+        System.out.println("actualTodos = " + actualTodos);
         return CombinedTodoResponse.builder()
                 .actualTodos(actualTodos)
-                .routinePreviews(routinePreviews)
+                .routinePreviews(routinesExcludingTodos)
                 .build();
     }
 

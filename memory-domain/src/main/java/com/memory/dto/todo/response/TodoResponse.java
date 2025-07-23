@@ -2,6 +2,7 @@ package com.memory.dto.todo.response;
 
 import com.memory.domain.todo.Todo;
 import com.memory.dto.member.response.MemberResponse;
+import com.memory.dto.routine.response.RoutinePreviewResponse;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -51,5 +52,13 @@ public class TodoResponse {
             todo.getCreateDate(),
             todo.getUpdateDate()
         );
+    }
+
+    public boolean isConvertRoutine(RoutinePreviewResponse routine) {
+        if (routine == null || !this.isRoutine) {
+            return false;
+        }
+
+        return this.getDueDate().toLocalDate().isEqual(routine.getTargetDate());
     }
 }

@@ -60,48 +60,4 @@ public class RoutineRepositoryCustomImpl implements RoutineRepositoryCustom {
         
         return Optional.ofNullable(result);
     }
-
-    @Override
-    public boolean existsByMemberAndTitleAndRepeatType(Member member, String title, String repeatType) {
-        Integer exists = queryFactory
-                .selectOne()
-                .from(routine)
-                .where(
-                        routine.member.eq(member)
-                        .and(routine.title.eq(title))
-                        .and(routine.repeatSetting.repeatType.stringValue().eq(repeatType))
-                        .and(routine.deleteDate.isNull())
-                )
-                .fetchFirst();
-        
-        return exists != null;
-    }
-
-    @Override
-    public long countActiveRoutinesByMember(Member member) {
-        return queryFactory
-                .selectFrom(routine)
-                .where(
-                        routine.member.eq(member)
-                        .and(routine.active.isTrue())
-                        .and(routine.deleteDate.isNull())
-                )
-                .stream().count();
-    }
-
-    @Override
-    public List<Routine> findActiveRoutinesByMemberAndRepeatType(Member member, String repeatType) {
-        return queryFactory
-                .selectFrom(routine)
-                .where(
-                        routine.member.eq(member)
-                        .and(routine.active.isTrue())
-                        .and(routine.repeatSetting.repeatType.stringValue().eq(repeatType))
-                        .and(routine.deleteDate.isNull())
-                )
-                .orderBy(
-                        routine.createDate.desc()
-                )
-                .fetch();
-    }
 }

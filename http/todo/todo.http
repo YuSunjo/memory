@@ -47,20 +47,6 @@ Authorization: Bearer {{access_token}}
   "dueDate": "2023-12-11T12:00:00"
 }
 
-### Update a todo with repeat settings
-PUT {{memory_api}}/api/v1/todos/2
-Content-Type: application/json
-Authorization: Bearer {{access_token}}
-
-{
-  "title": "수정된 주간 보고서 작성",
-  "content": "팀 주간 보고서 작성, 검토 및 제출",
-  "dueDate": "2023-12-08T16:00:00",
-  "repeatType": "WEEKLY",
-  "repeatInterval": 2,
-  "repeatEndDate": "2024-06-30"
-}
-
 ### Update todo status (mark as completed)
 PATCH {{memory_api}}/api/v1/todos/1/status
 Content-Type: application/json

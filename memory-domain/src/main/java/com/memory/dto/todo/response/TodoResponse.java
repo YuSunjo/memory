@@ -59,6 +59,7 @@ public class TodoResponse {
             return false;
         }
 
-        return this.getDueDate().toLocalDate().isEqual(routine.getTargetDate());
+        return this.getDueDate().toLocalDate().isEqual(routine.getTargetDate()) &&
+               this.getRoutineId() != null && this.getRoutineId().equals(routine.getRoutineId());
     }
 }

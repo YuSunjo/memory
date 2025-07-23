@@ -70,13 +70,13 @@ DELETE {{memory_api}}/api/v1/todos/3
 Authorization: Bearer {{access_token}}
 
 ### Get todos by date range
-GET {{memory_api}}/api/v1/todos/date-range?startDate=2023-12-01&endDate=2023-12-31
+GET {{memory_api}}/api/v1/todos/date-range?startDate=2025-07-22&endDate=2025-07-28
 Authorization: Bearer {{access_token}}
 
 ### Get todos for a specific week
-GET {{memory_api}}/api/v1/todos/date-range?startDate=2023-12-04&endDate=2023-12-10
+GET {{memory_api}}/api/v1/todos/date-range?startDate=2025-07-22&endDate=2025-07-28
 Authorization: Bearer {{access_token}}
 
 ### Get todos for a specific day
-GET {{memory_api}}/api/v1/todos/date-range?startDate=2023-12-08&endDate=2023-12-08
+GET {{memory_api}}/api/v1/todos/date-range?startDate=2025-07-22&endDate=2025-07-28
 Authorization: Bearer {{access_token}}

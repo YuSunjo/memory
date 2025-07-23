@@ -8,6 +8,7 @@ import com.memory.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,8 @@ public class Memory extends BaseTimeEntity {
 
     private String locationName;
 
+    private LocalDate memorableDate;
+
     @Enumerated(EnumType.STRING)
     private MemoryType memoryType;
 
@@ -46,10 +49,11 @@ public class Memory extends BaseTimeEntity {
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
-    public Memory(String title, String content, String locationName, MemoryType memoryType, Member member, Map map) {
+    public Memory(String title, String content, String locationName, LocalDate memorableDate, MemoryType memoryType, Member member, Map map) {
         this.title = title;
         this.content = content;
         this.locationName = locationName;
+        this.memorableDate = memorableDate;
         this.memoryType = memoryType;
         this.member = member;
         this.map = map;
@@ -57,10 +61,11 @@ public class Memory extends BaseTimeEntity {
         this.comments = new ArrayList<>();
     }
 
-    public void update(String title, String content, String locationName, MemoryType memoryType) {
+    public void update(String title, String content, String locationName, LocalDate memorableDate, MemoryType memoryType) {
         this.title = title;
         this.content = content;
         this.locationName = locationName;
+        this.memorableDate = memorableDate;
         this.memoryType = memoryType;
     }
 

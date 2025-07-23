@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +66,7 @@ class MemoryServiceTest {
     private final String title = "테스트 메모리";
     private final String content = "테스트 내용";
     private final String locationName = "테스트 장소";
+    private final LocalDate memorableDate = LocalDate.of(2023, 12, 25);
 
     @BeforeEach
     void setUp() {
@@ -104,7 +106,7 @@ class MemoryServiceTest {
         setId(file2, fileId2);
 
         // Memory 객체 생성
-        memory = new Memory(title, content, locationName, MemoryType.PRIVATE, member, mapEntity);
+        memory = new Memory(title, content, locationName, memorableDate, MemoryType.PRIVATE, member, mapEntity);
         setId(memory, memoryId);
 
         // Request 객체들 생성
@@ -123,13 +125,13 @@ class MemoryServiceTest {
     }
 
     private MemoryRequest.Create createMemoryCreateRequest() {
-        return new MemoryRequest.Create(title, content, locationName, mapId, MemoryType.PRIVATE, 
+        return new MemoryRequest.Create(title, content, locationName, memorableDate, mapId, MemoryType.PRIVATE, 
                 Arrays.asList(fileId1, fileId2));
     }
 
     private MemoryRequest.Update createMemoryUpdateRequest() {
         return new MemoryRequest.Update("수정된 메모리", "수정된 내용", "수정된 장소", 
-                MemoryType.PUBLIC, List.of(fileId1));
+                LocalDate.of(2023, 12, 26), MemoryType.PUBLIC, List.of(fileId1));
     }
 
     @Test
@@ -196,7 +198,7 @@ class MemoryServiceTest {
     void createMemoryWithoutFiles() {
         // Given
         MemoryRequest.Create requestWithoutFiles = new MemoryRequest.Create(title, content, locationName, 
-                mapId, MemoryType.PRIVATE, null);
+                memorableDate, mapId, MemoryType.PRIVATE, null);
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(mapRepository.findById(mapId)).thenReturn(Optional.of(mapEntity));
@@ -270,7 +272,7 @@ class MemoryServiceTest {
         // Given
         int size = 10;
         Memory memory2 = new Memory("두 번째 메모리", "두 번째 내용", "두 번째 장소", 
-                MemoryType.PRIVATE, member, mapEntity);
+                LocalDate.of(2023, 12, 27), MemoryType.PRIVATE, member, mapEntity);
         setId(memory2, 2L);
 
         List<Memory> memories = Arrays.asList(memory, memory2);
@@ -389,7 +391,7 @@ class MemoryServiceTest {
         setId(otherMember, 2L);
         
         Memory otherMemory = new Memory("다른 메모리", "다른 내용", "다른 장소", 
-                MemoryType.PRIVATE, otherMember, mapEntity);
+                LocalDate.of(2023, 12, 28), MemoryType.PRIVATE, otherMember, mapEntity);
         setId(otherMemory, memoryId);
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
@@ -409,7 +411,7 @@ class MemoryServiceTest {
     void updateMemoryWithoutFiles() {
         // Given
         MemoryRequest.Update updateWithoutFiles = new MemoryRequest.Update("파일 없는 수정", "파일 없는 내용", 
-                "파일 없는 장소", MemoryType.PUBLIC, null);
+                "파일 없는 장소", LocalDate.of(2023, 12, 29), MemoryType.PUBLIC, null);
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)).thenReturn(Optional.of(memory));
@@ -478,7 +480,7 @@ class MemoryServiceTest {
         setId(otherMember, 2L);
         
         Memory otherMemory = new Memory("다른 메모리", "다른 내용", "다른 장소", 
-                MemoryType.PRIVATE, otherMember, mapEntity);
+                LocalDate.of(2023, 12, 30), MemoryType.PRIVATE, otherMember, mapEntity);
         setId(otherMemory, memoryId);
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
@@ -499,7 +501,7 @@ class MemoryServiceTest {
         // Given
         int size = 10;
         Memory publicMemory = new Memory("공개 메모리", "공개 내용", "공개 장소", 
-                MemoryType.PUBLIC, member, mapEntity);
+                LocalDate.of(2024, 1, 1), MemoryType.PUBLIC, member, mapEntity);
         setId(publicMemory, 3L);
 
         List<Memory> publicMemories = List.of(publicMemory);
@@ -564,7 +566,7 @@ class MemoryServiceTest {
         // Given
         int size = 10;
         Memory publicMemory = new Memory("공개 메모리", "공개 내용", "공개 장소", 
-                MemoryType.PUBLIC, member, mapEntity);
+                LocalDate.of(2024, 1, 2), MemoryType.PUBLIC, member, mapEntity);
         setId(publicMemory, 3L);
 
         List<Memory> publicMemories = List.of(publicMemory);
@@ -591,7 +593,7 @@ class MemoryServiceTest {
     void createMemoryWithEmptyFileList() {
         // Given
         MemoryRequest.Create requestWithEmptyFiles = new MemoryRequest.Create("빈 파일 메모리", "빈 파일 내용",
-                "빈 파일 장소", mapId, MemoryType.PRIVATE, List.of());
+                "빈 파일 장소", LocalDate.of(2024, 1, 3), mapId, MemoryType.PRIVATE, List.of());
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(mapRepository.findById(mapId)).thenReturn(Optional.of(mapEntity));
@@ -613,7 +615,7 @@ class MemoryServiceTest {
     void updateMemoryWithEmptyFileList() {
         // Given
         MemoryRequest.Update updateWithEmptyFiles = new MemoryRequest.Update("빈 파일 수정", "빈 파일 내용", 
-                "빈 파일 장소", MemoryType.PUBLIC, List.of());
+                "빈 파일 장소", LocalDate.of(2024, 1, 4), MemoryType.PUBLIC, List.of());
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)).thenReturn(Optional.of(memory));

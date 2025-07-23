@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -216,12 +217,13 @@ class MyMemoriesGameServiceTest {
                 .title("추억 " + index)
                 .content("추억 내용 " + index)
                 .locationName("장소 " + index)
+                .memorableDate(LocalDate.now().minusDays(index))
                 .memoryType(MemoryType.PUBLIC)
                 .map(map)
                 .member(createTestMember())
                 .build();
         
-        return new Memory(memory.getTitle(), memory.getContent(), memory.getLocationName(), 
+        return new Memory(memory.getTitle(), memory.getContent(), memory.getLocationName(), memory.getMemorableDate(),
                          memory.getMemoryType(), memory.getMember(), memory.getMap()) {
             @Override
             public Long getId() {

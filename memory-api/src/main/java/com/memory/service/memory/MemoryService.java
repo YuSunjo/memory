@@ -99,7 +99,7 @@ public class MemoryService {
             throw new NotFoundException("해당 메모리에 접근 권한이 없습니다.");
         }
 
-        memory.update(updateRequest.getTitle(), updateRequest.getContent(), updateRequest.getLocationName(), updateRequest.getMemoryType());
+        memory.update(updateRequest.getTitle(), updateRequest.getContent(), updateRequest.getLocationName(), updateRequest.getMemorableDate(), updateRequest.getMemoryType());
 
         // Associate files with the memory if fileIdList is not empty
         if (updateRequest.getFileIdList() != null && !updateRequest.getFileIdList().isEmpty()) {

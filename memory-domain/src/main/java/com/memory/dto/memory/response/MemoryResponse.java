@@ -6,6 +6,7 @@ import com.memory.dto.file.response.FileResponse;
 import com.memory.dto.map.response.MapResponse;
 import com.memory.dto.member.response.MemberResponse;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ public record MemoryResponse(
         String title,
         String content,
         String locationName,
+        LocalDate memorableDate,
         MemberResponse member,
         MapResponse map,
         MemoryType memoryType,
@@ -34,6 +36,7 @@ public record MemoryResponse(
                 memory.getTitle(),
                 memory.getContent(),
                 memory.getLocationName(),
+                memory.getMemorableDate(),
                 MemberResponse.from(memory.getMember()),
                 MapResponse.from(memory.getMap()),
                 memory.getMemoryType(),

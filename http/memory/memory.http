@@ -20,6 +20,7 @@ Authorization: Bearer {{access_token}}
   "title": "첫 번째 추억",
   "content": "서울 시청에서의 즐거운 시간",
   "locationName": "서울 시청",
+  "memorableDate": "2023-12-25",
   "mapId": 1,
   "memoryType": "PUBLIC",
   "fileIdList": [1, 2]
@@ -34,6 +35,7 @@ Authorization: Bearer {{access_token}}
   "title": "두 번째 추억",
   "content": "남산타워에서의 즐거운 시간",
   "locationName": "남산타워",
+  "memorableDate": "2024-01-01",
   "mapId": 2,
   "memoryType": "PUBLIC",
   "fileIdList": []
@@ -79,6 +81,7 @@ Authorization: Bearer {{access_token}}
   "title": "수정된 추억",
   "content": "서울 시청에서의 더욱 즐거운 시간",
   "locationName": "서울 시청 광장",
+  "memorableDate": "2023-12-26",
   "memoryType": "PRIVATE",
   "fileIdList": [4, 5, 6]
 }
@@ -92,6 +95,7 @@ Authorization: Bearer {{access_token}}
   "title": "수정된 두 번째 추억",
   "content": "남산타워에서의 더욱 즐거운 시간",
   "locationName": "남산타워 전망대",
+  "memorableDate": "2024-01-02",
   "memoryType": "PRIVATE",
   "fileIdList": []
 }

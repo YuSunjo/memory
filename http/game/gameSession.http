@@ -59,15 +59,15 @@ GET {{memory_api}}/api/v1/game/sessions
 Authorization: Bearer {{access_token}}
 
 ### 7. 내 게임 세션 목록 조회 (MY_MEMORIES 모드만)
-GET {{memory_api}}/api/v1/game/sessions?gameMode=MY_MEMORIES
+GET {{memory_api}}/api/v1/game/sessions?gameMode=MY_MEMORIES&size=10&lastSessionId=17
 Authorization: Bearer {{access_token}}
 
 ### 8. 내 게임 세션 목록 조회 (FRIEND_MEMORIES 모드만)
-GET {{memory_api}}/api/v1/game/sessions?gameMode=MEMORIES_RANDOM
+GET {{memory_api}}/api/v1/game/sessions?gameMode=MEMORIES_RANDOM&size=10
 Authorization: Bearer {{access_token}}
 
 ### 9. 내 게임 세션 목록 조회 (RANDOM 모드만)
-GET {{memory_api}}/api/v1/game/sessions?gameMode=RANDOM
+GET {{memory_api}}/api/v1/game/sessions?gameMode=RANDOM&size=5&lastSessionId=21
 Authorization: Bearer {{access_token}}
 
 ### 10. 게임 세션 포기 (진행중인 게임만 가능)

@@ -26,18 +26,22 @@ public class GameSessionRepositoryCustomImpl implements GameSessionRepositoryCus
     }
 
     @Override
-    public List<GameSession> findByMemberAndGameMode(Member member, GameMode gameMode) {
+    public List<GameSession> findByMemberAndGameMode(Member member, GameMode gameMode, Long lastSessionId, Integer size) {
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(gameSession.member.eq(member));
-
+        builder.and(gameSession.deleteDate.isNull());
         if (gameMode != null) {
             builder.and(gameSession.gameMode.eq(gameMode));
+        }
+        if (lastSessionId != null) {
+            builder.and(gameSession.id.lt(lastSessionId));
         }
 
         return queryFactory
                 .selectFrom(gameSession)
                 .where(builder)
-                .orderBy(gameSession.createDate.desc())
+                .orderBy(gameSession.id.desc())
+                .limit(size != null ? size : 10)
                 .fetch();
     }
 

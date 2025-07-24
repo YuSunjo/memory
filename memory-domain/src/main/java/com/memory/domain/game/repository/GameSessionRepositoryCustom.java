@@ -14,6 +14,6 @@ public interface GameSessionRepositoryCustom {
 
     Optional<GameSession> findByMemberAndStatus(Member member, GameSessionStatus gameSessionStatus);
 
-    List<GameSession> findByMemberAndGameMode(Member member, GameMode gameMode);
+    List<GameSession> findByMemberAndGameMode(Member member, GameMode gameMode, Long lastSessionId, Integer size);
 
 }

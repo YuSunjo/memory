@@ -78,7 +78,7 @@ public class GameSessionService {
     public List<GameSessionResponse> findGameSessionsByMember(Long memberId, GameSessionRequest.GetList request) {
         Member member = validateAndGetMember(memberId);
 
-        List<GameSession> gameSessions = gameSessionRepository.findByMemberAndGameMode(member, request.getGameMode());
+        List<GameSession> gameSessions = gameSessionRepository.findByMemberAndGameMode(member, request.getGameMode(), request.getLastSessionId(), request.getSize());
 
         return gameSessions.stream()
                 .map(gameSession -> {

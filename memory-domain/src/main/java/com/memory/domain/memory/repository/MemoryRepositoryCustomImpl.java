@@ -40,7 +40,7 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
                 .where(
                         getMemoryAccessCondition(member),
                         memory.deleteDate.isNull(),
-                        gtMemoryId(lastMemoryId)
+                        ltMemoryId(lastMemoryId)
                 )
                 .orderBy(memory.id.desc())
                 .limit(size)
@@ -76,7 +76,7 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
                 .where(
                         getMemoryType(memoryType),
                         memory.deleteDate.isNull(),
-                        gtMemoryId(lastMemoryId)
+                        ltMemoryId(lastMemoryId)
                 )
                 .orderBy(memory.id.desc())
                 .limit(size)
@@ -120,8 +120,8 @@ public class MemoryRepositoryCustomImpl implements MemoryRepositoryCustom {
                 .fetchOne());
     }
 
-    private BooleanExpression gtMemoryId(Long memoryId) {
-        return memoryId != null ? memory.id.gt(memoryId) : null;
+    private BooleanExpression ltMemoryId(Long memoryId) {
+        return memoryId != null ? memory.id.lt(memoryId) : null;
     }
 
     private Predicate getMemoryType(MemoryType memoryType) {

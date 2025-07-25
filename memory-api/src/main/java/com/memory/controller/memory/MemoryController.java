@@ -7,6 +7,7 @@ import com.memory.dto.memory.MemoryRequest;
 import com.memory.dto.memory.response.MemoryResponse;
 import com.memory.response.ServerResponse;
 import com.memory.service.memory.MemoryService;
+import com.memory.useCase.memory.MemoryUseCase;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ import java.util.List;
 @Tag(name = "Memory", description = "Memory API")
 public class MemoryController {
 
+    private final MemoryUseCase memoryUseCase;
     private final MemoryService memoryService;
 
     @ApiOperations.SecuredApi(
@@ -32,7 +34,7 @@ public class MemoryController {
     public ServerResponse<MemoryResponse> createMemory(
             @Parameter(hidden = true) @MemberId Long memberId,
             @RequestBody @Valid MemoryRequest.Create createRequest) {
-        return ServerResponse.success(memoryService.createMemory(memberId, createRequest));
+        return ServerResponse.success(memoryUseCase.createMemoryWithHashTags(memberId, createRequest));
     }
 
     @ApiOperations.SecuredApi(
@@ -80,7 +82,7 @@ public class MemoryController {
             @Parameter(hidden = true) @MemberId Long memberId,
             @PathVariable Long memoryId,
             @RequestBody @Valid MemoryRequest.Update updateRequest) {
-        return ServerResponse.success(memoryService.updateMemory(memberId, memoryId, updateRequest));
+        return ServerResponse.success(memoryUseCase.updateMemoryWithHashTags(memberId, memoryId, updateRequest));
     }
 
     @ApiOperations.SecuredApi(

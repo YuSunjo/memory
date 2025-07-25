@@ -36,7 +36,9 @@ public class MemoryRequest {
 
         private List<Long> fileIdList;
 
-        public Create(String title, String content, String locationName, LocalDate memorableDate, Long mapId, MemoryType memoryType, List<Long> fileIdList) {
+        private List<String> hashTagList;
+
+        public Create(String title, String content, String locationName, LocalDate memorableDate, Long mapId, MemoryType memoryType, List<Long> fileIdList, List<String> hashTagList) {
             this.title = title;
             this.content = content;
             this.locationName = locationName;
@@ -44,6 +46,7 @@ public class MemoryRequest {
             this.mapId = mapId;
             this.memoryType = memoryType;
             this.fileIdList = fileIdList != null ? fileIdList : new ArrayList<>();
+            this.hashTagList = hashTagList != null ? hashTagList : new ArrayList<>();
         }
 
         public Memory toEntity(Member member, Map map) {
@@ -69,13 +72,16 @@ public class MemoryRequest {
 
         private List<Long> fileIdList;
 
-        public Update(String title, String content, String locationName, LocalDate memorableDate, MemoryType memoryType, List<Long> fileIdList) {
+        private List<String> hashTagList;
+
+        public Update(String title, String content, String locationName, LocalDate memorableDate, MemoryType memoryType, List<Long> fileIdList, List<String> hashTagList) {
             this.title = title;
             this.content = content;
             this.locationName = locationName;
             this.memorableDate = memorableDate;
             this.memoryType = memoryType;
             this.fileIdList = fileIdList != null ? fileIdList : new ArrayList<>();
+            this.hashTagList = hashTagList != null ? hashTagList : new ArrayList<>();
         }
     }
 

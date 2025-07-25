@@ -1,0 +1,29 @@
+### ================================
+### HashTag API Test Suite
+### ================================
+### 해시태그 관련 모든 API 테스트를 위한 파일
+### 사용법: 각 섹션별로 테스트를 실행하세요
+### ================================
+
+### ================================
+### 1. Basic HashTag Search Tests
+### ================================
+
+### 1.1 기본 해시태그 검색 - "여행"
+GET {{memory_api}}/api/hashtag/search?keyword=신&limit=10
+
+### 1.2 기본 해시태그 검색 - "서울"
+GET {{memory_api}}/api/hashtag/search?keyword=서울&limit=5
+
+### ================================
+### 2. Popular HashTags Tests
+### ================================
+
+### 2.1 인기 해시태그 조회 - 기본값 (limit=10)
+GET {{memory_api}}/api/hashtag/popular
+
+### 2.2 인기 해시태그 조회 - 상위 3개
+GET {{memory_api}}/api/hashtag/popular?limit=3
+
+### 2.3 인기 해시태그 조회 - 상위 1개 (가장 인기있는)
+GET {{memory_api}}/api/hashtag/popular?limit=1

@@ -3,6 +3,7 @@ package com.memory.domain.memory;
 import com.memory.domain.BaseTimeEntity;
 import com.memory.domain.comment.Comment;
 import com.memory.domain.file.File;
+import com.memory.domain.hashtag.MemoryHashTag;
 import com.memory.domain.map.Map;
 import com.memory.domain.member.Member;
 import jakarta.persistence.*;
@@ -48,6 +49,9 @@ public class Memory extends BaseTimeEntity {
     @OneToMany(mappedBy = "memory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "memory", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemoryHashTag> memoryHashTags = new ArrayList<>();
+
     @Builder
     public Memory(String title, String content, String locationName, LocalDate memorableDate, MemoryType memoryType, Member member, Map map) {
         this.title = title;
@@ -59,6 +63,7 @@ public class Memory extends BaseTimeEntity {
         this.map = map;
         this.files = new ArrayList<>();
         this.comments = new ArrayList<>();
+        this.memoryHashTags = new ArrayList<>();
     }
 
     public void update(String title, String content, String locationName, LocalDate memorableDate, MemoryType memoryType) {
@@ -80,6 +85,26 @@ public class Memory extends BaseTimeEntity {
 
     public void addComment(Comment comment) {
         this.comments.add(comment);
+    }
+
+    public void addMemoryHashTag(MemoryHashTag memoryHashTag) {
+        this.memoryHashTags.add(memoryHashTag);
+        memoryHashTag.updateMemory(this);
+    }
+
+    public void addMemoryHashTags(List<MemoryHashTag> memoryHashTags) {
+        memoryHashTags.forEach(this::addMemoryHashTag);
+    }
+
+    public void clearHashTags() {
+        this.memoryHashTags.clear();
+    }
+
+    public List<String> getHashTagNames() {
+        return memoryHashTags.stream()
+                .filter(memoryHashTag -> !memoryHashTag.isDeleted())
+                .map(memoryHashTag -> memoryHashTag.getHashTag().getName())
+                .toList();
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.memory.useCase;
+package com.memory.useCase.todo;
 
 import com.memory.domain.member.repository.MemberRepository;
 import com.memory.dto.routine.response.RoutinePreviewResponse;
@@ -36,9 +36,6 @@ public class TodoUseCase {
                 .filter(routine -> actualTodos.stream()
                         .noneMatch(todo -> todo.isConvertRoutine(routine)))
                 .toList();
-        System.out.println("routinesExcludingTodos = " + routinesExcludingTodos);
-        System.out.println("routinePreviews = " + routinePreviews);
-        System.out.println("actualTodos = " + actualTodos);
         return CombinedTodoResponse.builder()
                 .actualTodos(actualTodos)
                 .routinePreviews(routinesExcludingTodos)

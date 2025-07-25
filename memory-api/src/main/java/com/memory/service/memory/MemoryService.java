@@ -141,4 +141,10 @@ public class MemoryService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public Memory findMemoryEntityById(Long memberId, Long memoryId) {
+        return memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)
+                .orElseThrow(() -> new NotFoundException("해당 유저의 메모리를 찾을 수 없습니다."));
+    }
+
 }

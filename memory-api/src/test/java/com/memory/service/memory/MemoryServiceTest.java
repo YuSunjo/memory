@@ -126,12 +126,12 @@ class MemoryServiceTest {
 
     private MemoryRequest.Create createMemoryCreateRequest() {
         return new MemoryRequest.Create(title, content, locationName, memorableDate, mapId, MemoryType.PRIVATE, 
-                Arrays.asList(fileId1, fileId2));
+                Arrays.asList(fileId1, fileId2), Arrays.asList("테스트", "메모리"));
     }
 
     private MemoryRequest.Update createMemoryUpdateRequest() {
         return new MemoryRequest.Update("수정된 메모리", "수정된 내용", "수정된 장소", 
-                LocalDate.of(2023, 12, 26), MemoryType.PUBLIC, List.of(fileId1));
+                LocalDate.of(2023, 12, 26), MemoryType.PUBLIC, List.of(fileId1), Arrays.asList("수정", "업데이트"));
     }
 
     @Test
@@ -198,7 +198,7 @@ class MemoryServiceTest {
     void createMemoryWithoutFiles() {
         // Given
         MemoryRequest.Create requestWithoutFiles = new MemoryRequest.Create(title, content, locationName, 
-                memorableDate, mapId, MemoryType.PRIVATE, null);
+                memorableDate, mapId, MemoryType.PRIVATE, null, Arrays.asList("파일없음", "테스트"));
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(mapRepository.findById(mapId)).thenReturn(Optional.of(mapEntity));
@@ -411,7 +411,7 @@ class MemoryServiceTest {
     void updateMemoryWithoutFiles() {
         // Given
         MemoryRequest.Update updateWithoutFiles = new MemoryRequest.Update("파일 없는 수정", "파일 없는 내용", 
-                "파일 없는 장소", LocalDate.of(2023, 12, 29), MemoryType.PUBLIC, null);
+                "파일 없는 장소", LocalDate.of(2023, 12, 29), MemoryType.PUBLIC, null, Arrays.asList("파일없음", "수정"));
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)).thenReturn(Optional.of(memory));
@@ -593,7 +593,7 @@ class MemoryServiceTest {
     void createMemoryWithEmptyFileList() {
         // Given
         MemoryRequest.Create requestWithEmptyFiles = new MemoryRequest.Create("빈 파일 메모리", "빈 파일 내용",
-                "빈 파일 장소", LocalDate.of(2024, 1, 3), mapId, MemoryType.PRIVATE, List.of());
+                "빈 파일 장소", LocalDate.of(2024, 1, 3), mapId, MemoryType.PRIVATE, List.of(), Arrays.asList("빈파일", "테스트"));
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(mapRepository.findById(mapId)).thenReturn(Optional.of(mapEntity));
@@ -615,13 +615,123 @@ class MemoryServiceTest {
     void updateMemoryWithEmptyFileList() {
         // Given
         MemoryRequest.Update updateWithEmptyFiles = new MemoryRequest.Update("빈 파일 수정", "빈 파일 내용", 
-                "빈 파일 장소", LocalDate.of(2024, 1, 4), MemoryType.PUBLIC, List.of());
+                "빈 파일 장소", LocalDate.of(2024, 1, 4), MemoryType.PUBLIC, List.of(), Arrays.asList("빈파일", "수정"));
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)).thenReturn(Optional.of(memory));
 
         // When
         MemoryResponse response = memoryService.updateMemory(memberId, memoryId, updateWithEmptyFiles);
+
+        // Then
+        assertNotNull(response);
+        verify(memberRepository).findMemberById(memberId);
+        verify(memoryRepository).findMemoryByIdAndMemberId(memoryId, memberId);
+        verify(fileRepository, never()).findAllById(any());
+    }
+
+    @Test
+    @DisplayName("해시태그만 있는 메모리 생성 테스트")
+    void createMemoryWithHashTagsOnly() {
+        // Given
+        MemoryRequest.Create requestWithHashTagsOnly = new MemoryRequest.Create("해시태그 메모리", "해시태그 내용",
+                "해시태그 장소", LocalDate.of(2024, 1, 5), mapId, MemoryType.PUBLIC, null, Arrays.asList("여행", "카페", "데이트"));
+
+        when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
+        when(mapRepository.findById(mapId)).thenReturn(Optional.of(mapEntity));
+        when(memoryRepository.save(any(Memory.class))).thenReturn(memory);
+
+        // When
+        MemoryResponse response = memoryService.createMemory(memberId, requestWithHashTagsOnly);
+
+        // Then
+        assertNotNull(response);
+        verify(memberRepository).findMemberById(memberId);
+        verify(mapRepository).findById(mapId);
+        verify(memoryRepository).save(any(Memory.class));
+        verify(fileRepository, never()).findAllById(any());
+    }
+
+    @Test
+    @DisplayName("빈 해시태그 리스트로 메모리 생성 테스트")
+    void createMemoryWithEmptyHashTagList() {
+        // Given
+        MemoryRequest.Create requestWithEmptyHashTags = new MemoryRequest.Create("빈 해시태그 메모리", "빈 해시태그 내용",
+                "빈 해시태그 장소", LocalDate.of(2024, 1, 6), mapId, MemoryType.PRIVATE, List.of(fileId1), List.of());
+
+        when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
+        when(mapRepository.findById(mapId)).thenReturn(Optional.of(mapEntity));
+        when(memoryRepository.save(any(Memory.class))).thenReturn(memory);
+        when(fileRepository.findAllById(Arrays.asList(fileId1))).thenReturn(Arrays.asList(file1));
+
+        // When
+        MemoryResponse response = memoryService.createMemory(memberId, requestWithEmptyHashTags);
+
+        // Then
+        assertNotNull(response);
+        verify(memberRepository).findMemberById(memberId);
+        verify(mapRepository).findById(mapId);
+        verify(memoryRepository).save(any(Memory.class));
+        verify(fileRepository).findAllById(Arrays.asList(fileId1));
+    }
+
+    @Test
+    @DisplayName("많은 해시태그가 있는 메모리 생성 테스트")
+    void createMemoryWithManyHashTags() {
+        // Given
+        List<String> manyHashTags = Arrays.asList("여행", "카페", "데이트", "서울", "맛집", "친구", "주말", "힐링");
+        MemoryRequest.Create requestWithManyHashTags = new MemoryRequest.Create("많은 해시태그 메모리", "많은 해시태그 내용",
+                "많은 해시태그 장소", LocalDate.of(2024, 1, 7), mapId, MemoryType.PUBLIC, Arrays.asList(fileId1, fileId2), manyHashTags);
+
+        when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
+        when(mapRepository.findById(mapId)).thenReturn(Optional.of(mapEntity));
+        when(memoryRepository.save(any(Memory.class))).thenReturn(memory);
+        when(fileRepository.findAllById(Arrays.asList(fileId1, fileId2))).thenReturn(Arrays.asList(file1, file2));
+
+        // When
+        MemoryResponse response = memoryService.createMemory(memberId, requestWithManyHashTags);
+
+        // Then
+        assertNotNull(response);
+        verify(memberRepository).findMemberById(memberId);
+        verify(mapRepository).findById(mapId);
+        verify(memoryRepository).save(any(Memory.class));
+        verify(fileRepository).findAllById(Arrays.asList(fileId1, fileId2));
+    }
+
+    @Test
+    @DisplayName("해시태그 업데이트 테스트")
+    void updateMemoryWithDifferentHashTags() {
+        // Given
+        MemoryRequest.Update updateWithNewHashTags = new MemoryRequest.Update("업데이트된 메모리", "업데이트된 내용", 
+                "업데이트된 장소", LocalDate.of(2024, 1, 8), MemoryType.PRIVATE, Arrays.asList(fileId2), Arrays.asList("새로운", "해시태그", "업데이트"));
+
+        when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
+        when(memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)).thenReturn(Optional.of(memory));
+        when(fileRepository.findAllById(Arrays.asList(fileId2))).thenReturn(Arrays.asList(file2));
+
+        // When
+        MemoryResponse response = memoryService.updateMemory(memberId, memoryId, updateWithNewHashTags);
+
+        // Then
+        assertNotNull(response);
+        verify(memberRepository).findMemberById(memberId);
+        verify(memoryRepository).findMemoryByIdAndMemberId(memoryId, memberId);
+        verify(fileRepository).findAllById(Arrays.asList(fileId2));
+    }
+
+    @Test
+    @DisplayName("해시태그 제거 테스트")
+    void updateMemoryToRemoveHashTags() {
+        // Given
+        MemoryRequest.Update updateWithoutHashTags = new MemoryRequest.Update("해시태그 제거", "해시태그 제거 내용", 
+                "해시태그 제거 장소", LocalDate.of(2024, 1, 9), MemoryType.PUBLIC, null, null);
+
+        when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
+        when(memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)).thenReturn(Optional.of(memory));
+
+        // When
+        MemoryResponse response = memoryService.updateMemory(memberId, memoryId, updateWithoutHashTags);
 
         // Then
         assertNotNull(response);

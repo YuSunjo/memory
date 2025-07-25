@@ -21,6 +21,7 @@ public record MemoryResponse(
         MapResponse map,
         MemoryType memoryType,
         List<FileResponse> files,
+        List<String> hashTagNames,
         LocalDateTime createDate,
         Long commentsCount
 ) {
@@ -41,6 +42,7 @@ public record MemoryResponse(
                 MapResponse.from(memory.getMap()),
                 memory.getMemoryType(),
                 fileResponses,
+                memory.getHashTagNames(),
                 memory.getCreateDate(),
                 memory.getCommentsCount()
         );

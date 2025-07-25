@@ -8,7 +8,7 @@ import com.memory.dto.todo.response.CombinedTodoResponse;
 import com.memory.dto.todo.response.TodoResponse;
 import com.memory.response.ServerResponse;
 import com.memory.service.todo.TodoService;
-import com.memory.useCase.TodoUseCase;
+import com.memory.useCase.todo.TodoUseCase;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

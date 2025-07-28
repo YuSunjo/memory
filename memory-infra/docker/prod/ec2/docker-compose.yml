@@ -1,9 +1,67 @@
 version: '3.8'
 
 services:
+  elasticsearch:
+    build:
+      context: .
+      dockerfile: ../../local/Dockerfile_Elastic
+    container_name: memory-elasticsearch-prod
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - bootstrap.memory_lock=true
+      - cluster.name=memory-prod-cluster
+      - node.name=memory-prod-node
+    volumes:
+      - ./data/elasticsearch-data:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    networks:
+      - memory-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.4
+    container_name: memory-kibana-prod
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - xpack.security.enabled=false
+      - SERVER_HOST=0.0.0.0
+      - SERVER_NAME=kibana-prod
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - memory-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   app:
     image: 228749872437.dkr.ecr.ap-northeast-2.amazonaws.com/my_memory/memory:latest
     container_name: my-memory
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
@@ -17,6 +75,7 @@ services:
       CLOUD_AWS_REGION_STATIC: ${AWS_S3_REGION}
       CLOUD_AWS_S3_ENDPOINT: ${AWS_S3_ENDPOINT}
       JWT_TOKEN_SECRET: ${JWT_TOKEN_SECRET}
+      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
     networks:
       - memory-network
     restart: always
@@ -27,3 +86,4 @@ networks:
 
 volumes:
   postgres-data:
+  elasticsearch-data:

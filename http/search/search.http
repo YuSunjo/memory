@@ -181,3 +181,38 @@ Content-Type: application/json
   "page": 0,
   "size": 10
 }
+
+### ===== 자동완성 API 테스트 =====
+
+### 인증된 사용자 - 자동완성 (제목 + 해시태그)
+GET {{memory_api}}/api/v1/memories/autocomplete?query=여행&limit=10
+Authorization: Bearer {{access_token}}
+
+### 인증된 사용자 - 자동완성 (제주로 검색)
+GET {{memory_api}}/api/v1/memories/autocomplete?query=제주&limit=5
+Authorization: Bearer {{access_token}}
+
+### 인증된 사용자 - 자동완성 (해시태그 검색)
+GET {{memory_api}}/api/v1/memories/autocomplete?query=여행&limit=5
+Authorization: Bearer {{access_token}}
+
+### 게스트 사용자 - 자동완성 (PUBLIC만)
+GET {{memory_api}}/api/v1/memories/public/autocomplete?query=추억&limit=10
+
+### 게스트 사용자 - 자동완성 (맛집으로 검색)
+GET {{memory_api}}/api/v1/memories/public/autocomplete?query=맛집&limit=5
+
+### 게스트 사용자 - 자동완성 (카페로 검색)
+GET {{memory_api}}/api/v1/memories/public/autocomplete?query=카페&limit=5
+
+### 자동완성 - 짧은 검색어 테스트
+GET {{memory_api}}/api/v1/memories/public/autocomplete?query=서&limit=10
+
+### 자동완성 - 한글 검색어 테스트
+GET {{memory_api}}/api/v1/memories/public/autocomplete?query=추억&limit=10
+
+### 자동완성 - 영어 검색어 테스트
+GET {{memory_api}}/api/v1/memories/public/autocomplete?query=cafe&limit=10
+
+### 자동완성 - 빈 검색어 오류 테스트
+GET {{memory_api}}/api/v1/memories/public/autocomplete?query=&limit=10

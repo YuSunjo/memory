@@ -19,7 +19,6 @@ import java.util.Locale;
 @AllArgsConstructor
 @Document(indexName = "memory")
 @Setting(settingPath = "elasticsearch/memory-settings.json")
-@Mapping(mappingPath = "elasticsearch/memory-mapping.json")
 public class MemoryDocument {
 
     @Id
@@ -95,4 +94,5 @@ public class MemoryDocument {
         this.hashTags = memory.getHashTagNames();
         this.relationshipMemberId = extractRelationshipMemberId(memory);
     }
+
 }

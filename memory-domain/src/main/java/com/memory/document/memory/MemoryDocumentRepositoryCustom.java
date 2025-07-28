@@ -1,5 +1,6 @@
 package com.memory.document.memory;
 
+import com.memory.dto.search.AutocompleteSuggestion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -72,4 +73,26 @@ public interface MemoryDocumentRepositoryCustom {
      * 사용자별 날짜 범위 검색
      */
     Page<SearchHit<MemoryDocument>> searchByMemberAndDateRange(Long memberId, LocalDate fromDate, LocalDate toDate, Pageable pageable);
+
+    // ===== 자동완성 메서드들 =====
+
+    /**
+     * PUBLIC 메모리 제목 자동완성
+     */
+    List<AutocompleteSuggestion> getPublicTitleSuggestions(String query, int limit);
+
+    /**
+     * PUBLIC 메모리 해시태그 자동완성
+     */
+    List<AutocompleteSuggestion> getPublicHashtagSuggestions(String query, int limit);
+
+    /**
+     * 인증된 사용자 제목 자동완성 (본인 + 관계된 사용자 + PUBLIC)
+     */
+    List<AutocompleteSuggestion> getAuthenticatedTitleSuggestions(Long memberId, String query, int limit);
+
+    /**
+     * 인증된 사용자 해시태그 자동완성 (본인 + 관계된 사용자 + PUBLIC)
+     */
+    List<AutocompleteSuggestion> getAuthenticatedHashtagSuggestions(Long memberId, String query, int limit);
 }

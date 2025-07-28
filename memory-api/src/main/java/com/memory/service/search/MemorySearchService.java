@@ -2,9 +2,7 @@ package com.memory.service.search;
 
 import com.memory.document.memory.MemoryDocument;
 import com.memory.document.memory.MemoryDocumentRepository;
-import com.memory.dto.search.MemorySearchRequest;
-import com.memory.dto.search.MemorySearchResponse;
-import com.memory.dto.search.SearchResultResponse;
+import com.memory.dto.search.*;
 import com.memory.exception.customException.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +12,7 @@ import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -167,5 +166,79 @@ public class MemorySearchService {
                 .toDate(request.getToDate())
                 .searchTimeMs(searchTime)
                 .build();
+    }
+
+    // ===== 자동완성 메서드들 =====
+
+    /**
+     * 게스트 사용자의 자동완성 (PUBLIC 메모리만) - 제목 + 해시태그
+     */
+    public AutocompleteResponse getPublicAutocomplete(String query, int limit) {
+        long startTime = System.currentTimeMillis();
+        
+        validateAutocompleteQuery(query);
+        
+        List<AutocompleteSuggestion> suggestions = new ArrayList<>();
+        
+        // 항상 제목과 해시태그 모두 검색
+        suggestions.addAll(memoryDocumentRepository.getPublicTitleSuggestions(query, limit / 2));
+        suggestions.addAll(memoryDocumentRepository.getPublicHashtagSuggestions(query, limit / 2));
+        
+        // 점수 기준으로 정렬하고 제한
+        suggestions = suggestions.stream()
+                .sorted((a, b) -> Float.compare(b.getScore(), a.getScore()))
+                .limit(limit)
+                .toList();
+        
+        long responseTime = System.currentTimeMillis() - startTime;
+        
+        return AutocompleteResponse.builder()
+                .suggestions(suggestions)
+                .query(query)
+                .totalSuggestions(suggestions.size())
+                .responseTimeMs(responseTime)
+                .build();
+    }
+
+    /**
+     * 인증된 사용자의 자동완성 (본인 + 관계된 사용자 + PUBLIC) - 제목 + 해시태그
+     */
+    public AutocompleteResponse getAuthenticatedAutocomplete(Long memberId, String query, int limit) {
+        long startTime = System.currentTimeMillis();
+        
+        validateAutocompleteQuery(query);
+        
+        List<AutocompleteSuggestion> suggestions = new ArrayList<>();
+        
+        // 항상 제목과 해시태그 모두 검색
+        suggestions.addAll(memoryDocumentRepository.getAuthenticatedTitleSuggestions(memberId, query, limit / 2));
+        suggestions.addAll(memoryDocumentRepository.getAuthenticatedHashtagSuggestions(memberId, query, limit / 2));
+        
+        // 점수 기준으로 정렬하고 제한
+        suggestions = suggestions.stream()
+                .sorted((a, b) -> Float.compare(b.getScore(), a.getScore()))
+                .limit(limit)
+                .toList();
+        
+        long responseTime = System.currentTimeMillis() - startTime;
+        
+        return AutocompleteResponse.builder()
+                .suggestions(suggestions)
+                .query(query)
+                .totalSuggestions(suggestions.size())
+                .responseTimeMs(responseTime)
+                .build();
+    }
+
+    private void validateAutocompleteQuery(String query) {
+        if (!StringUtils.hasText(query)) {
+            throw new ValidationException("검색어는 필수입니다");
+        }
+        if (query.isEmpty()) {
+            throw new ValidationException("검색어는 최소 1자 이상이어야 합니다");
+        }
+        if (query.length() > 100) {
+            throw new ValidationException("검색어는 최대 100자까지 입력 가능합니다");
+        }
     }
 }

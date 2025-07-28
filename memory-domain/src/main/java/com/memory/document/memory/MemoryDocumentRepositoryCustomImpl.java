@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery;
+import com.memory.dto.search.AutocompleteSuggestion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
@@ -248,5 +250,102 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
      */
     private Page<SearchHit<MemoryDocument>> executeSearchWithHighlight(Query query, Pageable pageable, String... fields) {
         return executeSearch(query, pageable);
+    }
+
+    // ===== 자동완성 메서드 구현 =====
+
+    @Override
+    public List<AutocompleteSuggestion> getPublicTitleSuggestions(String query, int limit) {
+        return getTitleSuggestions(createPublicMemoryFilter(), query, limit);
+    }
+
+    @Override
+    public List<AutocompleteSuggestion> getPublicHashtagSuggestions(String query, int limit) {
+        return getHashtagSuggestions(createPublicMemoryFilter(), query, limit);
+    }
+
+    @Override
+    public List<AutocompleteSuggestion> getAuthenticatedTitleSuggestions(Long memberId, String query, int limit) {
+        return getTitleSuggestions(createMemberOrPublicFilter(memberId), query, limit);
+    }
+
+    @Override
+    public List<AutocompleteSuggestion> getAuthenticatedHashtagSuggestions(Long memberId, String query, int limit) {
+        return getHashtagSuggestions(createMemberOrPublicFilter(memberId), query, limit);
+    }
+
+    /**
+     * 제목 자동완성 검색 실행 (Prefix Query 사용)
+     */
+    private List<AutocompleteSuggestion> getTitleSuggestions(Query filter, String query, int limit) {
+        Query boolQuery = BoolQuery.of(b -> b
+                .must(filter)
+                .must(Query.of(q -> q
+                        .prefix(p -> p
+                                .field("title")
+                                .value(query.toLowerCase())
+                        )
+                ))
+        )._toQuery();
+
+        NativeQuery searchQuery = NativeQuery.builder()
+                .withQuery(boolQuery)
+                .withMaxResults(limit * 2) // 중복 제거를 위해 더 많이 가져옴
+                .withSourceFilter(new FetchSourceFilter(
+                        true, new String[]{"title"}, null))
+                .build();
+
+        SearchHits<MemoryDocument> searchHits = elasticsearchOperations.search(
+                searchQuery, MemoryDocument.class, IndexCoordinates.of(INDEX_NAME));
+
+        return searchHits.getSearchHits().stream()
+                .map(hit -> AutocompleteSuggestion.builder()
+                        .text(hit.getContent().getTitle())
+                        .type(AutocompleteSuggestion.SuggestionType.TITLE)
+                        .score(hit.getScore())
+                        .matchCount(1L)
+                        .build())
+                .distinct() // 중복 제거
+                .limit(limit)
+                .toList();
+    }
+
+    /**
+     * 해시태그 자동완성 검색 실행 (Wildcard + Aggregation 사용)
+     */
+    private List<AutocompleteSuggestion> getHashtagSuggestions(Query filter, String query, int limit) {
+        Query boolQuery = BoolQuery.of(b -> b
+                .must(filter)
+                .must(Query.of(q -> q
+                        .wildcard(w -> w
+                                .field("hashTags")
+                                .value(query.toLowerCase() + "*")
+                        )
+                ))
+        )._toQuery();
+
+        NativeQuery searchQuery = NativeQuery.builder()
+                .withQuery(boolQuery)
+                .withMaxResults(limit)
+                .withSourceFilter(new FetchSourceFilter(
+                        true, new String[]{"hashTags"}, null))
+                .build();
+
+        SearchHits<MemoryDocument> searchHits = elasticsearchOperations.search(
+                searchQuery, MemoryDocument.class, IndexCoordinates.of(INDEX_NAME));
+
+        // 검색 결과에서 해시태그들을 추출하고 중복 제거
+        return searchHits.getSearchHits().stream()
+                .flatMap(hit -> hit.getContent().getHashTags().stream())
+                .filter(hashtag -> hashtag.toLowerCase().startsWith(query.toLowerCase()))
+                .distinct()
+                .map(hashtag -> AutocompleteSuggestion.builder()
+                        .text(hashtag)
+                        .type(AutocompleteSuggestion.SuggestionType.HASHTAG)
+                        .matchCount(1L)
+                        .score(1.0f)
+                        .build())
+                .limit(limit)
+                .toList();
     }
 }

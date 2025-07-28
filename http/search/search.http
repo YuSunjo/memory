@@ -1,0 +1,183 @@
+### 게스트 사용자 - 전체 필드 검색
+POST {{memory_api}}/api/v1/memories/public/search
+Content-Type: application/json
+
+{
+  "type": "ALL",
+  "query": "추억",
+  "page": 0,
+  "size": 10,
+  "highlight": true
+}
+
+### 게스트 사용자 - 제목 검색
+POST {{memory_api}}/api/v1/memories/public/search
+Content-Type: application/json
+
+{
+  "type": "TITLE",
+  "query": "제주도",
+  "page": 0,
+  "size": 10,
+  "highlight": true
+}
+
+### 게스트 사용자 - 내용 검색
+POST {{memory_api}}/api/v1/memories/public/search
+Content-Type: application/json
+
+{
+  "type": "CONTENT",
+  "query": "맛집",
+  "page": 0,
+  "size": 10,
+  "highlight": true
+}
+
+### 게스트 사용자 - 해시태그 검색
+POST {{memory_api}}/api/v1/memories/public/search
+Content-Type: application/json
+
+{
+  "type": "HASHTAGS",
+  "hashtags": ["여행", "맛집", "추억"],
+  "page": 0,
+  "size": 10,
+  "highlight": true
+}
+
+### 게스트 사용자 - 위치 검색
+POST {{memory_api}}/api/v1/memories/public/search
+Content-Type: application/json
+
+{
+  "type": "LOCATION",
+  "query": "서울",
+  "page": 0,
+  "size": 10,
+  "highlight": true
+}
+
+### 게스트 사용자 - 날짜 범위 검색
+POST {{memory_api}}/api/v1/memories/public/search
+Content-Type: application/json
+
+{
+  "type": "DATE",
+  "fromDate": "2024-01-01",
+  "toDate": "2024-12-31",
+  "page": 0,
+  "size": 10,
+  "highlight": false
+}
+
+### 인증된 사용자 - 전체 필드 검색
+POST {{memory_api}}/api/v1/memories/search
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "type": "ALL",
+  "query": "여행",
+  "page": 0,
+  "size": 10,
+  "highlight": true
+}
+
+### 인증된 사용자 - 제목 검색
+POST {{memory_api}}/api/v1/memories/search
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "type": "TITLE",
+  "query": "제주도",
+  "page": 0,
+  "size": 10,
+  "highlight": true
+}
+
+### 인증된 사용자 - 내용 검색
+POST {{memory_api}}/api/v1/memories/search
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "type": "CONTENT",
+  "query": "맛집",
+  "page": 0,
+  "size": 10,
+  "highlight": true
+}
+
+### 인증된 사용자 - 해시태그 검색
+POST {{memory_api}}/api/v1/memories/search
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "type": "HASHTAGS",
+  "hashtags": ["여행", "맛집", "추억"],
+  "page": 0,
+  "size": 10,
+  "highlight": true
+}
+
+### 인증된 사용자 - 위치 검색
+POST {{memory_api}}/api/v1/memories/search
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "type": "LOCATION",
+  "query": "서울",
+  "page": 0,
+  "size": 10,
+  "highlight": true
+}
+
+### 인증된 사용자 - 날짜 범위 검색
+POST {{memory_api}}/api/v1/memories/search
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "type": "DATE",
+  "fromDate": "2024-01-01",
+  "toDate": "2024-12-31",
+  "page": 0,
+  "size": 10,
+  "highlight": false
+}
+
+### 잘못된 요청 테스트 - 필수 파라미터 누락
+POST {{memory_api}}/api/v1/memories/public/search
+Content-Type: application/json
+
+{
+  "type": "ALL",
+  "page": 0,
+  "size": 10
+}
+
+### 잘못된 요청 테스트 - 해시태그 타입인데 hashtags 누락
+POST {{memory_api}}/api/v1/memories/public/search
+Content-Type: application/json
+
+{
+  "type": "HASHTAGS",
+  "query": "test",
+  "page": 0,
+  "size": 10
+}
+
+### 잘못된 요청 테스트 - 날짜 범위 타입인데 날짜 누락
+POST {{memory_api}}/api/v1/memories/public/search
+Content-Type: application/json
+
+{
+  "type": "DATE",
+  "query": "test",
+  "page": 0,
+  "size": 10
+}

@@ -82,6 +82,7 @@ spring:
       - local-jwt
       - local-db
       - local-aws
+      - local-elastic
       - swagger
   flyway:
     enabled: true

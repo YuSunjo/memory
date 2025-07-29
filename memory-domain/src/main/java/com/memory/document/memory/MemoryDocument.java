@@ -1,6 +1,7 @@
 package com.memory.document.memory;
 
 import com.memory.domain.memory.Memory;
+import com.memory.dto.relationship.response.RelationshipListResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,7 +55,7 @@ public class MemoryDocument {
     @Field(type = FieldType.Long)
     private Long relationshipMemberId;
 
-    public static MemoryDocument from(Memory memory) {
+    public static MemoryDocument from(Memory memory, RelationshipListResponse relationships) {
         return MemoryDocument.builder()
                 .memoryId(memory.getId())
                 .title(memory.getTitle())
@@ -65,7 +66,7 @@ public class MemoryDocument {
                 .memoryType(memory.getMemoryType().name())
                 .memberId(memory.getMember().getId())
                 .hashTags(memory.getHashTagNames())
-                .relationshipMemberId(extractRelationshipMemberId(memory))
+                .relationshipMemberId(extractRelationshipMemberId(relationships))
                 .build();
     }
 
@@ -77,13 +78,14 @@ public class MemoryDocument {
         return date.format(formatter);
     }
 
-    private static Long extractRelationshipMemberId(Memory memory) {
-        // TODO: Memory와 관련된 관계 멤버 ID 추출 로직
-        // 현재는 null 반환, 추후 관계 테이블과 연동하여 구현
-        return null;
+    private static Long extractRelationshipMemberId(RelationshipListResponse relationships) {
+        if (relationships == null || relationships.relationships() == null || relationships.relationships().isEmpty()) {
+            return null;
+        }
+        return relationships.relationships().get(0).relatedMember().id();
     }
 
-    public void updateFromMemory(Memory memory) {
+    public void updateFromMemory(Memory memory, RelationshipListResponse relationships) {
         this.memoryId = memory.getId();
         this.title = memory.getTitle();
         this.content = memory.getContent();
@@ -92,7 +94,7 @@ public class MemoryDocument {
         this.memorableDateText = formatMemorableDate(memory.getMemorableDate());
         this.memoryType = memory.getMemoryType().name();
         this.hashTags = memory.getHashTagNames();
-        this.relationshipMemberId = extractRelationshipMemberId(memory);
+        this.relationshipMemberId = extractRelationshipMemberId(relationships);
     }
 
 }

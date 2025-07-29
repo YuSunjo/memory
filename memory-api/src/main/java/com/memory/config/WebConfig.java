@@ -1,5 +1,6 @@
 package com.memory.config;
 
+import com.memory.config.interceptor.AdminInterceptor;
 import com.memory.config.interceptor.AuthInterceptor;
 import com.memory.config.resolver.MemberIdResolver;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final MemberIdResolver memberIdResolver;
     private final AuthInterceptor authInterceptor;
+    private final AdminInterceptor adminInterceptor;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -26,6 +28,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
+                .addPathPatterns("/api/**")
+                .excludePathPatterns("/swagger-ui/**", "/v3/api-docs/**");
+        
+        registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/swagger-ui/**", "/v3/api-docs/**");
     }

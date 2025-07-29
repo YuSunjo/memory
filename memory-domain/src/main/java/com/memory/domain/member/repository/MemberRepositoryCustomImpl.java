@@ -1,6 +1,7 @@
 package com.memory.domain.member.repository;
 
 import com.memory.domain.member.Member;
+import com.memory.domain.member.MemberType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -14,11 +15,12 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<Member> findMemberByEmail(String email) {
+    public Optional<Member> findMemberByEmailAndMemberType(String email, MemberType memberType) {
         return Optional.ofNullable(
             queryFactory.selectFrom(member)
                 .where(
                     member.email.eq(email),
+                    member.memberType.eq(memberType),
                     member.deleteDate.isNull()
                 )
                 .fetchOne()

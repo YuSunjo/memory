@@ -4,6 +4,7 @@ import com.memory.config.jwt.JwtTokenProvider;
 import com.memory.domain.file.File;
 import com.memory.domain.file.repository.FileRepository;
 import com.memory.domain.member.Member;
+import com.memory.domain.member.MemberType;
 import com.memory.domain.member.repository.MemberRepository;
 import com.memory.dto.member.MemberRequest;
 import com.memory.dto.member.response.MemberLoginResponse;
@@ -27,7 +28,7 @@ public class MemberService {
 
     @Transactional
     public MemberResponse signup(MemberRequest.Signup signupRequestDto) {
-        memberRepository.findMemberByEmail(signupRequestDto.getEmail())
+        memberRepository.findMemberByEmailAndMemberType(signupRequestDto.getEmail(), MemberType.MEMBER)
                 .ifPresent(member -> {
                     throw new ConflictException("이미 존재하는 이메일입니다.");
                 });
@@ -39,7 +40,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberLoginResponse login(MemberRequest.Login loginRequestDto) {
-        Member member = memberRepository.findMemberByEmail(loginRequestDto.getEmail())
+        Member member = memberRepository.findMemberByEmailAndMemberType(loginRequestDto.getEmail(), MemberType.MEMBER)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이메일입니다."));
 
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), member.getPassword())) {
@@ -88,7 +89,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberResponse findMemberByEmail(String email) {
-        Member member = memberRepository.findMemberByEmail(email)
+        Member member = memberRepository.findMemberByEmailAndMemberType(email, MemberType.MEMBER)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이메일입니다."));
         return MemberResponse.from(member);
     }

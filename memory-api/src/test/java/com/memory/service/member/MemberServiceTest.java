@@ -69,7 +69,7 @@ class MemberServiceTest {
     @DisplayName("회원가입 성공 테스트")
     void signupSuccess() {
         // Given
-        when(memberRepository.findMemberByEmail(email)).thenReturn(Optional.empty());
+        when(memberRepository.findMemberByEmailAndMemberType(email, MemberType.MEMBER)).thenReturn(Optional.empty());
         when(passwordEncoder.encode(password)).thenReturn(encodedPassword);
         when(memberRepository.save(any(Member.class))).thenReturn(member);
 
@@ -85,7 +85,7 @@ class MemberServiceTest {
         assertEquals(MemberType.MEMBER, response.memberType());
         assertNull(response.profile());  // No file associated with the member yet
 
-        verify(memberRepository).findMemberByEmail(email);
+        verify(memberRepository).findMemberByEmailAndMemberType(email, MemberType.MEMBER);
         verify(passwordEncoder).encode(password);
         verify(memberRepository).save(any(Member.class));
     }
@@ -94,13 +94,13 @@ class MemberServiceTest {
     @DisplayName("회원가입 실패 테스트 - 이미 존재하는 이메일")
     void signupFailDuplicateEmail() {
         // Given
-        when(memberRepository.findMemberByEmail(email)).thenReturn(Optional.of(member));
+        when(memberRepository.findMemberByEmailAndMemberType(email, MemberType.MEMBER)).thenReturn(Optional.of(member));
 
         // When & Then
         ConflictException exception = assertThrows(ConflictException.class, () -> memberService.signup(signupRequest));
 
         assertEquals("이미 존재하는 이메일입니다.", exception.getMessage());
-        verify(memberRepository).findMemberByEmail(email);
+        verify(memberRepository).findMemberByEmailAndMemberType(email, MemberType.MEMBER);
         verify(passwordEncoder, never()).encode(anyString());
         verify(memberRepository, never()).save(any(Member.class));
     }
@@ -109,7 +109,7 @@ class MemberServiceTest {
     @DisplayName("로그인 성공 테스트")
     void loginSuccess() {
         // Given
-        when(memberRepository.findMemberByEmail(email)).thenReturn(Optional.of(member));
+        when(memberRepository.findMemberByEmailAndMemberType(email, MemberType.MEMBER)).thenReturn(Optional.of(member));
         when(passwordEncoder.matches(password, encodedPassword)).thenReturn(true);
         String accessToken = "access.token.example";
         when(jwtTokenProvider.createAccessToken(email)).thenReturn(accessToken);
@@ -124,7 +124,7 @@ class MemberServiceTest {
         assertEquals(accessToken, response.accessToken());
         assertEquals(refreshToken, response.refreshToken());
 
-        verify(memberRepository).findMemberByEmail(email);
+        verify(memberRepository).findMemberByEmailAndMemberType(email, MemberType.MEMBER);
         verify(passwordEncoder).matches(password, encodedPassword);
         verify(jwtTokenProvider).createAccessToken(email);
         verify(jwtTokenProvider).createRefreshToken(email);
@@ -134,13 +134,13 @@ class MemberServiceTest {
     @DisplayName("로그인 실패 테스트 - 존재하지 않는 이메일")
     void loginFailEmailNotFound() {
         // Given
-        when(memberRepository.findMemberByEmail(email)).thenReturn(Optional.empty());
+        when(memberRepository.findMemberByEmailAndMemberType(email, MemberType.MEMBER)).thenReturn(Optional.empty());
 
         // When & Then
         NotFoundException exception = assertThrows(NotFoundException.class, () -> memberService.login(loginRequest));
 
         assertEquals("존재하지 않는 이메일입니다.", exception.getMessage());
-        verify(memberRepository).findMemberByEmail(email);
+        verify(memberRepository).findMemberByEmailAndMemberType(email, MemberType.MEMBER);
         verify(passwordEncoder, never()).matches(anyString(), anyString());
         verify(jwtTokenProvider, never()).createAccessToken(anyString());
         verify(jwtTokenProvider, never()).createRefreshToken(anyString());
@@ -150,14 +150,14 @@ class MemberServiceTest {
     @DisplayName("로그인 실패 테스트 - 비밀번호 불일치")
     void loginFailPasswordMismatch() {
         // Given
-        when(memberRepository.findMemberByEmail(email)).thenReturn(Optional.of(member));
+        when(memberRepository.findMemberByEmailAndMemberType(email, MemberType.MEMBER)).thenReturn(Optional.of(member));
         when(passwordEncoder.matches(password, encodedPassword)).thenReturn(false);
 
         // When & Then
         ValidationException exception = assertThrows(ValidationException.class, () -> memberService.login(loginRequest));
 
         assertEquals("비밀번호가 일치하지 않습니다.", exception.getMessage());
-        verify(memberRepository).findMemberByEmail(email);
+        verify(memberRepository).findMemberByEmailAndMemberType(email, MemberType.MEMBER);
         verify(passwordEncoder).matches(password, encodedPassword);
         verify(jwtTokenProvider, never()).createAccessToken(anyString());
         verify(jwtTokenProvider, never()).createRefreshToken(anyString());

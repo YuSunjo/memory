@@ -58,16 +58,11 @@ jobs:
   
           # Elasticsearch 디렉토리 권한 설정
           sudo mkdir -p data/elasticsearch-data
-          sudo mkdir -p certs
-          sudo chown -R ubuntu:ubuntu data/elasticsearch-data certs
-          sudo chmod -R 777 data/elasticsearch-data certs
+          sudo chown -R ubuntu:ubuntu data/elasticsearch-data
+          sudo chmod -R 777 data/elasticsearch-data
           
           # 컨테이너 빌드 및 시작
           docker compose up -d --build
-          
-          # Elasticsearch TLS 자동 설정
-          chmod +x setup-elasticsearch-tls.sh
-          ./setup-elasticsearch-tls.sh
           
           # 사용하지 않는 이미지 정리
           docker image prune -f

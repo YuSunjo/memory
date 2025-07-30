@@ -127,8 +127,20 @@ public class MemorySearchService {
                 .memorableDateText(document.getMemorableDateText())
                 .memoryType(document.getMemoryType())
                 .hashtags(document.getHashTags())
+                
+                // 메모리 작성자 정보
                 .memberId(document.getMemberId())
-                .relationshipMemberId(document.getRelationshipMemberId());
+                .memberName(document.getMemberName())
+                .memberNickname(document.getMemberNickname())
+                .memberEmail(document.getMemberEmail())
+                .memberFileUrl(document.getMemberFileUrl())
+                
+                // 관계된 멤버 정보
+                .relationshipMemberId(document.getRelationshipMemberId())
+                .relationshipMemberName(document.getRelationshipMemberName())
+                .relationshipMemberNickname(document.getRelationshipMemberNickname())
+                .relationshipMemberEmail(document.getRelationshipMemberEmail())
+                .relationshipMemberFileUrl(document.getRelationshipMemberFileUrl());
 
         if (includeHighlight && !hit.getHighlightFields().isEmpty()) {
             builder.highlights(buildHighlights(hit.getHighlightFields()));
@@ -143,6 +155,10 @@ public class MemorySearchService {
                 .content(highlightFields.get("content"))
                 .locationName(highlightFields.get("locationName"))
                 .hashtags(highlightFields.get("hashTags"))
+                .memberName(highlightFields.get("memberName"))
+                .memberNickname(highlightFields.get("memberNickname"))
+                .relationshipMemberName(highlightFields.get("relationshipMemberName"))
+                .relationshipMemberNickname(highlightFields.get("relationshipMemberNickname"))
                 .build();
     }
 

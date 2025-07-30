@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import com.memory.dto.search.AutocompleteSuggestion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,7 +38,11 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
                 .must(createPublicMemoryFilter())
                 .must(MultiMatchQuery.of(m -> m
                         .query(query)
-                        .fields("title", "content", "hashTags", "locationName", "memorableDateText")
+                        .fields("title^2", "title.ngram^1.5", "content^1.5", "content.ngram^1", "hashTags^3",
+                                "locationName^1", "locationName.ngram^0.8", "memorableDateText",
+                                "memberName^1", "memberName.ngram^0.8", "memberNickname^1", "memberNickname.ngram^0.8",
+                                "relationshipMemberName^1", "relationshipMemberName.ngram^0.8", "relationshipMemberNickname^1", "relationshipMemberNickname.ngram^0.8")
+                        .type(TextQueryType.BestFields)
                 )._toQuery())
         )._toQuery();
 
@@ -48,12 +53,11 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
     public Page<SearchHit<MemoryDocument>> searchPublicByTitle(String query, Pageable pageable) {
         Query boolQuery = BoolQuery.of(b -> b
                 .must(createPublicMemoryFilter())
-                .must(Query.of(q -> q
-                        .match(match -> match
-                                .field("title")
-                                .query(query)
-                        )
-                ))
+                .must(MultiMatchQuery.of(m -> m
+                        .query(query)
+                        .fields("title^2", "title.ngram^1.5")
+                        .type(TextQueryType.BestFields)
+                )._toQuery())
         )._toQuery();
 
         return executeSearchWithHighlight(boolQuery, pageable, "title");
@@ -63,12 +67,11 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
     public Page<SearchHit<MemoryDocument>> searchPublicByContent(String query, Pageable pageable) {
         Query boolQuery = BoolQuery.of(b -> b
                 .must(createPublicMemoryFilter())
-                .must(Query.of(q -> q
-                        .match(match -> match
-                                .field("content")
-                                .query(query)
-                        )
-                ))
+                .must(MultiMatchQuery.of(m -> m
+                        .query(query)
+                        .fields("content^1.5", "content.ngram^1")
+                        .type(TextQueryType.BestFields)
+                )._toQuery())
         )._toQuery();
 
         return executeSearchWithHighlight(boolQuery, pageable, "content");
@@ -93,12 +96,11 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
     public Page<SearchHit<MemoryDocument>> searchPublicByLocation(String query, Pageable pageable) {
         Query boolQuery = BoolQuery.of(b -> b
                 .must(createPublicMemoryFilter())
-                .must(Query.of(q -> q
-                        .match(match -> match
-                                .field("locationName")
-                                .query(query)
-                        )
-                ))
+                .must(MultiMatchQuery.of(m -> m
+                        .query(query)
+                        .fields("locationName^1", "locationName.ngram^0.8")
+                        .type(TextQueryType.BestFields)
+                )._toQuery())
         )._toQuery();
 
         return executeSearchWithHighlight(boolQuery, pageable, "locationName");
@@ -118,7 +120,11 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
         Query boolQuery = BoolQuery.of(b -> b
                 .must(MultiMatchQuery.of(m -> m
                         .query(query)
-                        .fields("title", "content", "hashTags", "locationName", "memorableDateText")
+                        .fields("title^2", "title.ngram^1.5", "content^1.5", "content.ngram^1", "hashTags^3",
+                                "locationName^1", "locationName.ngram^0.8", "memorableDateText",
+                                "memberName^1", "memberName.ngram^0.8", "memberNickname^1", "memberNickname.ngram^0.8",
+                                "relationshipMemberName^1", "relationshipMemberName.ngram^0.8", "relationshipMemberNickname^1", "relationshipMemberNickname.ngram^0.8")
+                        .type(TextQueryType.BestFields)
                 )._toQuery())
                 .must(createMemberOrPublicFilter(memberId))
         )._toQuery();
@@ -129,12 +135,11 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
     @Override
     public Page<SearchHit<MemoryDocument>> searchByMemberAndTitle(Long memberId, String query, Pageable pageable) {
         Query boolQuery = BoolQuery.of(b -> b
-                .must(Query.of(q -> q
-                        .match(match -> match
-                                .field("title")
-                                .query(query)
-                        )
-                ))
+                .must(MultiMatchQuery.of(m -> m
+                        .query(query)
+                        .fields("title^2", "title.ngram^1.5")
+                        .type(TextQueryType.BestFields)
+                )._toQuery())
                 .must(createMemberOrPublicFilter(memberId))
         )._toQuery();
 
@@ -144,12 +149,11 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
     @Override
     public Page<SearchHit<MemoryDocument>> searchByMemberAndContent(Long memberId, String query, Pageable pageable) {
         Query boolQuery = BoolQuery.of(b -> b
-                .must(Query.of(q -> q
-                        .match(match -> match
-                                .field("content")
-                                .query(query)
-                        )
-                ))
+                .must(MultiMatchQuery.of(m -> m
+                        .query(query)
+                        .fields("content^1.5", "content.ngram^1")
+                        .type(TextQueryType.BestFields)
+                )._toQuery())
                 .must(createMemberOrPublicFilter(memberId))
         )._toQuery();
 
@@ -174,12 +178,11 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
     @Override
     public Page<SearchHit<MemoryDocument>> searchByMemberAndLocation(Long memberId, String query, Pageable pageable) {
         Query boolQuery = BoolQuery.of(b -> b
-                .must(Query.of(q -> q
-                        .match(match -> match
-                                .field("locationName")
-                                .query(query)
-                        )
-                ))
+                .must(MultiMatchQuery.of(m -> m
+                        .query(query)
+                        .fields("locationName^1", "locationName.ngram^0.8")
+                        .type(TextQueryType.BestFields)
+                )._toQuery())
                 .must(createMemberOrPublicFilter(memberId))
         )._toQuery();
 
@@ -280,12 +283,11 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
     private List<AutocompleteSuggestion> getTitleSuggestions(Query filter, String query, int limit) {
         Query boolQuery = BoolQuery.of(b -> b
                 .must(filter)
-                .must(Query.of(q -> q
-                        .prefix(p -> p
-                                .field("title")
-                                .value(query.toLowerCase())
-                        )
-                ))
+                .must(MultiMatchQuery.of(m -> m
+                        .query(query)
+                        .fields("title.ngram^2", "title^1.5")
+                        .type(TextQueryType.BestFields)
+                )._toQuery())
         )._toQuery();
 
         NativeQuery searchQuery = NativeQuery.builder()

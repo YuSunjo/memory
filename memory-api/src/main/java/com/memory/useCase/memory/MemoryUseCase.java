@@ -2,6 +2,7 @@ package com.memory.useCase.memory;
 
 import com.memory.domain.hashtag.HashTag;
 import com.memory.domain.memory.Memory;
+import com.memory.domain.relationship.RelationshipStatus;
 import com.memory.dto.memory.MemoryRequest;
 import com.memory.dto.memory.response.MemoryResponse;
 import com.memory.dto.relationship.response.RelationshipListResponse;
@@ -39,7 +40,7 @@ public class MemoryUseCase {
             
             memoryHashTagService.createMemoryHashTags(memory, hashTags);
         }
-        RelationshipListResponse relationships = relationshipService.getRelationships(memberId);
+        RelationshipListResponse relationships = relationshipService.getRelationshipsByStatus(memberId, RelationshipStatus.ACCEPTED);
 
         // 3. Elasticsearch 인덱싱 저장
         memoryDocumentService.indexMemory(memory, relationships);
@@ -58,7 +59,7 @@ public class MemoryUseCase {
         memoryHashTagService.updateMemoryHashTags(memory, newHashTags);
         
         // 3. Elasticsearch 인덱스 업데이트
-        RelationshipListResponse relationships = relationshipService.getRelationships(memberId);
+        RelationshipListResponse relationships = relationshipService.getRelationshipsByStatus(memberId, RelationshipStatus.ACCEPTED);
         memoryDocumentService.updateMemoryIndex(memory, relationships);
         
         return memoryResponse;

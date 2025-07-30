@@ -56,6 +56,12 @@ jobs:
           # 기존 이미지 제거 (추가)
           docker compose pull
   
+          # Elasticsearch 디렉토리 권한 설정
+          sudo mkdir -p data/elasticsearch-data
+          sudo mkdir -p certs
+          sudo chown -R 1000:1000 data/elasticsearch-data certs
+          sudo chmod -R 777 data/elasticsearch-data certs
+          
           # 컨테이너 빌드 및 시작
           docker compose up -d --build
           

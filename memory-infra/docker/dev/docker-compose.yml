@@ -144,10 +144,11 @@ services:
       - memory-network
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl -f -k https://localhost:9200/_cluster/health -u elastic:${ELASTIC_PASSWORD} || curl -f http://localhost:9200/_cluster/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health -u elastic:${ELASTIC_PASSWORD} --connect-timeout 10 --max-time 10 || exit 1"]
       interval: 30s
-      timeout: 10s
-      retries: 5
+      timeout: 15s
+      retries: 10
+      start_period: 60s
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.17.4

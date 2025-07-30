@@ -1,0 +1,66 @@
+### Admin Login
+POST {{memory_api}}/api/v1/admin/login
+Content-Type: application/json
+
+{
+  "email": "tnswh2023.admin@naver.com",
+  "password": "1234"
+}
+
+> {%
+    client.global.set("admin_token", response.body.data.accessToken);
+%}
+
+### ===== Memory Document Admin API =====
+
+### Migrate all memories to Elasticsearch
+POST {{memory_api}}/api/v1/admin/memory-documents/migrate-all
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+### Migrate individual memory - ID: 1
+POST {{memory_api}}/api/v1/admin/memory-documents/migrate/1
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+### Migrate individual memory - ID: 10
+POST {{memory_api}}/api/v1/admin/memory-documents/migrate/10
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+### Migrate individual memory - ID: 100
+POST {{memory_api}}/api/v1/admin/memory-documents/migrate/100
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+### Delete all documents (Warning: All documents will be deleted)
+DELETE {{memory_api}}/api/v1/admin/memory-documents/delete-all
+Authorization: Bearer {{admin_token}}
+
+### ===== Permission Tests =====
+
+### Try migration with regular user token (should fail)
+POST {{memory_api}}/api/v1/admin/memory-documents/migrate-all
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+### Try migration without token (should fail)
+POST {{memory_api}}/api/v1/admin/memory-documents/migrate-all
+Content-Type: application/json
+
+### Try migration with invalid token (should fail)
+POST {{memory_api}}/api/v1/admin/memory-documents/migrate-all
+Content-Type: application/json
+Authorization: Bearer invalid_token_here
+
+### ===== Error Case Tests =====
+
+### Try migration with non-existent memory ID
+POST {{memory_api}}/api/v1/admin/memory-documents/migrate/999999
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+### Try migration with invalid memory ID format
+POST {{memory_api}}/api/v1/admin/memory-documents/migrate/invalid_id
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}

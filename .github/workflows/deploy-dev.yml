@@ -44,6 +44,7 @@ jobs:
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }}
+          ELASTIC_PASSWORD=${{ secrets.ELASTIC_PASSWORD }}
           LETSENCRYPT_EMAIL=my.memory.world2025@gmail.com
           EOF
           
@@ -57,6 +58,10 @@ jobs:
   
           # 컨테이너 빌드 및 시작
           docker compose up -d --build
+          
+          # Elasticsearch TLS 자동 설정
+          chmod +x setup-elasticsearch-tls.sh
+          ./setup-elasticsearch-tls.sh
           
           # 사용하지 않는 이미지 정리
           docker image prune -f

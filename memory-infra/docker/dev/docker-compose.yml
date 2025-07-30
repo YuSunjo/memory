@@ -71,8 +71,12 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     ports:
       - "8080:8080"
+    volumes:
+      - ./certs:/app/certs:ro
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
@@ -84,6 +88,11 @@ services:
       CLOUD_AWS_REGION_STATIC: ap-northeast-2
       CLOUD_AWS_S3_ENDPOINT: http://minio:9000
       JWT_TOKEN_SECRET: ${JWT_TOKEN_SECRET}
+      SPRING_ELASTICSEARCH_URIS: https://elasticsearch:9200
+      SPRING_ELASTICSEARCH_USERNAME: elastic
+      SPRING_ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+      SPRING_ELASTICSEARCH_SSL_TRUST_STORE: file:/app/certs/elasticsearch-truststore.p12
+      SPRING_ELASTICSEARCH_SSL_TRUST_STORE_PASSWORD: changeit
     networks:
       - memory-network
     restart: always
@@ -107,6 +116,63 @@ services:
       - memory-network
     restart: unless-stopped
 
+  elasticsearch:
+    build:
+      context: .
+      dockerfile: Dockerfile_Elastic
+    container_name: memory-elasticsearch-dev
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - bootstrap.memory_lock=true
+    volumes:
+      - ./data/elasticsearch-data:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certs
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    networks:
+      - memory-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -k https://localhost:9200/_cluster/health -u elastic:${ELASTIC_PASSWORD} || curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.4
+    platform: linux/arm64
+    container_name: memory-kibana-dev
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - xpack.security.enabled=true
+      - SERVER_PUBLICBASEURL=https://kibana.${DOMAIN}
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - memory-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   certbot:
     image: certbot/certbot
     container_name: memory-certbot-dev
@@ -122,3 +188,4 @@ networks:
 volumes:
   postgres-data:
   minio-data:
+  elasticsearch-data:

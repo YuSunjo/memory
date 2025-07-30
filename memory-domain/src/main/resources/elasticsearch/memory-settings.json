@@ -1,0 +1,27 @@
+{
+  "analysis": {
+    "tokenizer": {
+      "nori_tokenizer": {
+        "type": "nori_tokenizer",
+        "decompound_mode": "mixed"
+      }
+    },
+    "analyzer": {
+      "nori_with_html_strip": {
+        "type": "custom",
+        "tokenizer": "nori_tokenizer",
+        "char_filter": ["html_strip"],
+        "filter": [
+          "nori_part_of_speech",
+          "nori_readingform",
+          "lowercase"
+        ]
+      }
+    }
+  },
+  "index": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "max_result_window": 50000
+  }
+}

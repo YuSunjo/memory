@@ -1,0 +1,39 @@
+{
+  "properties": {
+    "memory_id": {
+      "type": "long"
+    },
+    "title": {
+      "type": "text",
+      "analyzer": "nori_with_html_strip"
+    },
+    "content": {
+      "type": "text",
+      "analyzer": "nori_with_html_strip"
+    },
+    "locationName": {
+      "type": "text",
+      "analyzer": "nori_with_html_strip"
+    },
+    "memorableDate": {
+      "type": "date",
+      "format": "yyyy-MM-dd"
+    },
+    "memorableDateText": {
+      "type": "text",
+      "analyzer": "nori_with_html_strip"
+    },
+    "memoryType": {
+      "type": "keyword"
+    },
+    "hashTags": {
+      "type": "keyword"
+    },
+    "member_id": {
+      "type": "long"
+    },
+    "relationship_member_id": {
+      "type": "long"
+    }
+  }
+}

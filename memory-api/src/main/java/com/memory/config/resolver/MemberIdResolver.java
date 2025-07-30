@@ -3,6 +3,7 @@ package com.memory.config.resolver;
 import com.memory.annotation.MemberId;
 import com.memory.config.jwt.JwtTokenProvider;
 import com.memory.domain.member.Member;
+import com.memory.domain.member.MemberType;
 import com.memory.domain.member.repository.MemberRepository;
 import com.memory.exception.customException.JwtException;
 import com.memory.exception.customException.NotFoundException;
@@ -49,7 +50,7 @@ public class MemberIdResolver implements HandlerMethodArgumentResolver {
             throw new JwtException("유효하지 않은 JWT 토큰입니다.");
         }
         
-        Member member = memberRepository.findMemberByEmail(email)
+        Member member = memberRepository.findMemberByEmailAndMemberType(email, MemberType.MEMBER)
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
         
         return member.getId();

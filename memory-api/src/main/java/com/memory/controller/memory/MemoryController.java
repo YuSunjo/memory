@@ -94,7 +94,7 @@ public class MemoryController {
     public ServerResponse<String> deleteMemory(
             @Parameter(hidden = true) @MemberId Long memberId,
             @PathVariable Long memoryId) {
-        memoryService.deleteMemory(memberId, memoryId);
+        memoryUseCase.deleteMemory(memberId, memoryId);
         return ServerResponse.OK;
     }
 

@@ -1,3 +1,6 @@
 spring:
   elasticsearch:
     uris: http://localhost:9200
+    username: elastic
+    password: elasticsearch-local-password
+    # kibana.password: kibana-local-password

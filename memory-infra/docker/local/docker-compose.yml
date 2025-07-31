@@ -66,6 +66,8 @@ services:
       CLOUD_AWS_S3_ENDPOINT: http://minio:9000
       JWT_TOKEN_SECRET: secure_enough_for_the_HS256_algorithm_memory_secret_key_v1
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+      SPRING_ELASTICSEARCH_USERNAME: elastic
+      SPRING_ELASTICSEARCH_PASSWORD: elasticsearch-local-password
     depends_on:
       - postgres
       - minio
@@ -84,9 +86,10 @@ services:
       - "9300:9300"
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=true
+      - ES_JAVA_OPTS=-Xms128m -Xmx256m
       - bootstrap.memory_lock=true
+      - ELASTIC_PASSWORD=elasticsearch-local-password
     volumes:
       - ./data/elasticsearch-data:/usr/share/elasticsearch/data
     ulimits:
@@ -99,7 +102,7 @@ services:
     networks:
       - memory-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health -u elastic:elasticsearch-local-password || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -111,14 +114,16 @@ services:
       - "5601:5601"
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - xpack.security.enabled=false
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=kibana-local-password
+      - xpack.security.enabled=true
     depends_on:
       elasticsearch:
         condition: service_healthy
     networks:
       - memory-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status -u kibana_system:kibana-local-password || curl -f http://localhost:5601/api/status || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5

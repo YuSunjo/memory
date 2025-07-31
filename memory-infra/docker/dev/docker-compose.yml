@@ -128,7 +128,6 @@ services:
       - bootstrap.memory_lock=true
     volumes:
       - ./data/elasticsearch-data:/usr/share/elasticsearch/data
-      - ./certs:/usr/share/elasticsearch/config/certs
     ulimits:
       memlock:
         soft: -1
@@ -154,10 +153,9 @@ services:
       - "5601:5601"
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
       - xpack.security.enabled=true
-      - SERVER_PUBLICBASEURL=https://kibana.${DOMAIN}
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -165,7 +163,7 @@ services:
       - memory-network
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status -u kibana_system:${KIBANA_PASSWORD} || curl -f http://localhost:5601/api/status || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5

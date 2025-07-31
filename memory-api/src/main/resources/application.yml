@@ -26,9 +26,9 @@ spring:
         dialect: org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect
         format_sql: false
         use_sql_comments: false
-        default_batch_fetch_size: 1000
+        default_batch_fetch_size: 50
         jdbc:
-          batch_size: 50
+          batch_size: 10
         temp:
           use_jdbc_metadata_defaults: false
     open-in-view: false

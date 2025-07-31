@@ -4,9 +4,6 @@ services:
   app:
     image: 228749872437.dkr.ecr.ap-northeast-2.amazonaws.com/my_memory/memory:latest
     container_name: my-memory
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
     ports:
       - "8080:8080"
     environment:

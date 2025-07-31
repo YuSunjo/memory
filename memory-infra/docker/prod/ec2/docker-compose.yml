@@ -6,8 +6,15 @@ services:
     container_name: my-memory
     ports:
       - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 750M
+        reservations:
+          memory: 250M
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      JAVA_OPTS: "-Xms250m -Xmx550m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication -XX:+UseCompressedOops -XX:MaxMetaspaceSize=128m"
       SPRING_DATASOURCE_URL: ${DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}

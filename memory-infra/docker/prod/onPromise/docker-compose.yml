@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  elasticsearch:
+    build:
+      context: .
+      dockerfile: Dockerfile_Elastic
+    container_name: memory-elasticsearch-prod
+    ports:
+      - "9520:9200"
+      - "9350:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - bootstrap.memory_lock=true
+    volumes:
+      - ./data/elasticsearch-data:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    networks:
+      - memory-network-prod
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health -u elastic:${ELASTIC_PASSWORD} --connect-timeout 10 --max-time 10 || exit 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 10
+      start_period: 60s
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.4
+    container_name: memory-kibana-prod
+    ports:
+      - "9651:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9250
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - xpack.security.enabled=true
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - memory-network-prod
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status -u kibana_system:${KIBANA_PASSWORD} || curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+networks:
+  memory-network-prod:
+    driver: bridge
+
+volumes:
+  elasticsearch-data:

@@ -23,6 +23,9 @@ phases:
         AWS_S3_REGION=$(echo $SECRET_VALUES | jq -r '.AWS_S3_REGION')
         AWS_S3_ENDPOINT=$(echo $SECRET_VALUES | jq -r '.AWS_S3_ENDPOINT')
         JWT_TOKEN_SECRET=$(echo $SECRET_VALUES | jq -r '.JWT_TOKEN_SECRET')
+        ELASTIC_URIS=$(echo $SECRET_VALUES | jq -r '.ELASTIC_URIS')
+        ELASTIC_PASSWORD=$(echo $SECRET_VALUES | jq -r '.ELASTIC_PASSWORD')
+        KIBANA_PASSWORD=$(echo $SECRET_VALUES | jq -r '.KIBANA_PASSWORD')
         EOF
 
   build:

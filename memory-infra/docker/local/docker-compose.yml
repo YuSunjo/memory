@@ -47,34 +47,34 @@ services:
     networks:
       - memory-network
 
-  app:
-    build:
-      context: ../../..
-      dockerfile: memory-infra/docker/Dockerfile
-    container_name: memory-app-local
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: local
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/memory
-      SPRING_DATASOURCE_USERNAME: memory
-      SPRING_DATASOURCE_PASSWORD: memory
-      CLOUD_AWS_CREDENTIALS_ACCESS-KEY: minioadmin
-      CLOUD_AWS_CREDENTIALS_SECRET-KEY: minioadmin
-      CLOUD_AWS_S3_BUCKET: memory
-      CLOUD_AWS_REGION_STATIC: ap-northeast-2
-      CLOUD_AWS_S3_ENDPOINT: http://minio:9000
-      JWT_TOKEN_SECRET: secure_enough_for_the_HS256_algorithm_memory_secret_key_v1
-      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
-      SPRING_ELASTICSEARCH_USERNAME: elastic
-      SPRING_ELASTICSEARCH_PASSWORD: elasticsearch-local-password
-    depends_on:
-      - postgres
-      - minio
-      - elasticsearch
-    networks:
-      - memory-network
-    restart: always
+#  app:
+#    build:
+#      context: ../../..
+#      dockerfile: memory-infra/docker/Dockerfile
+#    container_name: memory-app-local
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      SPRING_PROFILES_ACTIVE: local
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/memory
+#      SPRING_DATASOURCE_USERNAME: memory
+#      SPRING_DATASOURCE_PASSWORD: memory
+#      CLOUD_AWS_CREDENTIALS_ACCESS-KEY: minioadmin
+#      CLOUD_AWS_CREDENTIALS_SECRET-KEY: minioadmin
+#      CLOUD_AWS_S3_BUCKET: memory
+#      CLOUD_AWS_REGION_STATIC: ap-northeast-2
+#      CLOUD_AWS_S3_ENDPOINT: http://minio:9000
+#      JWT_TOKEN_SECRET: secure_enough_for_the_HS256_algorithm_memory_secret_key_v1
+#      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+#      SPRING_ELASTICSEARCH_USERNAME: elastic
+#      SPRING_ELASTICSEARCH_PASSWORD: elasticsearch-local-password
+#    depends_on:
+#      - postgres
+#      - minio
+#      - elasticsearch
+#    networks:
+#      - memory-network
+#    restart: always
 
   elasticsearch:
     build:
@@ -128,19 +128,19 @@ services:
       timeout: 10s
       retries: 5
 
-  nginx:
-    image: nginx:latest
-    container_name: memory-nginx-local
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - app
-      - minio
-    networks:
-      - memory-network
+#  nginx:
+#    image: nginx:latest
+#    container_name: memory-nginx-local
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    volumes:
+#      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+#    depends_on:
+#      - app
+#      - minio
+#    networks:
+#      - memory-network
 
 
 networks:

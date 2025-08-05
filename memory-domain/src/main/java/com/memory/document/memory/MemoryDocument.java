@@ -3,7 +3,6 @@ package com.memory.document.memory;
 import com.memory.domain.file.File;
 import com.memory.domain.member.Member;
 import com.memory.domain.memory.Memory;
-import com.memory.dto.relationship.response.RelationshipListResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -116,7 +115,7 @@ public class MemoryDocument {
     @Field(type = FieldType.Keyword)
     private String relationshipMemberFileUrl;
 
-    public static MemoryDocument from(Memory memory, RelationshipListResponse relationships) {
+    public static MemoryDocument from(Memory memory, RelationshipInfo relationships) {
         Member member = memory.getMember();
         
         return MemoryDocument.builder()
@@ -158,22 +157,22 @@ public class MemoryDocument {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T extractRelationshipMember(RelationshipListResponse relationships, RelationshipMemberField field) {
+    private static <T> T extractRelationshipMember(RelationshipInfo relationships, RelationshipMemberField field) {
         if (relationships == null || relationships.relationships() == null || relationships.relationships().isEmpty()) {
             return null;
         }
         
-        var relatedMember = relationships.relationships().get(0).relatedMember();
+        var relatedMember = relationships.relationships().get(0);
         return switch (field) {
             case ID -> (T) relatedMember.id();
             case NAME -> (T) relatedMember.name();
             case NICKNAME -> (T) relatedMember.nickname();
             case EMAIL -> (T) relatedMember.email();
-            case FILE_URL -> relatedMember.profile() != null ? (T) relatedMember.profile().fileUrl() : null;
+            case FILE_URL -> (T) relatedMember.profileFileUrl();
         };
     }
 
-    public void updateFromMemory(Memory memory, RelationshipListResponse relationships) {
+    public void updateFromMemory(Memory memory, RelationshipInfo relationships) {
         Member member = memory.getMember();
         
         this.memoryId = memory.getId();

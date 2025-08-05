@@ -2,6 +2,7 @@ package com.memory.service.document;
 
 import com.memory.document.memory.MemoryDocument;
 import com.memory.document.memory.MemoryDocumentRepository;
+import com.memory.document.memory.RelationshipInfo;
 import com.memory.domain.memory.Memory;
 import com.memory.dto.relationship.response.RelationshipListResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class MemoryDocumentService {
 
     public void indexMemory(Memory memory, RelationshipListResponse relationships) {
         try {
-            MemoryDocument document = MemoryDocument.from(memory, relationships);
+            MemoryDocument document = MemoryDocument.from(memory, convertToRelationshipInfo(relationships));
             memoryDocumentRepository.save(document);
         } catch (Exception e) {
             log.error("Failed to index memory to Elasticsearch. memoryId: {}", memory.getId(), e);
@@ -29,11 +30,11 @@ public class MemoryDocumentService {
             // memoryId로 기존 문서 조회 후 업데이트
             MemoryDocument existingDoc = memoryDocumentRepository.findByMemoryId(memory.getId());
             if (existingDoc != null) {
-                existingDoc.updateFromMemory(memory, relationships);
+                existingDoc.updateFromMemory(memory, convertToRelationshipInfo(relationships));
                 memoryDocumentRepository.save(existingDoc);
             } else {
                 // 문서가 없으면 새로 생성
-                MemoryDocument newDocument = MemoryDocument.from(memory, relationships);
+                MemoryDocument newDocument = MemoryDocument.from(memory, convertToRelationshipInfo(relationships));
                 memoryDocumentRepository.save(newDocument);
             }
         } catch (Exception e) {
@@ -48,5 +49,23 @@ public class MemoryDocumentService {
         } catch (Exception e) {
             log.error("Failed to delete memory index from Elasticsearch. memoryId: {}", memoryId, e);
         }
+    }
+
+    private RelationshipInfo convertToRelationshipInfo(RelationshipListResponse relationshipListResponse) {
+        if (relationshipListResponse == null || relationshipListResponse.relationships() == null) {
+            return new RelationshipInfo(null);
+        }
+
+        var relationships = relationshipListResponse.relationships().stream()
+                .map(rel -> new RelationshipInfo.RelatedMemberInfo(
+                        rel.relatedMember().id(),
+                        rel.relatedMember().name(),
+                        rel.relatedMember().nickname(),
+                        rel.relatedMember().email(),
+                        rel.relatedMember().profile() != null ? rel.relatedMember().profile().fileUrl() : null
+                ))
+                .toList();
+
+        return new RelationshipInfo(relationships);
     }
 }

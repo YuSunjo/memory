@@ -12,6 +12,8 @@ COPY build.gradle .
 COPY memory-api memory-api
 COPY memory-common memory-common
 COPY memory-domain memory-domain
+COPY memory-adapter memory-adapter
+COPY memory-batch memory-batch
 COPY memory-infra memory-infra
 
 # Make the Gradle wrapper executable

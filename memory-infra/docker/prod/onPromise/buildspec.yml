@@ -1,0 +1,52 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 228749872437.dkr.ecr.ap-northeast-2.amazonaws.com
+      - REPOSITORY_URI=228749872437.dkr.ecr.ap-northeast-2.amazonaws.com/my_memory/memory
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      # 전체 시크릿 값을 변수에 저장
+      - SECRET_VALUES=$(aws secretsmanager get-secret-value --secret-id "prod/my-memory" --region ap-northeast-2 --query 'SecretString' --output text)
+
+      # .env 파일 생성
+      - |
+        cat << EOF > memory-infra/docker/prod/ec2/.env
+        DB_URL=$(echo $SECRET_VALUES | jq -r '.DB_URL')
+        DB_USERNAME=$(echo $SECRET_VALUES | jq -r '.DB_USERNAME')
+        DB_PASSWORD=$(echo $SECRET_VALUES | jq -r '.DB_PASSWORD')
+        SPRING_JPA_DDL_AUTO=$(echo $SECRET_VALUES | jq -r '.SPRING_JPA_DDL_AUTO')
+        AWS_S3_ACCESS_KEY=$(echo $SECRET_VALUES | jq -r '.AWS_S3_ACCESS_KEY')
+        AWS_S3_SECRET_KEY=$(echo $SECRET_VALUES | jq -r '.AWS_S3_SECRET_KEY')
+        AWS_S3_BUCKET=$(echo $SECRET_VALUES | jq -r '.AWS_S3_BUCKET')
+        AWS_S3_REGION=$(echo $SECRET_VALUES | jq -r '.AWS_S3_REGION')
+        AWS_S3_ENDPOINT=$(echo $SECRET_VALUES | jq -r '.AWS_S3_ENDPOINT')
+        JWT_TOKEN_SECRET=$(echo $SECRET_VALUES | jq -r '.JWT_TOKEN_SECRET')
+        ELASTIC_URIS=$(echo $SECRET_VALUES | jq -r '.ELASTIC_URIS')
+        ELASTIC_PASSWORD=$(echo $SECRET_VALUES | jq -r '.ELASTIC_PASSWORD')
+        KIBANA_PASSWORD=$(echo $SECRET_VALUES | jq -r '.KIBANA_PASSWORD')
+        EOF
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG -f memory-infra/docker/Dockerfile .
+      - docker tag $REPOSITORY_URI:$IMAGE_TAG $REPOSITORY_URI:latest
+  
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI:latest
+
+artifacts:
+  base-directory: memory-infra/docker/prod/ec2
+  files:
+    - appspec.yml
+    - scripts/**/*
+    - docker-compose.yml
+    - .env
+  discard-paths: no

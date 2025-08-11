@@ -2,6 +2,7 @@ package com.memory.service.admin;
 
 import com.memory.document.memory.MemoryDocument;
 import com.memory.document.memory.MemoryDocumentRepository;
+import com.memory.document.memory.RelationshipInfo;
 import com.memory.domain.memory.Memory;
 import com.memory.domain.memory.repository.MemoryRepository;
 import com.memory.domain.relationship.Relationship;
@@ -132,10 +133,10 @@ public class MemoryDocumentAdminService {
             MemoryDocument existingDocument = memoryDocumentRepository.findByMemoryId(memory.getId());
             
             if (existingDocument != null) {
-                existingDocument.updateFromMemory(memory, relationshipListResponse);
+                existingDocument.updateFromMemory(memory, convertToRelationshipInfo(relationshipListResponse));
                 memoryDocumentRepository.save(existingDocument);
             } else {
-                MemoryDocument newDocument = MemoryDocument.from(memory, relationshipListResponse);
+                MemoryDocument newDocument = MemoryDocument.from(memory, convertToRelationshipInfo(relationshipListResponse));
                 memoryDocumentRepository.save(newDocument);
             }
             
@@ -145,5 +146,23 @@ public class MemoryDocumentAdminService {
             log.error("Failed to migrate memory ID: {}, Error: {}", memory.getId(), e.getMessage());
             return false;
         }
+    }
+
+    private RelationshipInfo convertToRelationshipInfo(RelationshipListResponse relationshipListResponse) {
+        if (relationshipListResponse == null || relationshipListResponse.relationships() == null) {
+            return new RelationshipInfo(null);
+        }
+
+        var relationships = relationshipListResponse.relationships().stream()
+                .map(rel -> new RelationshipInfo.RelatedMemberInfo(
+                        rel.relatedMember().id(),
+                        rel.relatedMember().name(),
+                        rel.relatedMember().nickname(),
+                        rel.relatedMember().email(),
+                        rel.relatedMember().profile() != null ? rel.relatedMember().profile().fileUrl() : null
+                ))
+                .toList();
+
+        return new RelationshipInfo(relationships);
     }
 }

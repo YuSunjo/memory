@@ -1,10 +1,10 @@
 package com.memory.service.file;
 
 import com.memory.domain.file.FileType;
-import com.memory.dto.UploadResponse;
+import com.memory.storage.dto.UploadResponse;
 import com.memory.dto.file.FileRequest;
 import com.memory.dto.file.response.FileResponse;
-import com.memory.service.upload.UploadService;
+import com.memory.storage.service.upload.UploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

@@ -2,6 +2,9 @@ plugins {
     id 'base'
 }
 
+bootJar { enabled = false }
+jar { enabled = false }
+
 // Docker Compose tasks for local environment
 tasks.register('localStart', Exec) {
     description = 'Start local Docker environment'

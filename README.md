@@ -6,12 +6,13 @@ Memory는 지도 기반의 추억 공유 사이트로, 사용자들이 특정 �
 ## 🏗️ 프로젝트 아키텍처
 
 ### Domain-Driven Design Architecture
-Memory 프로젝트는 DDD 원칙을 따르는 5개 모듈 구조입니다:
+Memory 프로젝트는 Clean Architecture와 DDD 원칙을 따르는 6개 모듈 구조입니다:
 
 **모듈별 역할**:
-- **memory-api**: Controllers, Business Services, UseCase (Application Layer)
-- **memory-domain**: JPA Entities, Repositories, DTOs, QueryDSL (Domain Layer)
-- **memory-common**: Cross-cutting concerns (JWT, security, AWS S3, exceptions, annotations)
+- **memory-api**: Controllers, Business Services, Request/Response DTOs (Application Layer) 
+- **memory-domain**: JPA Entities, Repository Interfaces, Domain Objects (Domain Layer)
+- **memory-adapter**: Repository Implementations, External System Integrations (Infrastructure Layer)
+- **memory-common**: Cross-cutting concerns (JWT, security, exceptions, annotations)
 - **memory-batch**: Spring Batch jobs and scheduling
 - **memory-infra**: Docker configurations for different environments
 
@@ -49,7 +50,7 @@ Memory 프로젝트는 DDD 원칙을 따르는 5개 모듈 구조입니다:
 │  ├── boolean existsByEmail(String email)                       │
 │  └── Custom QueryDSL methods                                   │
 │                                                                 │
-│  MemberRequest/Response DTOs                                    │
+│  Repository Interfaces Only                                    │
 └─────────────────────────┬───────────────────────────────────────┘
                           │ Database Query
                           ▼
@@ -63,12 +64,24 @@ Memory 프로젝트는 DDD 원칙을 따르는 5개 모듈 구조입니다:
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
+│                   MEMORY-ADAPTER MODULE                         │
+├─────────────────────────────────────────────────────────────────┤
+│  Repository Implementations (JPA, QueryDSL)                    │
+│  ├── MemberRepositoryCustomImpl                                │
+│  ├── MemoryRepositoryCustomImpl                                │
+│  └── External System Adapters                                  │
+│      ├── S3 Storage Service                                    │
+│      ├── ElasticSearch Integration                             │
+│      └── Database Configuration                                │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │ External Systems
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
 │                    MEMORY-COMMON MODULE                         │
 ├─────────────────────────────────────────────────────────────────┤
 │  ├── @Auth, @MemberId 어노테이션                                │
 │  ├── JWT 토큰 처리 (JwtComponent)                               │
 │  ├── Spring Security 설정                                       │
-│  ├── AWS S3 파일 업로드 (S3Service)                             │
 │  └── 공통 예외 처리                                             │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -76,9 +89,9 @@ Memory 프로젝트는 DDD 원칙을 따르는 5개 모듈 구조입니다:
 ### 의존성 흐름도
 
 ```
-memory-api ──────────→ memory-domain
-    │                      ↑
-    └─────→ memory-common ──┘
+memory-api ──────────→ memory-domain ←── memory-adapter
+    │                      ↑                    ↑
+    └─────→ memory-common ──┘────────────────────┘
             ↑
 memory-batch ┘
 ```
@@ -122,33 +135,36 @@ memory-batch ┘
 
 ### 개발 순서 (MEMBER 회원가입 API 예시)
 
-1. **Domain 계층**: Member JPA 엔티티, MemberRepository, Request/Response DTOs
-2. **API 계층**: MemberService (비즈니스 로직), MemberController
-3. **데이터베이스**: Flyway 마이그레이션 파일 작성
-4. **테스트**: Service 단위 테스트, Controller 통합 테스트
+1. **Domain 계층**: Member JPA 엔티티, MemberRepository 인터페이스
+2. **Adapter 계층**: MemberRepositoryCustomImpl (구현체), 외부 시스템 연동
+3. **API 계층**: MemberRequest/Response DTOs, MemberService, MemberController  
+4. **데이터베이스**: Flyway 마이그레이션 파일 작성
+5. **테스트**: Service 단위 테스트, Controller 통합 테스트
 
 ### 핵심 원칙
-- **의존성 방향**: API → Domain ← Common 방향으로 의존
-- **Domain 특징**: JPA 엔티티와 Repository가 중심, QueryDSL로 타입 안전한 쿼리
-- **Common 활용**: JWT, S3, 보안 설정 등 횡단 관심사 분리
-- **테스트 전략**: Service 단위 테스트 → Controller 통합 테스트
+- **의존성 방향**: API → Domain ← Adapter, 모든 모듈 → Common
+- **Domain 순수성**: 순수 JPA 엔티티와 Repository 인터페이스만 포함, 외부 의존성 없음
+- **Adapter 패턴**: 외부 시스템 연동 전담 (JPA 구현체, S3, ElasticSearch)
+- **DTO 분리**: API 계약용 DTO는 memory-api, 도메인 특화 DTO는 memory-domain
+- **테스트 전략**: Domain 단위 테스트 → Service 통합 테스트 → Controller E2E 테스트
 
 ### 멀티모듈 구조 (현재)
-프로젝트는 Clean Architecture와 Hexagonal Architecture 원칙을 따라 5개의 모듈로 구성되어 있습니다:
+프로젝트는 Clean Architecture와 Hexagonal Architecture 원칙을 따라 6개의 모듈로 구성되어 있습니다:
 
 ```
 memory/
-├── memory-api/         # 🌐 Presentation Layer (Web)
-├── memory-common/      # 🔧 Common Utilities & Infrastructure
-├── memory-domain/      # 📊 Domain Layer & Data Access
-├── memory-infra/       # 🐳 Infrastructure & DevOps
-└── memory-batch/       # ⚡ Batch Processing
+├── memory-api/         # 🌐 Presentation Layer (Web + DTOs)
+├── memory-domain/      # 🎯 Domain Layer (Entities + Interfaces)  
+├── memory-adapter/     # 🔌 Infrastructure Layer (Implementations)
+├── memory-common/      # 🔧 Common Utilities & Cross-cutting
+├── memory-batch/       # ⚡ Batch Processing
+└── memory-infra/       # 🐳 Infrastructure & DevOps
 ```
 
 ### 모듈별 상세 설명
 
 #### 🌐 memory-api (Presentation Layer)
-**역할**: 외부 요청을 받아 처리하는 웹 계층
+**역할**: 외부 요청을 받아 처리하는 웹 계층 + API 계약 정의
 - **실행 가능한 JAR**: 애플리케이션의 진입점
 - **의존성**: `memory-common` ← `memory-domain`
 
@@ -157,51 +173,64 @@ memory/
 memory-api/
 ├── config/                         # Spring 설정 (CORS, Swagger 등)
 ├── controller/                     # REST API 컨트롤러
-└── service/                        # 비즈니스 로직 서비스
+├── service/                        # 비즈니스 로직 서비스
+└── dto/                            # Request/Response DTOs (API 계약)
+    ├── member/                     # 회원 관련 DTO
+    ├── memory/                     # 추억 관련 DTO
+    └── relationship/               # 관계 관련 DTO
+```
+
+#### 🎯 memory-domain (Domain Layer) 
+**역할**: 순수 도메인 모델과 비즈니스 규칙
+- **라이브러리 JAR**: 도메인 엔티티와 인터페이스 제공
+- **의존성**: `memory-common`
+
+**주요 구성요소**:
+```
+memory-domain/
+├── domain/                         # JPA 엔티티
+│   ├── member/Member.java          # 회원 엔티티
+│   ├── memory/Memory.java          # 추억 엔티티
+│   └── BaseTimeEntity.java         # 공통 베이스 엔티티
+├── repository/                     # Repository 인터페이스 (구현체 없음)
+└── dto/search/                     # 도메인 특화 DTO (ElasticSearch)
+```
+
+#### 🔌 memory-adapter (Infrastructure Layer)
+**역할**: 외부 시스템 연동 및 기술적 구현체
+- **라이브러리 JAR**: Repository 구현체와 외부 시스템 어댑터
+- **의존성**: `memory-domain`
+
+**주요 구성요소**:
+```
+memory-adapter/
+├── persistence/repository/         # JPA Repository 구현체
+│   ├── member/MemberRepositoryCustomImpl.java
+│   └── memory/MemoryRepositoryCustomImpl.java
+├── search/repository/              # ElasticSearch Repository 구현체  
+├── storage/service/                # S3 파일 업로드 서비스
+├── config/                         # 기술적 설정 (JPA, S3, ElasticSearch)
+└── src/main/resources/             # 설정 파일
 ```
 
 #### 🔧 memory-common (Common Layer)
-**역할**: 모든 모듈에서 공통으로 사용하는 기능들
+**역할**: 횡단 관심사 및 공통 유틸리티
 - **라이브러리 JAR**: 다른 모듈에서 참조
 - **의존성**: 다른 모듈들의 기반
 
 **주요 구성요소**:
 ```
 memory-common/
-├── annotation/                     # 커스텀 어노테이션
+├── annotation/                     # 커스텀 어노테이션 (@Auth, @MemberId)
 ├── component/
 │   ├── jwt/                        # JWT 토큰 처리
-│   ├── security/                   # 보안 컴포넌트
-│   └── storage/                    # 파일 저장소 (S3)
-├── config/
-│   ├── security/SecurityConfig.java # Spring Security + CORS 설정
-│   └── storage/S3Config.java       # AWS S3 설정
-├── dto/                            # 공통 DTO
+│   └── security/                   # 보안 컴포넌트
+├── config/security/                # Spring Security + CORS 설정
 ├── exception/                      # 공통 예외 클래스
 ├── response/                       # 공통 응답 포맷
-└── service/                        # 공통 서비스 (파일 업로드 등)
+└── util/                           # 공통 유틸리티
 ```
 
-#### 📊 memory-domain (Domain Layer)
-**역할**: 도메인 모델과 데이터 액세스 로직
-- **라이브러리 JAR**: 도메인 엔티티와 리포지토리 제공
-- **의존성**: `memory-common`
-
-**주요 구성요소**:
-```
-memory-domain/
-├── config/
-│   └── QueryDslConfig.java         # QueryDSL 설정
-├── domain/
-├── dto/                            # 도메인별 DTO
-└── repository/                     # JPA Repository + QueryDSL
-```
-
-**기술 스택**:
-- Spring Data JPA + PostgreSQL
-- PostGIS (지리공간 데이터)
-- QueryDSL (타입 안전 쿼리)
-- Flyway (DB 마이그레이션)
 
 #### 🐳 memory-infra (Infrastructure Layer)
 **역할**: 인프라스트럭처 및 DevOps 도구
@@ -251,9 +280,16 @@ graph TD
     A[memory-api] --> B[memory-common]
     A --> C[memory-domain]
     C --> B
-    D[memory-batch] --> C
-    E[memory-infra] 
+    D[memory-adapter] --> C
+    D --> B
+    E[memory-batch] --> C
+    F[memory-infra]
 ```
+
+**기술 스택**:
+- Spring Data JPA + PostgreSQL + PostGIS (지리공간 데이터)
+- QueryDSL (타입 안전 쿼리) + ElasticSearch (검색)
+- AWS S3 (파일 저장) + Flyway (DB 마이그레이션)
 
 ## 🛠️ 기술 스택
 

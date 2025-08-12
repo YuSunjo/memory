@@ -5,7 +5,7 @@ on:
     workflows: ["Build and Push to ECR - Production"]
     types:
       - completed
-    branches: [ feat/onpromise ]
+    branches: [ main ]
 
 jobs:
   deploy:

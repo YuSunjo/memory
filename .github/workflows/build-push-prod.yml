@@ -5,7 +5,7 @@ on:
     workflows: ["Run Tests"]
     types:
       - completed
-    branches: [ feat/onpromise ]
+    branches: [ main ]
 
 env:
   AWS_REGION: ap-northeast-2

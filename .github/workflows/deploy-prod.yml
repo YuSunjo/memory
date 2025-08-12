@@ -41,6 +41,15 @@ jobs:
           echo "📂 Navigating to Docker directory..."
           cd memory-infra/docker/prod/onPromise
           
+          echo "📦 Checking and installing required tools..."
+          if ! command -v jq &> /dev/null; then
+            echo "Installing jq..."
+            sudo apt-get update
+            sudo apt-get install -y jq
+          else
+            echo "jq is already installed"
+          fi
+          
           echo "📄 Creating .env file..."          
           SECRET_VALUES=$(aws secretsmanager get-secret-value --secret-id "prod/my-memory" --region ap-northeast-2 --query 'SecretString' --output text)
 
@@ -78,7 +87,7 @@ jobs:
           docker compose up -d
           
           echo "🔑 Setting Kibana system user password..."
-          docker exec memory-elasticsearch-dev curl -X POST "localhost:9200/_security/user/kibana_system/_password" \
+          docker exec memory-elasticsearch-prod curl -X POST "localhost:9200/_security/user/kibana_system/_password" \
             -H "Content-Type: application/json" \
             -u elastic:$(echo $SECRET_VALUES | jq -r '.ELASTIC_PASSWORD') \
             -d "{\"password\": \"$(echo $SECRET_VALUES | jq -r '.KIBANA_PASSWORD')\"}"

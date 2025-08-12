@@ -1,8 +1,8 @@
-name: Deploy to OnPremise - Production
+name: Deploy to OnPremise
 
 on:
   workflow_run:
-    workflows: ["Build and Push to ECR - Production"]
+    workflows: ["Build and Push to ECR"]
     types:
       - completed
     branches: [ main ]

@@ -66,9 +66,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 750M
+          memory: 10G
         reservations:
-          memory: 250M
+          memory: 2G
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: ${DB_URL}
@@ -83,6 +83,7 @@ services:
       SPRING_ELASTICSEARCH_URIS: ${ELASTIC_URIS}
       SPRING_ELASTICSEARCH_USERNAME: elastic
       SPRING_ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+      JAVA_OPTS: "-Xms2g -Xmx8g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication -XX:G1HeapRegionSize=16m"
     networks:
       - memory-network-prod
     restart: always

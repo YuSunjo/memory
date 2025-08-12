@@ -9,6 +9,9 @@ import com.memory.domain.member.repository.MemberRepository;
 import com.memory.domain.memory.Memory;
 import com.memory.domain.memory.MemoryType;
 import com.memory.domain.memory.repository.MemoryRepository;
+import com.memory.domain.relationship.Relationship;
+import com.memory.domain.relationship.RelationshipStatus;
+import com.memory.domain.relationship.repository.RelationshipRepository;
 import com.memory.dto.memory.MemoryRequest;
 import com.memory.dto.memory.response.MemoryResponse;
 import com.memory.exception.customException.NotFoundException;
@@ -27,6 +30,7 @@ public class MemoryService {
     private final MemberRepository memberRepository;
     private final MapRepository mapRepository;
     private final FileRepository fileRepository;
+    private final RelationshipRepository relationshipRepository;
 
     @Transactional
     public MemoryResponse createMemory(Long memberId, MemoryRequest.Create createRequest) {
@@ -74,11 +78,17 @@ public class MemoryService {
         Member member = memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
 
+        List<Relationship> relationshipList = relationshipRepository.findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);
+
+        List<Long> relatedMemberIds = relationshipList.stream()
+                .map(relationship -> relationship.getRelatedMember().getId())
+                .toList();
+
         List<Memory> memories;
         if (lastMemoryId == null) {
-            memories = memoryRepository.findByMemberAndMemoryType(member, memoryType, size);
+            memories = memoryRepository.findByMemberAndMemoryType(member, relatedMemberIds, memoryType, size);
         } else {
-            memories = memoryRepository.findByMemberAndMemoryType(member, memoryType, lastMemoryId, size);
+            memories = memoryRepository.findByMemberAndMemoryType(member, relatedMemberIds, memoryType, lastMemoryId, size);
         }
 
         return memories.stream()

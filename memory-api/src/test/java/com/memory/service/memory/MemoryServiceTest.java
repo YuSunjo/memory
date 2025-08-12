@@ -8,6 +8,9 @@ import com.memory.domain.member.repository.MemberRepository;
 import com.memory.domain.memory.Memory;
 import com.memory.domain.memory.MemoryType;
 import com.memory.domain.memory.repository.MemoryRepository;
+import com.memory.domain.relationship.Relationship;
+import com.memory.domain.relationship.RelationshipStatus;
+import com.memory.domain.relationship.repository.RelationshipRepository;
 import com.memory.dto.memory.MemoryRequest;
 import com.memory.dto.memory.response.MemoryResponse;
 import com.memory.exception.customException.NotFoundException;
@@ -47,6 +50,9 @@ class MemoryServiceTest {
 
     @Mock
     private FileRepository fileRepository;
+
+    @Mock
+    private RelationshipRepository relationshipRepository;
 
     @InjectMocks
     private MemoryService memoryService;
@@ -278,7 +284,9 @@ class MemoryServiceTest {
         List<Memory> memories = Arrays.asList(memory, memory2);
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
-        when(memoryRepository.findByMemberAndMemoryType(member, MemoryType.PRIVATE, size))
+        when(relationshipRepository.findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED))
+                .thenReturn(Collections.emptyList());
+        when(memoryRepository.findByMemberAndMemoryType(member, Collections.emptyList(), MemoryType.PRIVATE, size))
                 .thenReturn(memories);
 
         // When
@@ -291,7 +299,8 @@ class MemoryServiceTest {
         assertEquals(2L, responses.get(1).id());
 
         verify(memberRepository).findMemberById(memberId);
-        verify(memoryRepository).findByMemberAndMemoryType(member, MemoryType.PRIVATE, size);
+        verify(relationshipRepository).findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);
+        verify(memoryRepository).findByMemberAndMemoryType(member, Collections.emptyList(), MemoryType.PRIVATE, size);
     }
 
     @Test
@@ -303,7 +312,9 @@ class MemoryServiceTest {
         List<Memory> memories = Collections.singletonList(memory);
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
-        when(memoryRepository.findByMemberAndMemoryType(member, MemoryType.PRIVATE, lastMemoryId, size))
+        when(relationshipRepository.findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED))
+                .thenReturn(Collections.emptyList());
+        when(memoryRepository.findByMemberAndMemoryType(member, Collections.emptyList(), MemoryType.PRIVATE, lastMemoryId, size))
                 .thenReturn(memories);
 
         // When
@@ -315,7 +326,8 @@ class MemoryServiceTest {
         assertEquals(memoryId, responses.get(0).id());
 
         verify(memberRepository).findMemberById(memberId);
-        verify(memoryRepository).findByMemberAndMemoryType(member, MemoryType.PRIVATE, lastMemoryId, size);
+        verify(relationshipRepository).findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);
+        verify(memoryRepository).findByMemberAndMemoryType(member, Collections.emptyList(), MemoryType.PRIVATE, lastMemoryId, size);
     }
 
     @Test
@@ -331,7 +343,8 @@ class MemoryServiceTest {
 
         assertEquals("회원을 찾을 수 없습니다.", exception.getMessage());
         verify(memberRepository).findMemberById(memberId);
-        verify(memoryRepository, never()).findByMemberAndMemoryType(any(), any(), anyInt());
+        verify(relationshipRepository, never()).findByMemberAndRelationshipStatus(any(), any());
+        verify(memoryRepository, never()).findByMemberAndMemoryType(any(), any(), any(), anyInt());
     }
 
     @Test
@@ -572,7 +585,9 @@ class MemoryServiceTest {
         List<Memory> publicMemories = List.of(publicMemory);
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
-        when(memoryRepository.findByMemberAndMemoryType(member, MemoryType.PUBLIC, size))
+        when(relationshipRepository.findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED))
+                .thenReturn(Collections.emptyList());
+        when(memoryRepository.findByMemberAndMemoryType(member, Collections.emptyList(), MemoryType.PUBLIC, size))
                 .thenReturn(publicMemories);
 
         // When
@@ -585,7 +600,83 @@ class MemoryServiceTest {
         assertEquals(MemoryType.PUBLIC, responses.get(0).memoryType());
 
         verify(memberRepository).findMemberById(memberId);
-        verify(memoryRepository).findByMemberAndMemoryType(member, MemoryType.PUBLIC, size);
+        verify(relationshipRepository).findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);
+        verify(memoryRepository).findByMemberAndMemoryType(member, Collections.emptyList(), MemoryType.PUBLIC, size);
+    }
+
+    @Test
+    @DisplayName("관계가 있는 회원의 메모리 조회 테스트 - RELATIONSHIP 타입")
+    void findMemoriesByMemberWithRelationshipType() {
+        // Given
+        int size = 10;
+        Long relatedMemberId = 2L;
+        
+        Member relatedMember = new Member("관련 사용자", "relateduser", "related@example.com", "encodedPassword");
+        setId(relatedMember, relatedMemberId);
+        
+        Relationship relationship = new Relationship(member, relatedMember, RelationshipStatus.ACCEPTED);
+        List<Relationship> relationships = List.of(relationship);
+        List<Long> relatedMemberIds = List.of(relatedMemberId);
+        
+        Memory myPublicMemory = new Memory("내 공개 메모리", "내 공개 내용", "내 공개 장소", 
+                LocalDate.of(2024, 1, 10), MemoryType.PUBLIC, member, mapEntity);
+        setId(myPublicMemory, 3L);
+        
+        Memory relatedPublicMemory = new Memory("상대방 공개 메모리", "상대방 공개 내용", "상대방 공개 장소", 
+                LocalDate.of(2024, 1, 11), MemoryType.PUBLIC, relatedMember, mapEntity);
+        setId(relatedPublicMemory, 4L);
+        
+        List<Memory> memories = Arrays.asList(myPublicMemory, relatedPublicMemory);
+
+        when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
+        when(relationshipRepository.findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED))
+                .thenReturn(relationships);
+        when(memoryRepository.findByMemberAndMemoryType(member, relatedMemberIds, MemoryType.RELATIONSHIP, size))
+                .thenReturn(memories);
+
+        // When
+        List<MemoryResponse> responses = memoryService.findMemoriesByMember(memberId, null, size, MemoryType.RELATIONSHIP);
+
+        // Then
+        assertNotNull(responses);
+        assertEquals(2, responses.size());
+        assertEquals(3L, responses.get(0).id());
+        assertEquals(4L, responses.get(1).id());
+
+        verify(memberRepository).findMemberById(memberId);
+        verify(relationshipRepository).findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);
+        verify(memoryRepository).findByMemberAndMemoryType(member, relatedMemberIds, MemoryType.RELATIONSHIP, size);
+    }
+
+    @Test
+    @DisplayName("관계가 없는 회원의 메모리 조회 테스트 - RELATIONSHIP 타입")
+    void findMemoriesByMemberWithoutRelationshipType() {
+        // Given
+        int size = 10;
+        
+        Memory myPublicMemory = new Memory("내 공개 메모리", "내 공개 내용", "내 공개 장소", 
+                LocalDate.of(2024, 1, 12), MemoryType.PUBLIC, member, mapEntity);
+        setId(myPublicMemory, 5L);
+        
+        List<Memory> memories = List.of(myPublicMemory);
+
+        when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
+        when(relationshipRepository.findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED))
+                .thenReturn(Collections.emptyList());
+        when(memoryRepository.findByMemberAndMemoryType(member, Collections.emptyList(), MemoryType.RELATIONSHIP, size))
+                .thenReturn(memories);
+
+        // When
+        List<MemoryResponse> responses = memoryService.findMemoriesByMember(memberId, null, size, MemoryType.RELATIONSHIP);
+
+        // Then
+        assertNotNull(responses);
+        assertEquals(1, responses.size());
+        assertEquals(5L, responses.get(0).id());
+
+        verify(memberRepository).findMemberById(memberId);
+        verify(relationshipRepository).findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);
+        verify(memoryRepository).findByMemberAndMemoryType(member, Collections.emptyList(), MemoryType.RELATIONSHIP, size);
     }
 
     @Test
@@ -662,7 +753,7 @@ class MemoryServiceTest {
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(mapRepository.findById(mapId)).thenReturn(Optional.of(mapEntity));
         when(memoryRepository.save(any(Memory.class))).thenReturn(memory);
-        when(fileRepository.findAllById(Arrays.asList(fileId1))).thenReturn(Arrays.asList(file1));
+        when(fileRepository.findAllById(List.of(fileId1))).thenReturn(Collections.singletonList(file1));
 
         // When
         MemoryResponse response = memoryService.createMemory(memberId, requestWithEmptyHashTags);
@@ -672,7 +763,7 @@ class MemoryServiceTest {
         verify(memberRepository).findMemberById(memberId);
         verify(mapRepository).findById(mapId);
         verify(memoryRepository).save(any(Memory.class));
-        verify(fileRepository).findAllById(Arrays.asList(fileId1));
+        verify(fileRepository).findAllById(List.of(fileId1));
     }
 
     @Test
@@ -704,11 +795,11 @@ class MemoryServiceTest {
     void updateMemoryWithDifferentHashTags() {
         // Given
         MemoryRequest.Update updateWithNewHashTags = new MemoryRequest.Update("업데이트된 메모리", "업데이트된 내용", 
-                "업데이트된 장소", LocalDate.of(2024, 1, 8), MemoryType.PRIVATE, Arrays.asList(fileId2), Arrays.asList("새로운", "해시태그", "업데이트"));
+                "업데이트된 장소", LocalDate.of(2024, 1, 8), MemoryType.PRIVATE, List.of(fileId2), Arrays.asList("새로운", "해시태그", "업데이트"));
 
         when(memberRepository.findMemberById(memberId)).thenReturn(Optional.of(member));
         when(memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)).thenReturn(Optional.of(memory));
-        when(fileRepository.findAllById(Arrays.asList(fileId2))).thenReturn(Arrays.asList(file2));
+        when(fileRepository.findAllById(List.of(fileId2))).thenReturn(Collections.singletonList(file2));
 
         // When
         MemoryResponse response = memoryService.updateMemory(memberId, memoryId, updateWithNewHashTags);
@@ -717,7 +808,7 @@ class MemoryServiceTest {
         assertNotNull(response);
         verify(memberRepository).findMemberById(memberId);
         verify(memoryRepository).findMemoryByIdAndMemberId(memoryId, memberId);
-        verify(fileRepository).findAllById(Arrays.asList(fileId2));
+        verify(fileRepository).findAllById(List.of(fileId2));
     }
 
     @Test

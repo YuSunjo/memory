@@ -55,6 +55,37 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+  app:
+    image: 228749872437.dkr.ecr.ap-northeast-2.amazonaws.com/my_memory/memory:latest
+    container_name: my-memory
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 750M
+        reservations:
+          memory: 250M
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      CLOUD_AWS_CREDENTIALS_ACCESS-KEY: ${AWS_S3_ACCESS_KEY}
+      CLOUD_AWS_CREDENTIALS_SECRET-KEY: ${AWS_S3_SECRET_KEY}
+      CLOUD_AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      CLOUD_AWS_REGION_STATIC: ${AWS_S3_REGION}
+      CLOUD_AWS_S3_ENDPOINT: ${AWS_S3_ENDPOINT}
+      JWT_TOKEN_SECRET: ${JWT_TOKEN_SECRET}
+      SPRING_ELASTICSEARCH_URIS: ${ELASTIC_URIS}
+      SPRING_ELASTICSEARCH_USERNAME: elastic
+      SPRING_ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+    networks:
+      - memory-network-prod
+    restart: always
 networks:
   memory-network-prod:
     driver: bridge

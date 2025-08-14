@@ -37,9 +37,7 @@ out/
 .vscode/
 
 ### docker data
-memory-infra/docker/**/data/postgres-data/
-memory-infra/docker/**/data/minio-data/
-memory-infra/docker/**/data/elasticsearch-data/
+memory-infra/docker/**/data/*
 
 .env
 CLAUDE.md

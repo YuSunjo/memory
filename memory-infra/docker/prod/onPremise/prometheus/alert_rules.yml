@@ -59,10 +59,19 @@ groups:
 
       # 📊 Production-specific alerts
       - alert: MemoryLeakSuspected
-        expr: increase(jvm_memory_used_bytes{job="memory-api",area="heap"}[1h]) > 50000000
+        expr: increase(jvm_memory_used_bytes{job="memory-api",area="heap"}[1h]) > 100000000
         for: 2m
         labels:
           severity: warning
         annotations:
           summary: "⚠️ PROD: Memory leak suspected"
           description: "Heap memory increased by {{ $value | humanize1024 }}B in the last hour"
+
+      - alert: ElasticsearchDown
+        expr: up{job="elasticsearch"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "🚨 PROD: Elasticsearch is down"
+          description: "Elasticsearch has been down for more than 30 seconds"

@@ -63,6 +63,8 @@ jobs:
           ELASTIC_URIS=$(echo $SECRET_VALUES | jq -r '.ELASTIC_URIS')
           ELASTIC_PASSWORD=$(echo $SECRET_VALUES | jq -r '.ELASTIC_PASSWORD')
           KIBANA_PASSWORD=$(echo $SECRET_VALUES | jq -r '.KIBANA_PASSWORD')
+          GRAFANA_ADMIN_USER=$(echo $SECRET_VALUES | jq -r '.GRAFANA_ADMIN_USER')
+          GRAFANA_ADMIN_PASSWORD=$(echo $SECRET_VALUES | jq -r '.GRAFANA_ADMIN_PASSWORD')
           EOF
           
           echo "🛑 Stopping existing containers..."

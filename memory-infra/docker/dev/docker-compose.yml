@@ -117,6 +117,7 @@ services:
   grafana:
     image: grafana/grafana
     container_name: memory-grafana-dev
+    user: "root"
     ports:
       - "3001:3000"
     environment:

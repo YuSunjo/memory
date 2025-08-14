@@ -1,0 +1,58 @@
+groups:
+  - name: memory-api-alerts
+    rules:
+      # 🚨 Critical Alerts
+      - alert: ServiceDown
+        expr: up{job="memory-api"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Memory API service is down"
+          description: "Memory API has been down for more than 30 seconds"
+
+      - alert: HighJVMHeapUsage
+        expr: (jvm_memory_used_bytes{job="memory-api",area="heap"} / jvm_memory_max_bytes{job="memory-api",area="heap"}) * 100 > 85
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "JVM heap memory usage is critically high"
+          description: "JVM heap memory usage is {{ $value | humanizePercentage }} for more than 2 minutes"
+
+      # ⚠️ Warning Alerts
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job="memory-api"}[5m])) > 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response latency detected"
+          description: "95th percentile latency is {{ $value }}s for more than 2 minutes"
+
+      - alert: DatabaseConnectionPoolHigh
+        expr: (hikari_connections_active{job="memory-api"} / hikari_connections_max{job="memory-api"}) * 100 > 90
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Database connection pool usage is high"
+          description: "Active database connections: {{ $value | humanizePercentage }}"
+
+      - alert: HighErrorRate
+        expr: (rate(http_server_requests_seconds_count{job="memory-api",status=~"5.."}[5m]) / rate(http_server_requests_seconds_count{job="memory-api"}[5m])) * 100 > 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High server error rate detected"
+          description: "Server error rate is {{ $value | humanizePercentage }} for more than 2 minutes"
+
+      - alert: HighCPUUsage
+        expr: system_cpu_usage{job="memory-api"} * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value | humanizePercentage }} for more than 5 minutes"

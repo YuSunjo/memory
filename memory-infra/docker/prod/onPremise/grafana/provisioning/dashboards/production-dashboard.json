@@ -1,217 +1,214 @@
 {
-  "dashboard": {
-    "id": null,
-    "uid": "memory-prod-onpremise",
-    "title": "Memory API PRODUCTION OnPremise Monitoring",
-    "tags": ["memory", "spring-boot", "production", "onpremise"],
-    "timezone": "Asia/Seoul",
-    "refresh": "15s",
-    "time": {
-      "from": "now-1h",
-      "to": "now"
-    },
-    "panels": [
-      {
-        "id": 1,
-        "title": "🚨 Service Status",
-        "type": "stat",
-        "targets": [
-          {
-            "expr": "up{job=\"memory-api\"}",
-            "legendFormat": "Status"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
-        "fieldConfig": {
-          "defaults": {
-            "color": {"mode": "thresholds"},
-            "thresholds": {
-              "steps": [
-                {"color": "red", "value": 0},
-                {"color": "green", "value": 1}
-              ]
-            },
-            "mappings": [
-              {"options": {"0": {"text": "❌ DOWN", "color": "red"}}, "type": "value"},
-              {"options": {"1": {"text": "✅ UP", "color": "green"}}, "type": "value"}
+  "id": null,
+  "uid": "memory-prod-onpremise",
+  "title": "Memory API PRODUCTION OnPremise Monitoring",
+  "tags": ["memory", "spring-boot", "production", "onpremise"],
+  "timezone": "Asia/Seoul",
+  "refresh": "15s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "🚨 Service Status",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "up{job=\"memory-api\"}",
+          "legendFormat": "Status"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "red", "value": 0},
+              {"color": "green", "value": 1}
             ]
-          }
-        }
-      },
-      {
-        "id": 2,
-        "title": "💾 JVM Heap Usage",
-        "type": "stat",
-        "targets": [
-          {
-            "expr": "(jvm_memory_used_bytes{job=\"memory-api\",area=\"heap\"} / jvm_memory_max_bytes{job=\"memory-api\",area=\"heap\"}) * 100",
-            "legendFormat": "Heap Usage %"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
-        "fieldConfig": {
-          "defaults": {
-            "color": {"mode": "thresholds"},
-            "thresholds": {
-              "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 70},
-                {"color": "red", "value": 80}
-              ]
-            },
-            "unit": "percent"
-          }
-        }
-      },
-      {
-        "id": 3,
-        "title": "🌐 Request Rate",
-        "type": "stat",
-        "targets": [
-          {
-            "expr": "rate(http_server_requests_seconds_count{job=\"memory-api\"}[5m])",
-            "legendFormat": "Requests/sec"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
-        "fieldConfig": {
-          "defaults": {
-            "color": {"mode": "palette-classic"},
-            "unit": "reqps"
-          }
-        }
-      },
-      {
-        "id": 4,
-        "title": "🗄️ DB Connections",
-        "type": "stat",
-        "targets": [
-          {
-            "expr": "(hikari_connections_active{job=\"memory-api\"} / hikari_connections_max{job=\"memory-api\"}) * 100",
-            "legendFormat": "Connection Usage %"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
-        "fieldConfig": {
-          "defaults": {
-            "color": {"mode": "thresholds"},
-            "thresholds": {
-              "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 70},
-                {"color": "red", "value": 80}
-              ]
-            },
-            "unit": "percent"
-          }
-        }
-      },
-      {
-        "id": 5,
-        "title": "📈 Response Time Distribution",
-        "type": "timeseries",
-        "targets": [
-          {
-            "expr": "histogram_quantile(0.50, rate(http_server_requests_seconds_bucket{job=\"memory-api\"}[5m]))",
-            "legendFormat": "50th percentile"
           },
-          {
-            "expr": "histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job=\"memory-api\"}[5m]))",
-            "legendFormat": "95th percentile"
-          },
-          {
-            "expr": "histogram_quantile(0.99, rate(http_server_requests_seconds_bucket{job=\"memory-api\"}[5m]))",
-            "legendFormat": "99th percentile"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
-        "fieldConfig": {
-          "defaults": {
-            "color": {"mode": "palette-classic"},
-            "unit": "s"
-          }
-        }
-      },
-      {
-        "id": 6,
-        "title": "🚨 HTTP Status Codes",
-        "type": "timeseries",
-        "targets": [
-          {
-            "expr": "rate(http_server_requests_seconds_count{job=\"memory-api\",status=~\"2..\"}[5m])",
-            "legendFormat": "2xx Success"
-          },
-          {
-            "expr": "rate(http_server_requests_seconds_count{job=\"memory-api\",status=~\"4..\"}[5m])",
-            "legendFormat": "4xx Client Error"
-          },
-          {
-            "expr": "rate(http_server_requests_seconds_count{job=\"memory-api\",status=~\"5..\"}[5m])",
-            "legendFormat": "5xx Server Error"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
-        "fieldConfig": {
-          "defaults": {
-            "color": {"mode": "palette-classic"},
-            "unit": "reqps"
-          }
-        }
-      },
-      {
-        "id": 7,
-        "title": "💽 JVM Memory Detail",
-        "type": "timeseries",
-        "targets": [
-          {
-            "expr": "jvm_memory_used_bytes{job=\"memory-api\",area=\"heap\"} / 1024 / 1024 / 1024",
-            "legendFormat": "Heap Memory (GB)"
-          },
-          {
-            "expr": "jvm_memory_max_bytes{job=\"memory-api\",area=\"heap\"} / 1024 / 1024 / 1024",
-            "legendFormat": "Heap Max (GB)"
-          },
-          {
-            "expr": "jvm_memory_used_bytes{job=\"memory-api\",area=\"nonheap\"} / 1024 / 1024",
-            "legendFormat": "Non-Heap Memory (MB)"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
-        "fieldConfig": {
-          "defaults": {
-            "color": {"mode": "palette-classic"},
-            "unit": "short"
-          }
-        }
-      },
-      {
-        "id": 8,
-        "title": "🔍 Elasticsearch Status",
-        "type": "stat",
-        "targets": [
-          {
-            "expr": "up{job=\"elasticsearch\"}",
-            "legendFormat": "Elasticsearch"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
-        "fieldConfig": {
-          "defaults": {
-            "color": {"mode": "thresholds"},
-            "thresholds": {
-              "steps": [
-                {"color": "red", "value": 0},
-                {"color": "green", "value": 1}
-              ]
-            },
-            "mappings": [
-              {"options": {"0": {"text": "❌ DOWN", "color": "red"}}, "type": "value"},
-              {"options": {"1": {"text": "✅ UP", "color": "green"}}, "type": "value"}
-            ]
-          }
+          "mappings": [
+            {"options": {"0": {"text": "❌ DOWN", "color": "red"}}, "type": "value"},
+            {"options": {"1": {"text": "✅ UP", "color": "green"}}, "type": "value"}
+          ]
         }
       }
-    ]
-  },
-  "overwrite": true
+    },
+    {
+      "id": 2,
+      "title": "💾 JVM Heap Usage",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "(jvm_memory_used_bytes{job=\"memory-api\",area=\"heap\"} / jvm_memory_max_bytes{job=\"memory-api\",area=\"heap\"}) * 100",
+          "legendFormat": "Heap Usage %"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "green", "value": 0},
+              {"color": "yellow", "value": 70},
+              {"color": "red", "value": 80}
+            ]
+          },
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "🌐 Request Rate",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_count{job=\"memory-api\"}[5m])",
+          "legendFormat": "Requests/sec"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "reqps"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "🗄️ DB Connections",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "(hikari_connections_active{job=\"memory-api\"} / hikari_connections_max{job=\"memory-api\"}) * 100",
+          "legendFormat": "Connection Usage %"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "green", "value": 0},
+              {"color": "yellow", "value": 70},
+              {"color": "red", "value": 80}
+            ]
+          },
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "📈 Response Time Distribution",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, rate(http_server_requests_seconds_bucket{job=\"memory-api\"}[5m]))",
+          "legendFormat": "50th percentile"
+        },
+        {
+          "expr": "histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job=\"memory-api\"}[5m]))",
+          "legendFormat": "95th percentile"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(http_server_requests_seconds_bucket{job=\"memory-api\"}[5m]))",
+          "legendFormat": "99th percentile"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "s"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "🚨 HTTP Status Codes",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_count{job=\"memory-api\",status=~\"2..\"}[5m])",
+          "legendFormat": "2xx Success"
+        },
+        {
+          "expr": "rate(http_server_requests_seconds_count{job=\"memory-api\",status=~\"4..\"}[5m])",
+          "legendFormat": "4xx Client Error"
+        },
+        {
+          "expr": "rate(http_server_requests_seconds_count{job=\"memory-api\",status=~\"5..\"}[5m])",
+          "legendFormat": "5xx Server Error"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "reqps"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "💽 JVM Memory Detail",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "jvm_memory_used_bytes{job=\"memory-api\",area=\"heap\"} / 1024 / 1024 / 1024",
+          "legendFormat": "Heap Memory (GB)"
+        },
+        {
+          "expr": "jvm_memory_max_bytes{job=\"memory-api\",area=\"heap\"} / 1024 / 1024 / 1024",
+          "legendFormat": "Heap Max (GB)"
+        },
+        {
+          "expr": "jvm_memory_used_bytes{job=\"memory-api\",area=\"nonheap\"} / 1024 / 1024",
+          "legendFormat": "Non-Heap Memory (MB)"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "🔍 Elasticsearch Status",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "up{job=\"elasticsearch\"}",
+          "legendFormat": "Elasticsearch"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "red", "value": 0},
+              {"color": "green", "value": 1}
+            ]
+          },
+          "mappings": [
+            {"options": {"0": {"text": "❌ DOWN", "color": "red"}}, "type": "value"},
+            {"options": {"1": {"text": "✅ UP", "color": "green"}}, "type": "value"}
+          ]
+        }
+      }
+    }
+  ]
 }

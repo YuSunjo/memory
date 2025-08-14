@@ -1,6 +1,7 @@
 {
   "dashboard": {
     "id": null,
+    "uid": "memory-prod-onpremise",
     "title": "Memory API PRODUCTION OnPremise Monitoring",
     "tags": ["memory", "spring-boot", "production", "onpremise"],
     "timezone": "Asia/Seoul",
@@ -211,5 +212,6 @@
         }
       }
     ]
-  }
+  },
+  "overwrite": true
 }

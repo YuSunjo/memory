@@ -1,6 +1,7 @@
 {
   "dashboard": {
     "id": null,
+    "uid": "memory-dev-enhanced",
     "title": "Memory API Enhanced Monitoring",
     "tags": ["memory", "spring-boot", "enhanced"],
     "timezone": "Asia/Seoul",
@@ -259,5 +260,6 @@
         }
       }
     ]
-  }
+  },
+  "overwrite": true
 }

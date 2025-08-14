@@ -35,7 +35,7 @@ jobs:
           fi
           
           echo "📂 Navigating to Docker directory..."
-          cd memory-infra/docker/prod/onPromise
+          cd memory-infra/docker/prod/onPremise
           
           echo "📦 Checking and installing required tools..."
           if ! command -v jq &> /dev/null; then

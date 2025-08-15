@@ -8,5 +8,6 @@ cloud:
     s3:
       bucket: memory
       endpoint: http://localhost:9000
+      cdn-endpoint:
     stack:
       auto: false

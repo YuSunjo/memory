@@ -46,6 +46,7 @@ public class S3Component {
     public static class S3 {
         private String bucket;
         private String endpoint;
+        private String cdnEndpoint;
     }
 
     @Getter

@@ -9,11 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-import java.net.URL;
 
 @Slf4j
 @Service
@@ -45,8 +43,7 @@ public class S3Service {
 
     public void deleteFile(String fileUrl) {
         try {
-            String bucket = s3Component.getS3().getBucket();
-            String fileName = fileUrl.substring(fileUrl.indexOf(bucket) + bucket.length() + 1);
+            String fileName = extractFileNameFromUrl(fileUrl);
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                     .bucket(s3Component.getS3().getBucket())
                     .key(fileName)
@@ -59,23 +56,31 @@ public class S3Service {
         }
     }
 
-    private String getFileUrl(String fileName) {
-        boolean isMinioEndpoint = s3Component.getS3().getEndpoint() != null &&
-                !s3Component.getS3().getEndpoint().contains("amazonaws.com");
-
-        if (isMinioEndpoint) {
-            // MinIO 방식 URL 생성
-            return s3Component.getS3().getEndpoint() + "/" +
-                    s3Component.getS3().getBucket() + "/" +
-                    fileName;
-        } else {
-            // AWS S3 방식 URL 생성
-            GetUrlRequest getUrlRequest = GetUrlRequest.builder()
-                    .bucket(s3Component.getS3().getBucket())
-                    .key(fileName)
-                    .build();
-            URL url = s3Client.utilities().getUrl(getUrlRequest);
-            return url.toString();
+    private String extractFileNameFromUrl(String fileUrl) {
+        String cdnEndpoint = s3Component.getS3().getCdnEndpoint();
+        
+        // CloudFront URL인 경우
+        if (cdnEndpoint != null && fileUrl.startsWith(cdnEndpoint)) {
+            return fileUrl.substring(cdnEndpoint.length() + 1);
         }
+        
+        // 기존 S3 URL인 경우
+        String bucket = s3Component.getS3().getBucket();
+        if (fileUrl.contains(bucket)) {
+            return fileUrl.substring(fileUrl.indexOf(bucket) + bucket.length() + 1);
+        }
+        
+        // URL의 마지막 경로 부분을 파일명으로 추출
+        return fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+    }
+
+    private String getFileUrl(String fileName) {
+        if (s3Component.getS3().getCdnEndpoint() != null && !s3Component.getS3().getCdnEndpoint().isEmpty()) {
+            // CDN 엔드포인트가 설정되어 있으면 CloudFront URL 반환
+            return s3Component.getS3().getCdnEndpoint() + "/" + s3Component.getS3().getBucket() + "/" + fileName;
+        }
+        return s3Component.getS3().getEndpoint() + "/" +
+                s3Component.getS3().getBucket() + "/" +
+                fileName;
     }
 }

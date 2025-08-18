@@ -6,24 +6,54 @@ groups:
     folder: Memory API
     interval: 30s
     rules:
-      # 🚨 Critical Alerts - Production has stricter thresholds
+      # 🚨 Critical Alert - Service Down (더 빠른 반응)
       - uid: service-down-prod
         title: 🔥 Memory API Service Down [PROD] 🔥
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
+              disableTextWrap: false
+              editorMode: builder
               expr: up{job="memory-api"}
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: Alerting
         execErrState: Alerting
         for: 15s
@@ -33,24 +63,55 @@ groups:
         labels:
           severity: critical
           environment: production
-        
+
+      # 🚨 Critical Alert - High JVM Heap (더 낮은 임계값)
       - uid: high-jvm-heap-prod
         title: High JVM Heap Usage [PROD]
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: (jvm_memory_used_bytes{job="memory-api",area="heap"} / jvm_memory_max_bytes{job="memory-api",area="heap"}) * 100 > 75
+              disableTextWrap: false
+              editorMode: builder
+              expr: (jvm_memory_used_bytes{job="memory-api",area="heap"} / jvm_memory_max_bytes{job="memory-api",area="heap"}) * 100
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 75
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 1m
@@ -61,23 +122,54 @@ groups:
           severity: critical
           environment: production
 
+      # 🚨 Critical Alert - Database Connection Pool
       - uid: high-db-connections-prod
         title: Database Connection Pool Critical [PROD]
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: (hikari_connections_active{job="memory-api"} / hikari_connections_max{job="memory-api"}) * 100 > 85
+              disableTextWrap: false
+              editorMode: builder
+              expr: (hikari_connections_active{job="memory-api"} / hikari_connections_max{job="memory-api"}) * 100
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 85
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 30s
@@ -88,24 +180,54 @@ groups:
           severity: critical
           environment: production
 
-      # ⚠️ Warning Alerts - Production optimized thresholds
+      # ⚠️ Warning Alert - High Response Time (더 엄격한 임계값)
       - uid: high-response-time-prod
         title: High Response Time [PROD]
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job="memory-api"}[5m])) > 1.5
+              disableTextWrap: false
+              editorMode: builder
+              expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job="memory-api"}[5m]))
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1.5
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 1m
@@ -116,23 +238,54 @@ groups:
           severity: warning
           environment: production
 
+      # ⚠️ Warning Alert - High Error Rate (더 엄격한 임계값)
       - uid: high-error-rate-prod
         title: High Server Error Rate [PROD]
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: (rate(http_server_requests_seconds_count{job="memory-api",status=~"5.."}[5m]) / rate(http_server_requests_seconds_count{job="memory-api"}[5m])) * 100 > 2
+              disableTextWrap: false
+              editorMode: builder
+              expr: (rate(http_server_requests_seconds_count{job="memory-api",status=~"5.."}[5m]) / rate(http_server_requests_seconds_count{job="memory-api"}[5m])) * 100
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 2
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 1m
@@ -143,23 +296,54 @@ groups:
           severity: warning
           environment: production
 
+      # ⚠️ Warning Alert - High CPU Usage (더 엄격한 임계값)
       - uid: high-cpu-usage-prod
         title: High CPU Usage [PROD]
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: system_cpu_usage{job="memory-api"} * 100 > 70
+              disableTextWrap: false
+              editorMode: builder
+              expr: system_cpu_usage{job="memory-api"} * 100
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 70
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 3m
@@ -170,23 +354,54 @@ groups:
           severity: warning
           environment: production
 
+      # ⚠️ Warning Alert - Low Disk Space
       - uid: disk-space-low-prod
         title: Low Disk Space [PROD]
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: (disk_free_bytes{job="memory-api"} / disk_total_bytes{job="memory-api"}) * 100 < 15
+              disableTextWrap: false
+              editorMode: builder
+              expr: (disk_free_bytes{job="memory-api"} / disk_total_bytes{job="memory-api"}) * 100
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 15
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 1m

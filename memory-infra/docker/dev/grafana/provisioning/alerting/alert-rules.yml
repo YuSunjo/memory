@@ -4,26 +4,56 @@ groups:
   - name: memory-api-alerts-dev
     orgId: 1
     folder: Memory API
-    interval: 1m
+    interval: 10s
     rules:
-      # 🚨 Critical Alerts
+      # 🚨 Critical Alert - Service Down
       - uid: service-down-dev
         title: Memory API Service Down [DEV]
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
+              disableTextWrap: false
+              editorMode: builder
               expr: up{job="memory-api"}
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 30s
@@ -33,24 +63,55 @@ groups:
         labels:
           severity: critical
           environment: dev
-        
+
+      # 🚨 Critical Alert - High JVM Heap
       - uid: high-jvm-heap-dev
         title: High JVM Heap Usage [DEV]
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: (jvm_memory_used_bytes{job="memory-api",area="heap"} / jvm_memory_max_bytes{job="memory-api",area="heap"}) * 100 > 85
+              disableTextWrap: false
+              editorMode: builder
+              expr: (jvm_memory_used_bytes{job="memory-api",area="heap"} / jvm_memory_max_bytes{job="memory-api",area="heap"}) * 100
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 85
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 2m
@@ -61,24 +122,54 @@ groups:
           severity: critical
           environment: dev
 
-      # ⚠️ Warning Alerts  
+      # ⚠️ Warning Alert - High Response Time
       - uid: high-response-time-dev
         title: High Response Time [DEV]
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job="memory-api"}[5m])) > 2
+              disableTextWrap: false
+              editorMode: builder
+              expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job="memory-api"}[5m]))
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 2
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 2m
@@ -89,23 +180,54 @@ groups:
           severity: warning
           environment: dev
 
+      # ⚠️ Warning Alert - High Error Rate
       - uid: high-error-rate-dev
         title: High Server Error Rate [DEV]
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: (rate(http_server_requests_seconds_count{job="memory-api",status=~"5.."}[5m]) / rate(http_server_requests_seconds_count{job="memory-api"}[5m])) * 100 > 5
+              disableTextWrap: false
+              editorMode: builder
+              expr: (rate(http_server_requests_seconds_count{job="memory-api",status=~"5.."}[5m]) / rate(http_server_requests_seconds_count{job="memory-api"}[5m])) * 100
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 5
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 2m
@@ -116,23 +238,54 @@ groups:
           severity: warning
           environment: dev
 
+      # ⚠️ Warning Alert - High CPU Usage  
       - uid: high-cpu-usage-dev
         title: High CPU Usage [DEV]
-        condition: A
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: system_cpu_usage{job="memory-api"} * 100 > 80
+              disableTextWrap: false
+              editorMode: builder
+              expr: system_cpu_usage{job="memory-api"} * 100
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 80
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 5m

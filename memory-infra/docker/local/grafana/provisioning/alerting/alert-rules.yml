@@ -4,136 +4,294 @@ groups:
   - name: memory-api-alerts
     orgId: 1
     folder: Memory API
-    interval: 1m
+    interval: 10s
     rules:
-      # 🚨 Critical Alerts
-      - uid: service-down
-        title: Memory API Service Down
-        condition: A
+      # 🚨 Critical Alert - Service Down
+      - uid: service-down-local
+        title: Memory API Service Down [LOCAL]
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
+              disableTextWrap: false
+              editorMode: builder
               expr: up{job="memory-api"}
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 30s
         annotations:
-          summary: "Memory API service is down"
-          description: "Memory API has been down for more than 30 seconds"
+          summary: "Memory API service is down [LOCAL]"
+          description: "Memory API has been down for more than 30 seconds in LOCAL environment"
         labels:
           severity: critical
-        
-      - uid: high-jvm-heap
-        title: High JVM Heap Usage
-        condition: A
+          environment: local
+
+      # 🚨 Critical Alert - High JVM Heap
+      - uid: high-jvm-heap-local
+        title: High JVM Heap Usage [LOCAL]
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: (jvm_memory_used_bytes{job="memory-api",area="heap"} / jvm_memory_max_bytes{job="memory-api",area="heap"}) * 100 > 85
+              disableTextWrap: false
+              editorMode: builder
+              expr: (jvm_memory_used_bytes{job="memory-api",area="heap"} / jvm_memory_max_bytes{job="memory-api",area="heap"}) * 100
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 85
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 2m
         annotations:
-          summary: "JVM heap memory usage is critically high"
-          description: "JVM heap memory usage is above 85% for more than 2 minutes"
+          summary: "JVM heap memory usage is critically high [LOCAL]"
+          description: "JVM heap memory usage is above 85% for more than 2 minutes in LOCAL environment"
         labels:
           severity: critical
+          environment: local
 
-      # ⚠️ Warning Alerts  
-      - uid: high-response-time
-        title: High Response Time
-        condition: A
+      # ⚠️ Warning Alert - High Response Time
+      - uid: high-response-time-local
+        title: High Response Time [LOCAL]
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job="memory-api"}[5m])) > 2
+              disableTextWrap: false
+              editorMode: builder
+              expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job="memory-api"}[5m]))
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 2
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 2m
         annotations:
-          summary: "High response latency detected"
-          description: "95th percentile latency is above 2 seconds for more than 2 minutes"
+          summary: "High response latency detected [LOCAL]"
+          description: "95th percentile latency is above 2 seconds for more than 2 minutes in LOCAL environment"
         labels:
           severity: warning
+          environment: local
 
-      - uid: high-error-rate
-        title: High Server Error Rate
-        condition: A
+      # ⚠️ Warning Alert - High Error Rate
+      - uid: high-error-rate-local
+        title: High Server Error Rate [LOCAL]
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: (rate(http_server_requests_seconds_count{job="memory-api",status=~"5.."}[5m]) / rate(http_server_requests_seconds_count{job="memory-api"}[5m])) * 100 > 5
+              disableTextWrap: false
+              editorMode: builder
+              expr: (rate(http_server_requests_seconds_count{job="memory-api",status=~"5.."}[5m]) / rate(http_server_requests_seconds_count{job="memory-api"}[5m])) * 100
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 5
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 2m
         annotations:
-          summary: "High server error rate detected"
-          description: "Server error rate is above 5% for more than 2 minutes"
+          summary: "High server error rate detected [LOCAL]"
+          description: "Server error rate is above 5% for more than 2 minutes in LOCAL environment"
         labels:
           severity: warning
+          environment: local
 
-      - uid: high-cpu-usage
-        title: High CPU Usage
-        condition: A
+      # ⚠️ Warning Alert - High CPU Usage  
+      - uid: high-cpu-usage-local
+        title: High CPU Usage [LOCAL]
+        condition: C
         data:
           - refId: A
-            queryType: ""
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
-            datasource:
-              type: prometheus
-              uid: prometheus
+            datasourceUid: prometheus
             model:
-              expr: system_cpu_usage{job="memory-api"} * 100 > 80
+              disableTextWrap: false
+              editorMode: builder
+              expr: system_cpu_usage{job="memory-api"} * 100
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 80
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
               intervalMs: 1000
               maxDataPoints: 43200
-              refId: A
+              refId: C
+              type: threshold
         noDataState: NoData
         execErrState: Alerting
         for: 5m
         annotations:
-          summary: "High CPU usage detected"
-          description: "CPU usage is above 80% for more than 5 minutes"
+          summary: "High CPU usage detected [LOCAL]"
+          description: "CPU usage is above 80% for more than 5 minutes in LOCAL environment"
         labels:
           severity: warning
+          environment: local

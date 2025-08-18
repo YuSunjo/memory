@@ -65,6 +65,7 @@ jobs:
           KIBANA_PASSWORD=$(echo $SECRET_VALUES | jq -r '.KIBANA_PASSWORD')
           GRAFANA_ADMIN_USER=$(echo $SECRET_VALUES | jq -r '.GRAFANA_ADMIN_USER')
           GRAFANA_ADMIN_PASSWORD=$(echo $SECRET_VALUES | jq -r '.GRAFANA_ADMIN_PASSWORD')
+          PROD_DISCORD_WEBHOOK_URL=$(echo $SECRET_VALUES | jq -r '.PROD_DISCORD_WEBHOOK_URL')
           EOF
           
           echo "🛑 Stopping existing containers..."

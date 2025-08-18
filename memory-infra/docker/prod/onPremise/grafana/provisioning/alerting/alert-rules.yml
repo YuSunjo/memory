@@ -1,0 +1,198 @@
+apiVersion: 1
+
+groups:
+  - name: memory-api-alerts-prod
+    orgId: 1
+    folder: Memory API
+    interval: 30s
+    rules:
+      # 🚨 Critical Alerts - Production has stricter thresholds
+      - uid: service-down-prod
+        title: 🔥 Memory API Service Down [PROD] 🔥
+        condition: A
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasource:
+              type: prometheus
+              uid: prometheus
+            model:
+              expr: up{job="memory-api"}
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 15s
+        annotations:
+          summary: "🚨 CRITICAL: Memory API service is DOWN in PRODUCTION 🚨"
+          description: "Memory API has been down for more than 15 seconds in PRODUCTION environment"
+        labels:
+          severity: critical
+          environment: production
+        
+      - uid: high-jvm-heap-prod
+        title: High JVM Heap Usage [PROD]
+        condition: A
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasource:
+              type: prometheus
+              uid: prometheus
+            model:
+              expr: (jvm_memory_used_bytes{job="memory-api",area="heap"} / jvm_memory_max_bytes{job="memory-api",area="heap"}) * 100 > 75
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+        noDataState: NoData
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: "JVM heap memory usage is critically high [PROD]"
+          description: "JVM heap memory usage is above 75% for more than 1 minute in PRODUCTION"
+        labels:
+          severity: critical
+          environment: production
+
+      - uid: high-db-connections-prod
+        title: Database Connection Pool Critical [PROD]
+        condition: A
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasource:
+              type: prometheus
+              uid: prometheus
+            model:
+              expr: (hikari_connections_active{job="memory-api"} / hikari_connections_max{job="memory-api"}) * 100 > 85
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+        noDataState: NoData
+        execErrState: Alerting
+        for: 30s
+        annotations:
+          summary: "Database connection pool usage critical [PROD]"
+          description: "Active database connections above 85% in PRODUCTION"
+        labels:
+          severity: critical
+          environment: production
+
+      # ⚠️ Warning Alerts - Production optimized thresholds
+      - uid: high-response-time-prod
+        title: High Response Time [PROD]
+        condition: A
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasource:
+              type: prometheus
+              uid: prometheus
+            model:
+              expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job="memory-api"}[5m])) > 1.5
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+        noDataState: NoData
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: "High response latency detected [PROD]"
+          description: "95th percentile latency is above 1.5 seconds for more than 1 minute in PRODUCTION"
+        labels:
+          severity: warning
+          environment: production
+
+      - uid: high-error-rate-prod
+        title: High Server Error Rate [PROD]
+        condition: A
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasource:
+              type: prometheus
+              uid: prometheus
+            model:
+              expr: (rate(http_server_requests_seconds_count{job="memory-api",status=~"5.."}[5m]) / rate(http_server_requests_seconds_count{job="memory-api"}[5m])) * 100 > 2
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+        noDataState: NoData
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: "High server error rate detected [PROD]"
+          description: "Server error rate is above 2% for more than 1 minute in PRODUCTION"
+        labels:
+          severity: warning
+          environment: production
+
+      - uid: high-cpu-usage-prod
+        title: High CPU Usage [PROD]
+        condition: A
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasource:
+              type: prometheus
+              uid: prometheus
+            model:
+              expr: system_cpu_usage{job="memory-api"} * 100 > 70
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+        noDataState: NoData
+        execErrState: Alerting
+        for: 3m
+        annotations:
+          summary: "High CPU usage detected [PROD]"
+          description: "CPU usage is above 70% for more than 3 minutes in PRODUCTION"
+        labels:
+          severity: warning
+          environment: production
+
+      - uid: disk-space-low-prod
+        title: Low Disk Space [PROD]
+        condition: A
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasource:
+              type: prometheus
+              uid: prometheus
+            model:
+              expr: (disk_free_bytes{job="memory-api"} / disk_total_bytes{job="memory-api"}) * 100 < 15
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+        noDataState: NoData
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: "Disk space critically low [PROD]"
+          description: "Free disk space is below 15% in PRODUCTION"
+        labels:
+          severity: warning
+          environment: production

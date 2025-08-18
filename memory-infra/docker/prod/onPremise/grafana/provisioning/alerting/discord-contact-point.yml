@@ -1,0 +1,26 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: discord-webhook
+    receivers:
+      - uid: discord001
+        type: discord
+        settings:
+          url: "YOUR_PROD_DISCORD_WEBHOOK_URL_HERE"
+          title: "🚨 Memory API Alert [PROD] 🚨"
+          message: |
+            **🔥 PRODUCTION ALERT 🔥**
+            **{{ .CommonAnnotations.summary }}**
+            
+            **Environment:** PRODUCTION
+            **Description:** {{ .CommonAnnotations.description }}
+            **Severity:** {{ .CommonLabels.severity }}
+            **Timestamp:** {{ .CommonAnnotations.timestamp }}
+            
+            {{ range .Alerts }}
+            - **{{ .Annotations.summary }}**
+            {{ end }}
+            
+            @here **Immediate attention required!**
+        disableResolveMessage: false

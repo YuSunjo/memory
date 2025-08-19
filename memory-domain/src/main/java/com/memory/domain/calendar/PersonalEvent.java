@@ -33,7 +33,7 @@ public class PersonalEvent extends BaseCalendarEvent {
     // 일정 접근 권한 확인 메서드 (개인 일정은 소유자만 접근 가능)
     @Override
     public void validateAccessPermission(Member member) {
-        if (isOwner(member)) {
+        if (!isOwner(member)) {
             throw new ValidationException("이 일정에 접근할 권한이 없습니다.");
         }
     }

@@ -36,4 +36,13 @@ public class GameSetting extends BaseTimeEntity {
     @Column(nullable = false)
     private Boolean isActive = true;
 
+    public GameSetting(GameMode gameMode, Integer maxQuestions, Integer timeLimitSeconds, Integer maxDistanceForFullScoreKm, String scoringFormula, Boolean isActive) {
+        this.gameMode = gameMode;
+        this.maxQuestions = maxQuestions;
+        this.timeLimitSeconds = timeLimitSeconds;
+        this.maxDistanceForFullScoreKm = maxDistanceForFullScoreKm;
+        this.scoringFormula = scoringFormula;
+        this.isActive = isActive;
+    }
+
 }

@@ -1,0 +1,11 @@
+jwt:
+  token:
+    secret: test_secret_key_for_integration_tests_memory_jwt_token_secret_key_test_environment
+    expiration: 3600
+    refresh: 2592000
+    enabled: true
+
+logging:
+  level:
+    org.springframework.web: INFO
+    com.memory: INFO

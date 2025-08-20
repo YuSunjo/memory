@@ -19,9 +19,6 @@ cloud:
   aws:
     enabled: false
 
-# ElasticSearch Configuration for testing (disabled)
-elasticsearch:
-  enabled: false
 
 jwt:
   token:
@@ -35,3 +32,15 @@ logging:
     org.springframework.web: INFO
     com.memory: INFO
     com.amazonaws: WARN
+    # TestContainers 관련 디버깅 로그
+    com.memory.controller.PostgresTC: DEBUG
+    com.memory.controller.ElasticSearchTC: DEBUG
+    com.memory.controller.BaseIntegrationTest: DEBUG
+    org.testcontainers: INFO
+    org.springframework.boot.test: DEBUG
+    org.springframework.test.context: DEBUG
+    org.flywaydb: INFO
+    org.postgresql: INFO
+    # ElasticSearch 로깅
+    org.elasticsearch: INFO
+    org.springframework.data.elasticsearch: DEBUG

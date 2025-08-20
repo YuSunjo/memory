@@ -13,12 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public abstract class BaseIntegrationTest {
     static final PostgresTC PG = PostgresTC.getInstance();
+    // ElasticSearch 임시 비활성화
+    static final ElasticSearchTC ES = ElasticSearchTC.getInstance();
 
     @DynamicPropertySource
     static void props(DynamicPropertyRegistry r) {
+        // PostgreSQL 설정
         r.add("spring.datasource.url", PG::getJdbcUrl);
         r.add("spring.datasource.username", PG::getUsername);
         r.add("spring.datasource.password", PG::getPassword);
         r.add("spring.datasource.driver-class-name", () -> "org.postgresql.Driver");
+        
+        // ElasticSearch 설정 임시 비활성화
+         r.add("spring.elasticsearch.uris", ES::getHttpHostAddress);
     }
 }

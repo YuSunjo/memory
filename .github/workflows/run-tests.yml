@@ -2,9 +2,9 @@ name: Run Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, test ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, test ]
 
 jobs:
   test:
@@ -21,8 +21,22 @@ jobs:
         distribution: 'temurin'
         cache: gradle
         
+    - name: Check Docker availability
+      run: |
+        docker --version
+        docker info
+        
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+        
     - name: Run memory-api tests with coverage
-      run: ./gradlew :memory-api:test :memory-api:jacocoTestReport
+      run: ./gradlew :memory-api:test :memory-api:jacocoTestReport --info --stacktrace
+      env:
+        SPRING_PROFILES_ACTIVE: test
+        TESTCONTAINERS_RYUK_DISABLED: true
+        TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
+        # ElasticSearch TestContainer 설정
+        ES_JAVA_OPTS: "-Xms512m -Xmx512m"
       
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3

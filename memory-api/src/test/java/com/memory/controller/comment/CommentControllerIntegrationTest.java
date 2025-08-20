@@ -2,6 +2,7 @@ package com.memory.controller.comment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memory.config.jwt.JwtTokenProvider;
+import com.memory.controller.BaseIntegrationTest;
 import com.memory.domain.comment.Comment;
 import com.memory.domain.comment.repository.CommentRepository;
 import com.memory.domain.map.Map;
@@ -17,12 +18,8 @@ import com.memory.dto.comment.CommentCreateRequest;
 import com.memory.dto.comment.CommentUpdateRequest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -30,11 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Transactional
-class CommentControllerIntegrationTest {
+class CommentControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

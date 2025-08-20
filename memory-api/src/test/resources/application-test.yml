@@ -1,3 +1,28 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+
+  
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+# AWS S3 Configuration for testing (disabled)
+cloud:
+  aws:
+    enabled: false
+
+# ElasticSearch Configuration for testing (disabled)
+elasticsearch:
+  enabled: false
+
 jwt:
   token:
     secret: test_secret_key_for_integration_tests_memory_jwt_token_secret_key_test_environment
@@ -9,3 +34,4 @@ logging:
   level:
     org.springframework.web: INFO
     com.memory: INFO
+    com.amazonaws: WARN

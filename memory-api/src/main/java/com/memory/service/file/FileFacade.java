@@ -4,7 +4,7 @@ import com.memory.domain.file.FileType;
 import com.memory.storage.dto.UploadResponse;
 import com.memory.dto.file.FileRequest;
 import com.memory.dto.file.response.FileResponse;
-import com.memory.storage.service.upload.UploadService;
+import com.memory.storage.service.upload.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileFacade {
 
-    private final UploadService uploadService;
+    private final FileUploadService uploadService;
     private final FileService fileService;
 
     public FileResponse uploadFile(MultipartFile file, FileType fileType) {

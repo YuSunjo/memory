@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(prefix = "cloud.aws", name = "enabled", havingValue = "true")
-public class UploadService {
+public class UploadService implements FileUploadService {
 
     private final S3Service s3Service;
 

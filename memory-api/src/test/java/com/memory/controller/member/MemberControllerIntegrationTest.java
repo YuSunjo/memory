@@ -2,29 +2,25 @@ package com.memory.controller.member;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memory.config.jwt.JwtTokenProvider;
+import com.memory.controller.BaseIntegrationTest;
+import com.memory.domain.file.File;
+import com.memory.domain.file.FileType;
+import com.memory.domain.file.repository.FileRepository;
 import com.memory.domain.member.Member;
 import com.memory.domain.member.MemberType;
 import com.memory.domain.member.repository.MemberRepository;
 import com.memory.dto.member.MemberRequest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Transactional
-class MemberControllerIntegrationTest {
+class MemberControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,6 +33,9 @@ class MemberControllerIntegrationTest {
     
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private FileRepository fileRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -147,7 +146,10 @@ class MemberControllerIntegrationTest {
     @DisplayName("회원 정보 수정 통합 테스트")
     void updateMemberIntegrationTest() throws Exception {
         // Given
-        MemberRequest.Update request = new MemberRequest.Update("updatedNickname", 1L);
+        File file = new File("testFile", "image/png", "testFilePath", FileType.MEMBER, 2222L);
+        fileRepository.save(file);
+
+        MemberRequest.Update request = new MemberRequest.Update("updatedNickname", file.getId());
 
         // When & Then
         mockMvc.perform(put("/api/v1/member/me")

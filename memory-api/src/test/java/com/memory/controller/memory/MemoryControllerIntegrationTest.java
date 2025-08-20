@@ -2,6 +2,7 @@ package com.memory.controller.memory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memory.config.jwt.JwtTokenProvider;
+import com.memory.controller.BaseIntegrationTest;
 import com.memory.domain.map.Map;
 import com.memory.domain.map.MapType;
 import com.memory.domain.map.repository.MapRepository;
@@ -14,12 +15,8 @@ import com.memory.domain.memory.repository.MemoryRepository;
 import com.memory.dto.memory.MemoryRequest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -28,11 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Transactional
-class MemoryControllerIntegrationTest {
+class MemoryControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

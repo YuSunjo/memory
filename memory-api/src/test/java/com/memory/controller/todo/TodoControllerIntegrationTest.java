@@ -2,6 +2,7 @@ package com.memory.controller.todo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memory.config.jwt.JwtTokenProvider;
+import com.memory.controller.BaseIntegrationTest;
 import com.memory.domain.member.Member;
 import com.memory.domain.member.MemberType;
 import com.memory.domain.member.repository.MemberRepository;
@@ -12,13 +13,9 @@ import com.memory.domain.todo.repository.TodoRepository;
 import com.memory.dto.todo.TodoRequest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,11 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Transactional
-class TodoControllerIntegrationTest {
+class TodoControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

@@ -3,6 +3,7 @@ package com.memory.controller.calendar;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.memory.config.jwt.JwtTokenProvider;
+import com.memory.controller.BaseIntegrationTest;
 import com.memory.domain.calendar.CalendarEventType;
 import com.memory.domain.calendar.PersonalEvent;
 import com.memory.domain.calendar.repository.PersonalEventRepository;
@@ -12,12 +13,8 @@ import com.memory.domain.member.repository.MemberRepository;
 import com.memory.dto.calendar.CalendarEventRequest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -25,11 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Transactional
-class CalendarEventControllerIntegrationTest {
+class CalendarEventControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

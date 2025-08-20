@@ -28,7 +28,7 @@ public class GameSessionController {
         response = GameSessionResponse.class
     )
     @Auth
-    @PostMapping("api/v1/game/sessions")
+    @PostMapping("/api/v1/game/sessions")
     public ServerResponse<GameSessionResponse> createGameSession(
             @Parameter(hidden = true) @MemberId Long memberId,
             @RequestBody @Valid GameSessionRequest.Create request) {
@@ -41,7 +41,7 @@ public class GameSessionController {
         response = GameSessionResponse.class
     )
     @Auth
-    @GetMapping("api/v1/game/sessions/{sessionId}")
+    @GetMapping("/api/v1/game/sessions/{sessionId}")
     public ServerResponse<GameSessionResponse> findGameSessionById(
             @Parameter(hidden = true) @MemberId Long memberId,
             @PathVariable Long sessionId) {
@@ -54,7 +54,7 @@ public class GameSessionController {
         response = GameSessionResponse.class
     )
     @Auth
-    @GetMapping("api/v1/game/sessions/current")
+    @GetMapping("/api/v1/game/sessions/current")
     public ServerResponse<GameSessionResponse> findProgressGameSession(
             @Parameter(hidden = true) @MemberId Long memberId) {
         return ServerResponse.success(gameSessionService.findProgressGameSession(memberId));
@@ -66,7 +66,7 @@ public class GameSessionController {
         response = GameSessionResponse.class
     )
     @Auth
-    @GetMapping("api/v1/game/sessions")
+    @GetMapping("/api/v1/game/sessions")
     public ServerResponse<List<GameSessionResponse>> findGameSessionsByMember(
             @Parameter(hidden = true) @MemberId Long memberId,
             GameSessionRequest.GetList request) {
@@ -78,7 +78,7 @@ public class GameSessionController {
         description = "진행중인 게임 세션을 포기합니다."
     )
     @Auth
-    @PatchMapping("api/v1/game/sessions/{sessionId}/give-up")
+    @PatchMapping("/api/v1/game/sessions/{sessionId}/give-up")
     public ServerResponse<String> giveUpGameSession(
             @Parameter(hidden = true) @MemberId Long memberId,
             @PathVariable Long sessionId) {

@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-jammy AS builder
+FROM eclipse-temurin:21-jdk-jammy AS builder
 
 WORKDIR /app
 
@@ -23,7 +23,7 @@ RUN chmod +x ./gradlew
 RUN ./gradlew :memory-api:clean :memory-api:build -x test
 
 # Runtime stage
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 
 WORKDIR /app
 

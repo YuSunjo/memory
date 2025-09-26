@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- 공통 변수 정의 -->
-    <springProfile name="!prod">
+    <springProfile name="local">
         <property name="LOG_PATH" value="./logs"/>
     </springProfile>
-    <springProfile name="prod">
+    <springProfile name="prod, dev">
         <property name="LOG_PATH" value="/app/logs"/>
     </springProfile>
 

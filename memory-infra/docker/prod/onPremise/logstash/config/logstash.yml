@@ -1,0 +1,26 @@
+http.host: "0.0.0.0"
+xpack.monitoring.elasticsearch.hosts: ["http://elasticsearch:9200"]
+xpack.monitoring.elasticsearch.username: "elastic"
+xpack.monitoring.elasticsearch.password: "${ELASTICSEARCH_PASSWORD}"
+xpack.monitoring.enabled: true
+path.config: /usr/share/logstash/pipeline
+path.data: /usr/share/logstash/data
+
+# 운영 환경 성능 최적화 설정
+pipeline.workers: 8
+pipeline.batch.size: 1000
+pipeline.batch.delay: 5
+queue.type: persisted
+queue.max_bytes: 2gb
+queue.page_capacity: 64mb
+queue.checkpoint.writes: 1024
+
+# 로그 레벨 및 성능 설정
+log.level: warn
+slowlog.threshold.warn: 2s
+slowlog.threshold.info: 1s
+slowlog.threshold.debug: 500ms
+slowlog.threshold.trace: 100ms
+
+# JVM 힙 덤프 비활성화 (운영 환경)
+config.support_escapes: true

@@ -1,0 +1,145 @@
+filebeat.inputs:
+  # Memory Application Logs
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/memory/application*.log
+    fields:
+      service: memory-api
+      environment: prod
+      log_type: application
+    fields_under_root: true
+    multiline.pattern: '^\\{'
+    multiline.negate: true
+    multiline.match: after
+    exclude_lines: ['^$']
+    ignore_older: 24h
+    close_inactive: 30m
+    scan_frequency: 60s
+
+  # Memory API Logs
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/memory/api*.log
+    fields:
+      service: memory-api
+      environment: prod
+      log_type: api
+    fields_under_root: true
+    multiline.pattern: '^\\{'
+    multiline.negate: true
+    multiline.match: after
+    exclude_lines: ['^$']
+    ignore_older: 24h
+    close_inactive: 30m
+    scan_frequency: 30s
+
+  # Memory Error Logs
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/memory/error*.log
+    fields:
+      service: memory-api
+      environment: prod
+      log_type: error
+    fields_under_root: true
+    multiline.pattern: '^\\{'
+    multiline.negate: true
+    multiline.match: after
+    exclude_lines: ['^$']
+    ignore_older: 24h
+    close_inactive: 30m
+    scan_frequency: 10s
+
+  # Memory Business Logs
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/memory/business*.log
+    fields:
+      service: memory-api
+      environment: prod
+      log_type: business
+    fields_under_root: true
+    multiline.pattern: '^\\{'
+    multiline.negate: true
+    multiline.match: after
+    exclude_lines: ['^$']
+    ignore_older: 24h
+    close_inactive: 30m
+    scan_frequency: 60s
+
+  # Docker Container Logs (비활성화 - 운영 환경에서는 성능상 이유로)
+  - type: container
+    enabled: false
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    containers.ids:
+      - "*"
+    exclude_containers:
+      - "memory-elasticsearch-prod"
+      - "memory-kibana-prod"
+      - "memory-prometheus-prod"
+      - "memory-grafana-prod"
+      - "memory-logstash-prod"
+      - "memory-filebeat-prod"
+    fields:
+      environment: prod
+      log_type: container
+    fields_under_root: true
+
+# Logstash Output 설정 (운영 환경 최적화)
+output.logstash:
+  hosts: ["logstash:5044"]
+  compression_level: 9
+  worker: 8
+  bulk_max_size: 8192
+  timeout: 120s
+  pipelining: 8
+  backoff.init: 1s
+  backoff.max: 60s
+
+# Filebeat 자체 로그 설정 (운영 환경)
+logging.level: warn
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 60
+  permissions: 0600
+  rotateeverybytes: 500MB
+
+# 성능 설정 (운영 환경)
+filebeat.registry.path: /usr/share/filebeat/data/registry
+filebeat.registry.file_permissions: 0600
+filebeat.registry.flush: 30s
+
+# 모니터링 설정
+monitoring.enabled: true
+monitoring.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  username: elastic
+  password: ${ELASTICSEARCH_PASSWORD}
+
+# 프로세서 설정 (운영 환경)
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+      cache.ttl: 5m
+  - add_docker_metadata:
+      host: "unix:///var/run/docker.sock"
+  - timestamp:
+      field: json.timestamp
+      layouts:
+        - '2006-01-02 15:04:05.000'
+        - '2006-01-02T15:04:05.000Z'
+      test:
+        - '2023-12-01 12:34:56.789'
+
+# Queue settings for high performance
+queue.mem:
+  events: 4096
+  flush.min_events: 512
+  flush.timeout: 5s

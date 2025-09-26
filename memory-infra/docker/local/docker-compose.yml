@@ -68,6 +68,8 @@ services:
 #      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
 #      SPRING_ELASTICSEARCH_USERNAME: elastic
 #      SPRING_ELASTICSEARCH_PASSWORD: elasticsearch-local-password
+#    volumes:
+#      - ./data/logs:/app/logs
 #    depends_on:
 #      - postgres
 #      - minio
@@ -86,10 +88,9 @@ services:
       - "9300:9300"
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=true
-      - ES_JAVA_OPTS=-Xms128m -Xmx256m
-      - bootstrap.memory_lock=true
-      - ELASTIC_PASSWORD=elasticsearch-local-password
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - bootstrap.memory_lock=false
     volumes:
       - ./data/elasticsearch-data:/usr/share/elasticsearch/data
     ulimits:
@@ -99,10 +100,16 @@ services:
       nofile:
         soft: 65536
         hard: 65536
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+        reservations:
+          memory: 512m
     networks:
       - memory-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health -u elastic:elasticsearch-local-password || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -114,19 +121,58 @@ services:
       - "5601:5601"
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=kibana_system
-      - ELASTICSEARCH_PASSWORD=kibana-local-password
-      - xpack.security.enabled=true
     depends_on:
       elasticsearch:
         condition: service_healthy
     networks:
       - memory-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status -u kibana_system:kibana-local-password || curl -f http://localhost:5601/api/status || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.17.4
+    container_name: memory-logstash-local
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    environment:
+      - LS_JAVA_OPTS=-Xms256m -Xmx256m
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./data/logstash-data:/usr/share/logstash/data
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - memory-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9600/_node/stats || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.17.4
+    container_name: memory-filebeat-local
+    user: root
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - LOGSTASH_HOSTS=logstash:5044
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ../../../logs:/var/log/memory:ro
+      - ./data/filebeat-data:/usr/share/filebeat/data
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - logstash
+    networks:
+      - memory-network
 
   prometheus:
     image: prom/prometheus
@@ -189,3 +235,6 @@ volumes:
   elasticsearch-data:
   prometheus-data:
   grafana-data:
+  logs:
+  logstash-data:
+  filebeat-data:

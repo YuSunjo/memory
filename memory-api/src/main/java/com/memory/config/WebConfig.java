@@ -3,6 +3,7 @@ package com.memory.config;
 import com.memory.config.interceptor.AdminInterceptor;
 import com.memory.config.interceptor.AuthInterceptor;
 import com.memory.config.resolver.MemberIdResolver;
+import com.memory.interceptor.ApiLoggingInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -19,6 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     private final MemberIdResolver memberIdResolver;
     private final AuthInterceptor authInterceptor;
     private final AdminInterceptor adminInterceptor;
+    private final ApiLoggingInterceptor apiLoggingInterceptor;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -27,10 +29,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(apiLoggingInterceptor)
+                .addPathPatterns("/api/**")
+                .excludePathPatterns("/swagger-ui/**", "/v3/api-docs/**");
+
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/swagger-ui/**", "/v3/api-docs/**");
-        
+
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/swagger-ui/**", "/v3/api-docs/**");

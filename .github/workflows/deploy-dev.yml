@@ -60,6 +60,14 @@ jobs:
           sudo chown -R ubuntu:ubuntu data/elasticsearch-data
           sudo chmod -R 777 data/elasticsearch-data
           
+          # filebeat, logstash 디렉토리 권한 설정
+          sudo mkdir -p data/filebeat-data
+          sudo mkdir -p data/logstash-data
+          sudo chmod -R 777 data/filebeat-data
+          sudo chmod -R 777 data/logstash-data
+          sudo chown root:root filebeat/filebeat.yml
+          sudo chmod 600 filebeat/filebeat.yml
+          
           # 컨테이너 빌드 및 시작
           docker compose up -d --build
           

@@ -82,6 +82,14 @@ jobs:
           sudo chown -R ubuntu:ubuntu data/elasticsearch-data
           sudo chmod -R 777 data/elasticsearch-data
           
+          echo "📂 Setting up Filebeat and Logstash data directories..."
+          sudo mkdir -p data/filebeat-data
+          sudo mkdir -p data/logstash-data
+          sudo chmod -R 777 data/filebeat-data
+          sudo chmod -R 777 data/logstash-data
+          sudo chown root:root filebeat/filebeat.yml
+          sudo chmod 600 filebeat/filebeat.yml
+          
           echo "🚀 Starting new containers..."
           docker compose up -d
           

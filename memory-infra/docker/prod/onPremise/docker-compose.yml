@@ -148,6 +148,7 @@ services:
   logstash:
     image: docker.elastic.co/logstash/logstash:8.17.4
     container_name: memory-logstash-prod
+    user: root
     ports:
       - "5044:5044"
       - "9600:9600"

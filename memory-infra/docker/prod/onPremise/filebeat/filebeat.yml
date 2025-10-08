@@ -109,7 +109,7 @@ logging.files:
   name: filebeat
   keepfiles: 60
   permissions: 0600
-  rotateeverybytes: 500MB
+  rotateeverybytes: 524288000
 
 # 성능 설정 (운영 환경)
 filebeat.registry.path: /usr/share/filebeat/data/registry

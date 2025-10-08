@@ -42,4 +42,5 @@ memory-infra/docker/**/data/*
 .env
 CLAUDE.md
 settings.local.json
-./logs/*
+logs/*
+.serena/*

@@ -214,5 +214,6 @@ volumes:
   elasticsearch-data:
   prometheus-data:
   grafana-data:
+  logs:
   logstash-data:
   filebeat-data:

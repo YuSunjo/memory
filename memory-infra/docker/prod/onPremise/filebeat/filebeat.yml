@@ -102,7 +102,7 @@ output.logstash:
   backoff.max: 60s
 
 # Filebeat 자체 로그 설정 (운영 환경)
-logging.level: warn
+logging.level: warning
 logging.to_files: true
 logging.files:
   path: /var/log/filebeat

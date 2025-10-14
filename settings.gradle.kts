@@ -1,0 +1,7 @@
+rootProject.name = "memory"
+include("memory-api")
+include("memory-common")
+include("memory-domain")
+include("memory-batch")
+include("memory-adapter")
+include("memory-infra")

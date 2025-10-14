@@ -1,0 +1,23 @@
+plugins {
+    id("java")
+}
+
+tasks.bootJar {
+    enabled = false
+}
+
+tasks.jar {
+    enabled = true
+}
+
+dependencies {
+    implementation(project(":memory-domain"))
+    annotationProcessor(project(":memory-domain"))
+
+    // AWS S3
+    implementation("io.awspring.cloud:spring-cloud-aws-starter:3.3.1")
+    implementation("software.amazon.awssdk:s3:2.31.68")
+    implementation("commons-io:commons-io:2.19.0")
+}
+
+tasks.register("prepareKotlinBuildScriptModel") {}

@@ -25,7 +25,7 @@ public class GameSettingResponse {
         this.timeLimitSeconds = gameSetting.getTimeLimitSeconds();
         this.maxDistanceForFullScoreKm = gameSetting.getMaxDistanceForFullScoreKm();
         this.scoringFormula = gameSetting.getScoringFormula();
-        this.isActive = gameSetting.getIsActive();
+        this.isActive = gameSetting.isActive();
         this.createDate = gameSetting.getCreateDate();
     }
     

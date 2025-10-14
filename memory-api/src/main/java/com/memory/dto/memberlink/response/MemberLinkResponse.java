@@ -28,8 +28,8 @@ public class MemberLinkResponse {
                 memberLink.getUrl(),
                 memberLink.getDescription(),
                 memberLink.getDisplayOrder(),
-                memberLink.getIsActive(),
-                memberLink.getIsVisible(),
+                memberLink.isActive(),
+                memberLink.isVisible(),
                 memberLink.getIconUrl(),
                 memberLink.getClickCount(),
                 memberLink.getCreateDate()

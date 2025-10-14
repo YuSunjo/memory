@@ -23,7 +23,7 @@ public class RoutineResponse {
                 .id(routine.getId())
                 .title(routine.getTitle())
                 .content(routine.getContent())
-                .active(routine.isActive())
+                .active(routine.getActive())
                 .repeatType(routine.getRepeatSetting().getRepeatType().name())
                 .interval(routine.getRepeatSetting().getInterval())
                 .startDate(routine.getRepeatSetting().getStartDate())

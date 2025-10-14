@@ -40,7 +40,7 @@ public class AnniversaryEventResponse extends BaseCalendarEventResponse {
                 MemberResponse.from(anniversaryEvent.getMember()),
                 anniversaryEvent.getCreateDate(),
                 MemberResponse.from(anniversaryEvent.getRelationship().getRelatedMember()),
-                anniversaryEvent.getIsDday(),
+                anniversaryEvent.isDday(),
                 dday
         );
     }

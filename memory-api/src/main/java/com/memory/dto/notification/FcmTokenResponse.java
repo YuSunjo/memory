@@ -27,7 +27,7 @@ public record FcmTokenResponse(
                 fcmToken.getTokenValue(),
                 fcmToken.getDeviceId(),
                 fcmToken.getDeviceType(),
-                fcmToken.getIsActive(),
+                fcmToken.isActive(),
                 fcmToken.getLastUsedAt(),
                 fcmToken.getExpiresAt(),
                 fcmToken.getCreateDate()
@@ -54,7 +54,7 @@ public record FcmTokenResponse(
                     masked,
                     fcmToken.getDeviceId(),
                     fcmToken.getDeviceType(),
-                    fcmToken.getIsActive(),
+                    fcmToken.isActive(),
                     fcmToken.getLastUsedAt(),
                     fcmToken.getExpiresAt(),
                     fcmToken.getCreateDate()
@@ -84,7 +84,7 @@ public record FcmTokenResponse(
                     fcmToken.getId(),
                     fcmToken.getDeviceId(),
                     fcmToken.getDeviceType(),
-                    fcmToken.getIsActive(),
+                    fcmToken.isActive(),
                     fcmToken.getLastUsedAt()
             );
         }

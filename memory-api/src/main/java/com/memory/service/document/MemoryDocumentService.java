@@ -2,6 +2,7 @@ package com.memory.service.document;
 
 import com.memory.document.memory.MemoryDocument;
 import com.memory.document.memory.MemoryDocumentRepository;
+import com.memory.document.memory.RelatedMember;
 import com.memory.document.memory.RelationshipInfo;
 import com.memory.domain.memory.Memory;
 import com.memory.dto.relationship.response.RelationshipListResponse;
@@ -57,7 +58,7 @@ public class MemoryDocumentService {
         }
 
         var relationships = relationshipListResponse.relationships().stream()
-                .map(rel -> new RelationshipInfo.RelatedMemberInfo(
+                .map(rel -> new RelatedMember(
                         rel.relatedMember().id(),
                         rel.relatedMember().name(),
                         rel.relatedMember().nickname(),

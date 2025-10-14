@@ -75,7 +75,7 @@ public class RoutineService {
         Routine routine = routineRepository.findByIdAndMember(routineId, member)
                 .orElseThrow(() -> new NotFoundException("루틴을 찾을 수 없습니다."));
 
-        if (routine.isActive()) {
+        if (routine.getActive()) {
             routine.deactivate();
         } else {
             routine.activate();
@@ -117,7 +117,7 @@ public class RoutineService {
         Routine routine = routineRepository.findByIdAndMember(routineId, member)
                 .orElseThrow(() -> new NotFoundException("루틴을 찾을 수 없습니다."));
 
-        if (!routine.isActive()) {
+        if (!routine.getActive()) {
             throw new ValidationException("비활성화된 루틴입니다.");
         }
 

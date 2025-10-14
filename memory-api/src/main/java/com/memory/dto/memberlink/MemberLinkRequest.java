@@ -36,16 +36,10 @@ public class MemberLinkRequest {
         private String iconUrl;
 
         public MemberLink toEntity(Member member, Integer displayOrder) {
-            return MemberLink.builder()
-                    .member(member)
-                    .title(title)
-                    .url(url)
-                    .description(description)
-                    .displayOrder(displayOrder)
-                    .isActive(isActive != null ? isActive : true)
-                    .isVisible(isVisible != null ? isVisible : true)
-                    .iconUrl(iconUrl)
-                    .build();
+            return MemberLink.create(member, title, url, description, displayOrder,
+                    isActive != null ? isActive : true,
+                    isVisible != null ? isVisible : true,
+                    iconUrl);
         }
     }
 

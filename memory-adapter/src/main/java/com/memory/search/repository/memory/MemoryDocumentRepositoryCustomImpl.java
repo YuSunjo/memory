@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor
@@ -303,12 +304,12 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
                 searchQuery, MemoryDocument.class, IndexCoordinates.of(INDEX_NAME));
 
         return searchHits.getSearchHits().stream()
-                .map(hit -> AutocompleteSuggestion.builder()
-                        .text(hit.getContent().getTitle())
-                        .type(AutocompleteSuggestion.SuggestionType.TITLE)
-                        .score(hit.getScore())
-                        .matchCount(1L)
-                        .build())
+                .map(hit -> new AutocompleteSuggestion(
+                        Objects.requireNonNull(hit.getContent().getTitle()),
+                        AutocompleteSuggestion.SuggestionType.TITLE,
+                        1L,
+                        hit.getScore()
+                ))
                 .distinct() // 중복 제거
                 .limit(limit)
                 .toList();
@@ -343,12 +344,12 @@ public class MemoryDocumentRepositoryCustomImpl implements MemoryDocumentReposit
                 .flatMap(hit -> hit.getContent().getHashTags().stream())
                 .filter(hashtag -> hashtag.toLowerCase().startsWith(query.toLowerCase()))
                 .distinct()
-                .map(hashtag -> AutocompleteSuggestion.builder()
-                        .text(hashtag)
-                        .type(AutocompleteSuggestion.SuggestionType.HASHTAG)
-                        .matchCount(1L)
-                        .score(1.0f)
-                        .build())
+                .map(hashtag -> new AutocompleteSuggestion(
+                        hashtag,
+                        AutocompleteSuggestion.SuggestionType.HASHTAG,
+                        1L,
+                        1.0f
+                ))
                 .limit(limit)
                 .toList();
     }

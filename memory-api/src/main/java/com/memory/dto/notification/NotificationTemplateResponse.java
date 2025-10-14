@@ -27,7 +27,7 @@ public record NotificationTemplateResponse(
                 template.getTitleTemplate(),
                 template.getMessageTemplate(),
                 template.getPayloadTemplate(),
-                template.getIsActive(),
+                template.isActive(),
                 template.getDescription(),
                 template.getVersion(),
                 template.getCreateDate(),
@@ -48,7 +48,7 @@ public record NotificationTemplateResponse(
                     template.getId(),
                     template.getNotificationType(),
                     template.getTemplateName(),
-                    template.getIsActive(),
+                    template.isActive(),
                     template.getVersion(),
                     template.getUpdateDate()
             );
@@ -69,7 +69,7 @@ public record NotificationTemplateResponse(
                     template.getNotificationType(),
                     template.getTemplateName(),
                     template.getDescription(),
-                    template.getIsActive(),
+                    template.isActive(),
                     template.getVersion()
             );
         }

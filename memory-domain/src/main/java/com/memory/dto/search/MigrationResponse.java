@@ -1,10 +1,8 @@
 package com.memory.dto.search;
 
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 public class MigrationResponse {
     
     private final boolean success;
@@ -13,28 +11,23 @@ public class MigrationResponse {
     private final long successCount;
     private final long errorCount;
     private final long elapsedTimeMs;
-    
-    public static MigrationResponse success(String message, long processedCount, 
-                                          long successCount, long errorCount, long elapsedTimeMs) {
-        return MigrationResponse.builder()
-                .success(true)
-                .message(message)
-                .processedCount(processedCount)
-                .successCount(successCount)
-                .errorCount(errorCount)
-                .elapsedTimeMs(elapsedTimeMs)
-                .build();
+
+    public MigrationResponse(boolean success, String message, long processedCount, long successCount, long errorCount, long elapsedTimeMs) {
+        this.success = success;
+        this.message = message;
+        this.processedCount = processedCount;
+        this.successCount = successCount;
+        this.errorCount = errorCount;
+        this.elapsedTimeMs = elapsedTimeMs;
+    }
+
+    public static MigrationResponse success(String message, long processedCount,
+                                            long successCount, long errorCount, long elapsedTimeMs) {
+        return new MigrationResponse(true, message, processedCount, successCount, errorCount, elapsedTimeMs);
     }
     
     public static MigrationResponse failure(String message, long processedCount, 
                                           long successCount, long errorCount, long elapsedTimeMs) {
-        return MigrationResponse.builder()
-                .success(false)
-                .message(message)
-                .processedCount(processedCount)
-                .successCount(successCount)
-                .errorCount(errorCount)
-                .elapsedTimeMs(elapsedTimeMs)
-                .build();
+        return new MigrationResponse(false, message, processedCount, successCount, errorCount, elapsedTimeMs);
     }
 }

@@ -45,7 +45,7 @@ public class TodoResponse {
             todo.getTitle(),
             todo.getContent(),
             todo.getDueDate(),
-            todo.isCompleted(),
+            todo.getCompleted(),
             todo.isRoutine(),
             todo.getRoutine() != null ? todo.getRoutine().getId() : null,
             MemberResponse.from(todo.getMember()),

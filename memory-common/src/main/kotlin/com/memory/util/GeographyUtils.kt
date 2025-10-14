@@ -4,10 +4,11 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.*
 
-object GeographyUtilsKT {
+object GeographyUtils {
 
     private const val EARTH_RADIUS_KM = 6371.0
 
+    @JvmStatic
     fun calculateDistance(lat1: BigDecimal, lon1: BigDecimal, lat2: BigDecimal, lon2: BigDecimal): BigDecimal {
         val lat1Rad = Math.toRadians(lat1.toDouble())
         val lon1Rad = Math.toRadians(lon1.toDouble())
@@ -27,6 +28,7 @@ object GeographyUtilsKT {
         return BigDecimal.valueOf(distance).setScale(2, RoundingMode.HALF_UP)
     }
 
+    @JvmStatic
     fun calculateScore(distanceKm: BigDecimal?, maxDistanceForFullScore: Int): Int {
         if (distanceKm == null) {
             return 0

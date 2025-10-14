@@ -1,8 +1,8 @@
 package com.memory.exception.customException
 
-import com.memory.exception.errorCode.ErrorCodeKT
+import com.memory.exception.errorCode.ErrorCode
 
-open class CustomExceptionKT(
-    val errorCode: ErrorCodeKT,
+open class CustomException(
+    val errorCode: ErrorCode,
     message: String? = errorCode.message
 ) : RuntimeException(message)

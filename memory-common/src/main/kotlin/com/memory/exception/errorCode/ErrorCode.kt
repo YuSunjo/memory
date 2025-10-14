@@ -1,6 +1,6 @@
 package com.memory.exception.errorCode
 
-enum class ErrorCodeKT(
+enum class ErrorCode(
     val statusCode: Int,
     val message: String
 ) {

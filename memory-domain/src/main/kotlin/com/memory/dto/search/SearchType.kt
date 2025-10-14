@@ -1,6 +1,6 @@
-package com.memory.dto.search;
+package com.memory.dto.search
 
-public enum SearchType {
+enum class SearchType {
     ALL,
     TITLE,
     CONTENT,

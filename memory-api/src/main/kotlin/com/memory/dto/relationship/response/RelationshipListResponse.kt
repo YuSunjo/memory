@@ -1,18 +1,19 @@
-package com.memory.dto.relationship.response;
+package com.memory.dto.relationship.response
 
-import com.memory.domain.relationship.Relationship;
+import com.memory.domain.relationship.Relationship
+import java.util.stream.Collectors
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-public record RelationshipListResponse(
-        List<RelationshipResponse> relationships
+data class RelationshipListResponse(
+    val relationships: MutableList<RelationshipResponse?>?
 ) {
-    public static RelationshipListResponse fromEntities(List<Relationship> relationships) {
-        List<RelationshipResponse> relationshipResponses = relationships.stream()
-                .map(RelationshipResponse::from)
-                .collect(Collectors.toList());
-        return new RelationshipListResponse(relationshipResponses);
+    companion object {
+        @JvmStatic
+        fun fromEntities(relationships: List<Relationship>): RelationshipListResponse {
+            return RelationshipListResponse(
+                relationships.stream()
+                    .map { relationship: Relationship -> RelationshipResponse.from(relationship) }
+                    .collect(Collectors.toList())
+            )
+        }
     }
-
 }

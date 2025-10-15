@@ -1,26 +1,28 @@
-package com.memory.dto.member.response;
+package com.memory.dto.member.response
 
-import com.memory.domain.member.Member;
-import com.memory.domain.member.MemberType;
-import com.memory.dto.file.response.FileResponse;
+import com.memory.domain.member.Member
+import com.memory.domain.member.MemberType
+import com.memory.dto.file.response.FileResponse
 
-public record MemberResponse(
-        Long id,
-        String email,
-        String name,
-        String nickname,
-        MemberType memberType,
-        FileResponse profile
+data class MemberResponse(
+    val id: Long?,
+    val email: String?,
+    val name: String?,
+    val nickname: String?,
+    val memberType: MemberType?,
+    val profile: FileResponse?
 ) {
-
-    public static MemberResponse from(Member member) {
-        return new MemberResponse(
-                member.getId(),
-                member.getEmail(),
-                member.getName(),
-                member.getNickname(),
-                member.getMemberType(),
-                member.getFile() != null ? FileResponse.from(member.getFile()) : null
-        );
+    companion object {
+        @JvmStatic
+        fun from(member: Member): MemberResponse {
+            return MemberResponse(
+                member.id,
+                member.email,
+                member.name,
+                member.nickname,
+                member.memberType,
+                if (member.file != null) FileResponse.from(member.file!!) else null
+            )
+        }
     }
 }

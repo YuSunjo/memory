@@ -1,44 +1,34 @@
-package com.memory.dto.map;
+package com.memory.dto.map
 
-import com.memory.domain.map.Map;
-import com.memory.domain.map.MapType;
-import com.memory.domain.member.Member;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import com.memory.domain.map.Map
+import com.memory.domain.map.MapType
+import com.memory.domain.member.Member
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
-public class MapRequest {
+class MapRequest {
 
-    @Getter
-    public static class Create {
-        @NotBlank(message = "지도 이름은 필수 입력값입니다.")
-        private String name;
+    data class Create(
 
-        private String description;
+        @field:NotBlank(message = "이름은 필수 입력값입니다.")
+        val name: String,
 
-        @NotBlank(message = "주소는 필수 입력값입니다.")
-        private String address;
+        val description: String?,
 
-        @NotBlank(message = "위도는 필수 입력값입니다.")
-        private String latitude;
+        @field:NotBlank(message = "주소는 필수 입력값입니다.")
+        val address: String?,
 
-        @NotBlank(message = "경도는 필수 입력값입니다.")
-        private String longitude;
+        @field:NotBlank(message = "위도는 필수 입력값입니다.")
+        val latitude: String?,
 
-        @NotNull(message = "지도 타입은 필수 입력값입니다.")
-        private MapType mapType;
+        @field:NotBlank(message = "경도는 필수 입력값입니다.")
+        val longitude: String?,
 
-        public Create(String name, String description, String address, String latitude, String longitude, MapType mapType) {
-            this.name = name;
-            this.description = description;
-            this.address = address;
-            this.latitude = latitude;
-            this.longitude = longitude;
-            this.mapType = mapType;
-        }
-
-        public Map toEntity(Member member) {
-            return new Map(name, description, address, latitude, longitude, mapType, member);
+        @field:NotNull(message = "지도 타입은 필수 입력값입니다.")
+        val mapType: MapType
+    ) {
+        fun toEntity(member: Member): Map {
+            return Map(name, description, address, latitude, longitude, mapType, member)
         }
     }
 }

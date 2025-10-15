@@ -150,17 +150,17 @@ public class MemoryDocumentAdminService {
     }
 
     private RelationshipInfo convertToRelationshipInfo(RelationshipListResponse relationshipListResponse) {
-        if (relationshipListResponse == null || relationshipListResponse.relationships() == null) {
+        if (relationshipListResponse == null || relationshipListResponse.getRelationships() == null) {
             return new RelationshipInfo(null);
         }
 
-        var relationships = relationshipListResponse.relationships().stream()
+        var relationships = relationshipListResponse.getRelationships().stream()
                 .map(rel -> new RelatedMember(
-                        rel.relatedMember().id(),
-                        rel.relatedMember().name(),
-                        rel.relatedMember().nickname(),
-                        rel.relatedMember().email(),
-                        rel.relatedMember().profile() != null ? rel.relatedMember().profile().fileUrl() : null
+                        rel.getRelatedMember().getId(),
+                        rel.getRelatedMember().getName(),
+                        rel.getRelatedMember().getNickname(),
+                        rel.getRelatedMember().getEmail(),
+                        rel.getRelatedMember().getProfile() != null ? rel.getRelatedMember().getProfile().getFileUrl() : null
                 ))
                 .toList();
 

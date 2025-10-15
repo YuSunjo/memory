@@ -36,10 +36,7 @@ public class TodoUseCase {
                 .filter(routine -> actualTodos.stream()
                         .noneMatch(todo -> todo.isConvertRoutine(routine)))
                 .toList();
-        return CombinedTodoResponse.builder()
-                .actualTodos(actualTodos)
-                .routinePreviews(routinesExcludingTodos)
-                .build();
+        return CombinedTodoResponse.of(actualTodos, routinesExcludingTodos);
     }
 
     @Transactional

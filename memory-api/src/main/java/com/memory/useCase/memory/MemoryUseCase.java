@@ -32,7 +32,7 @@ public class MemoryUseCase {
         // 1. 메모리 생성
         MemoryResponse memoryResponse = memoryService.createMemory(memberId, createRequest);
 
-        Memory memory = memoryService.findMemoryEntityById(memberId, memoryResponse.id());
+        Memory memory = memoryService.findMemoryEntityById(memberId, memoryResponse.id);
 
         // 2. 해시태그 처리
         if (createRequest.getHashTagList() != null && !createRequest.getHashTagList().isEmpty()) {

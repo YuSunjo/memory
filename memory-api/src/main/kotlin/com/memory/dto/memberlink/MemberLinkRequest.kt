@@ -1,83 +1,76 @@
-package com.memory.dto.memberlink;
+package com.memory.dto.memberlink
 
-import com.memory.domain.member.Member;
-import com.memory.domain.memberlink.MemberLink;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.URL;
+import com.memory.domain.member.Member
+import com.memory.domain.memberlink.MemberLink
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
+import org.hibernate.validator.constraints.URL
 
-public class MemberLinkRequest {
+class MemberLinkRequest {
 
-    @Getter
-    @NoArgsConstructor
-    public static class Create {
+    data class Create(
+        @field:NotBlank(message = "링크 제목은 필수입니다.")
+        @field:Size(max = 100, message = "링크 제목은 100자를 초과할 수 없습니다.")
+        var title: String? = null,
 
-        @NotBlank(message = "링크 제목은 필수입니다.")
-        @Size(max = 100, message = "링크 제목은 100자를 초과할 수 없습니다.")
-        private String title;
+        @field:NotBlank(message = "링크 URL은 필수입니다.")
+        @field:URL(message = "올바른 URL 형식이어야 합니다.")
+        @field:Size(max = 500, message = "링크 URL은 500자를 초과할 수 없습니다.")
+        var url: String? = null,
 
-        @NotBlank(message = "링크 URL은 필수입니다.")
-        @URL(message = "올바른 URL 형식이어야 합니다.")
-        @Size(max = 500, message = "링크 URL은 500자를 초과할 수 없습니다.")
-        private String url;
+        @field:Size(max = 200, message = "링크 설명은 200자를 초과할 수 없습니다.")
+        var description: String? = null,
 
-        @Size(max = 200, message = "링크 설명은 200자를 초과할 수 없습니다.")
-        private String description;
+        var isActive: Boolean? = null,
+        var isVisible: Boolean? = null,
 
-        private Boolean isActive;
-
-        private Boolean isVisible;
-
-        @URL(message = "올바른 URL 형식이어야 합니다.")
-        @Size(max = 500, message = "아이콘 URL은 500자를 초과할 수 없습니다.")
-        private String iconUrl;
-
-        public MemberLink toEntity(Member member, Integer displayOrder) {
-            return MemberLink.create(member, title, url, description, displayOrder,
-                    isActive != null ? isActive : true,
-                    isVisible != null ? isVisible : true,
-                    iconUrl);
-        }
+        @field:URL(message = "올바른 URL 형식이어야 합니다.")
+        @field:Size(max = 500, message = "아이콘 URL은 500자를 초과할 수 없습니다.")
+        var iconUrl: String? = null
+    ) {
+        fun toEntity(member: Member, displayOrder: Int): MemberLink =
+            MemberLink.create(
+                member = member,
+                title = requireNotNull(title) { "title must not be null" },
+                url = requireNotNull(url) { "url must not be null" },
+                description = description,
+                displayOrder = displayOrder,
+                isActive = isActive ?: true,
+                isVisible = isVisible ?: true,
+                iconUrl = iconUrl
+            )
     }
 
-    @Getter
-    @NoArgsConstructor
-    public static class Update {
+    data class Update(
+        @field:NotBlank(message = "링크 제목은 필수입니다.")
+        @field:Size(max = 100, message = "링크 제목은 100자를 초과할 수 없습니다.")
+        var title: String? = null,
 
-        @NotBlank(message = "링크 제목은 필수입니다.")
-        @Size(max = 100, message = "링크 제목은 100자를 초과할 수 없습니다.")
-        private String title;
+        @field:NotBlank(message = "링크 URL은 필수입니다.")
+        @field:URL(message = "올바른 URL 형식이어야 합니다.")
+        @field:Size(max = 500, message = "링크 URL은 500자를 초과할 수 없습니다.")
+        var url: String? = null,
 
-        @NotBlank(message = "링크 URL은 필수입니다.")
-        @URL(message = "올바른 URL 형식이어야 합니다.")
-        @Size(max = 500, message = "링크 URL은 500자를 초과할 수 없습니다.")
-        private String url;
+        @field:Size(max = 200, message = "링크 설명은 200자를 초과할 수 없습니다.")
+        var description: String? = null,
 
-        @Size(max = 200, message = "링크 설명은 200자를 초과할 수 없습니다.")
-        private String description;
+        @field:NotNull(message = "표시 순서는 필수입니다.")
+        var displayOrder: Int? = null,
 
-        @NotNull(message = "표시 순서는 필수입니다.")
-        private Integer displayOrder;
+        @field:NotNull(message = "활성 상태는 필수입니다.")
+        var isActive: Boolean? = null,
 
-        @NotNull(message = "활성 상태는 필수입니다.")
-        private Boolean isActive;
+        @field:NotNull(message = "공개 여부는 필수입니다.")
+        var isVisible: Boolean? = null,
 
-        @NotNull(message = "공개 여부는 필수입니다.")
-        private Boolean isVisible;
+        @field:URL(message = "올바른 URL 형식이어야 합니다.")
+        @field:Size(max = 500, message = "아이콘 URL은 500자를 초과할 수 없습니다.")
+        var iconUrl: String? = null
+    )
 
-        @URL(message = "올바른 URL 형식이어야 합니다.")
-        @Size(max = 500, message = "아이콘 URL은 500자를 초과할 수 없습니다.")
-        private String iconUrl;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    public static class UpdateOrder {
-
-        @NotNull(message = "표시 순서는 필수입니다.")
-        private Integer displayOrder;
-    }
+    data class UpdateOrder(
+        @field:NotNull(message = "표시 순서는 필수입니다.")
+        var displayOrder: Int? = null
+    )
 }

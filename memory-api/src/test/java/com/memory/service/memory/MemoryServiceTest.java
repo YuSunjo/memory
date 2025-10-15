@@ -154,11 +154,11 @@ class MemoryServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(memoryId, response.id());
-        assertEquals(title, response.title());
-        assertEquals(content, response.content());
-        assertEquals(locationName, response.locationName());
-        assertEquals(MemoryType.PRIVATE, response.memoryType());
+        assertEquals(memoryId, response.id);
+        assertEquals(title, response.title);
+        assertEquals(content, response.content);
+        assertEquals(locationName, response.locationName);
+        assertEquals(MemoryType.PRIVATE, response.memoryType);
 
         verify(memberRepository).findMemberById(memberId);
         verify(mapRepository).findById(mapId);
@@ -233,9 +233,9 @@ class MemoryServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(memoryId, response.id());
-        assertEquals(title, response.title());
-        assertEquals(content, response.content());
+        assertEquals(memoryId, response.id);
+        assertEquals(title, response.title);
+        assertEquals(content, response.content);
 
         verify(memberRepository).findMemberById(memberId);
         verify(memoryRepository).findMemoryByIdAndMemberId(memoryId, memberId);
@@ -295,8 +295,8 @@ class MemoryServiceTest {
         // Then
         assertNotNull(responses);
         assertEquals(2, responses.size());
-        assertEquals(memoryId, responses.get(0).id());
-        assertEquals(2L, responses.get(1).id());
+        assertEquals(memoryId, responses.get(0).id);
+        assertEquals(2L, responses.get(1).id);
 
         verify(memberRepository).findMemberById(memberId);
         verify(relationshipRepository).findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);
@@ -323,7 +323,7 @@ class MemoryServiceTest {
         // Then
         assertNotNull(responses);
         assertEquals(1, responses.size());
-        assertEquals(memoryId, responses.get(0).id());
+        assertEquals(memoryId, responses.get(0).id);
 
         verify(memberRepository).findMemberById(memberId);
         verify(relationshipRepository).findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);
@@ -527,9 +527,9 @@ class MemoryServiceTest {
         // Then
         assertNotNull(responses);
         assertEquals(1, responses.size());
-        assertEquals(3L, responses.get(0).id());
-        assertEquals("공개 메모리", responses.get(0).title());
-        assertEquals(MemoryType.PUBLIC, responses.get(0).memoryType());
+        assertEquals(3L, responses.get(0).id);
+        assertEquals("공개 메모리", responses.get(0).title);
+        assertEquals(MemoryType.PUBLIC, responses.get(0).memoryType);
 
         verify(memoryRepository).findByMemoryType(MemoryType.PUBLIC, size);
     }
@@ -596,8 +596,8 @@ class MemoryServiceTest {
         // Then
         assertNotNull(responses);
         assertEquals(1, responses.size());
-        assertEquals(3L, responses.get(0).id());
-        assertEquals(MemoryType.PUBLIC, responses.get(0).memoryType());
+        assertEquals(3L, responses.get(0).id);
+        assertEquals(MemoryType.PUBLIC, responses.get(0).memoryType);
 
         verify(memberRepository).findMemberById(memberId);
         verify(relationshipRepository).findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);
@@ -640,8 +640,8 @@ class MemoryServiceTest {
         // Then
         assertNotNull(responses);
         assertEquals(2, responses.size());
-        assertEquals(3L, responses.get(0).id());
-        assertEquals(4L, responses.get(1).id());
+        assertEquals(3L, responses.get(0).id);
+        assertEquals(4L, responses.get(1).id);
 
         verify(memberRepository).findMemberById(memberId);
         verify(relationshipRepository).findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);
@@ -672,7 +672,7 @@ class MemoryServiceTest {
         // Then
         assertNotNull(responses);
         assertEquals(1, responses.size());
-        assertEquals(5L, responses.get(0).id());
+        assertEquals(5L, responses.get(0).id);
 
         verify(memberRepository).findMemberById(memberId);
         verify(relationshipRepository).findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);

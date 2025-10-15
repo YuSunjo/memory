@@ -63,11 +63,11 @@ class FileServiceTest {
 
         // Then
         assertThat(response).isNotNull();
-        assertThat(response.originalFileName()).isEqualTo("test.jpg");
-        assertThat(response.fileName()).isEqualTo("stored_test.jpg");
-        assertThat(response.fileSize()).isEqualTo(1024L);
-        assertThat(response.fileType()).isEqualTo(FileType.MEMORY);
-        assertThat(response.fileUrl()).isEqualTo("https://s3.bucket/stored_test.jpg");
+        assertThat(response.getOriginalFileName()).isEqualTo("test.jpg");
+        assertThat(response.getFileName()).isEqualTo("stored_test.jpg");
+        assertThat(response.getFileSize()).isEqualTo(1024L);
+        assertThat(response.getFileType()).isEqualTo(FileType.MEMORY);
+        assertThat(response.getFileUrl()).isEqualTo("https://s3.bucket/stored_test.jpg");
 
         verify(fileRepository, times(1)).save(any(File.class));
     }
@@ -128,10 +128,10 @@ class FileServiceTest {
 
         // Then
         assertThat(responses).hasSize(2);
-        assertThat(responses.get(0).originalFileName()).isEqualTo("test.jpg");
-        assertThat(responses.get(1).originalFileName()).isEqualTo("test2.jpg");
-        assertThat(responses.get(0).fileSize()).isEqualTo(1024L);
-        assertThat(responses.get(1).fileSize()).isEqualTo(2048L);
+        assertThat(responses.get(0).getOriginalFileName()).isEqualTo("test.jpg");
+        assertThat(responses.get(1).getOriginalFileName()).isEqualTo("test2.jpg");
+        assertThat(responses.get(0).getFileSize()).isEqualTo(1024L);
+        assertThat(responses.get(1).getFileSize()).isEqualTo(2048L);
 
         verify(fileRepository, times(1)).saveAll(anyList());
     }

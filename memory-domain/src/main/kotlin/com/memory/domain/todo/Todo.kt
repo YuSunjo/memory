@@ -37,7 +37,7 @@ class Todo(
         @JvmStatic
         fun create(
             title: String,
-            content: String,
+            content: String?,
             dueDate: LocalDateTime,
             member: Member
         ): Todo = Todo(

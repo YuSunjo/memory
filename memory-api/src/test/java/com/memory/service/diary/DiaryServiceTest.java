@@ -59,14 +59,7 @@ class DiaryServiceTest {
         setId(member, memberId);
 
         // Diary 객체 생성
-        diary = Diary.builder()
-                .member(member)
-                .title(title)
-                .content(content)
-                .date(date)
-                .mood(mood)
-                .weather(weather)
-                .build();
+        Diary diary = Diary.create(title, content, date, mood, weather, member);
         setId(diary, diaryId);
 
         // Request 객체들 생성
@@ -274,14 +267,7 @@ class DiaryServiceTest {
         LocalDate startDate = LocalDate.of(2025, 7, 1);
         LocalDate endDate = LocalDate.of(2025, 7, 31);
 
-        Diary diary2 = Diary.builder()
-                .member(member)
-                .title("두 번째 다이어리")
-                .content("두 번째 내용")
-                .date(date.plusDays(1))
-                .mood(mood)
-                .weather(weather)
-                .build();
+        Diary diary2 = Diary.create("두 번째 다이어리", "두 번째 내용", date.plusDays(1), mood, weather, member);
         setId(diary2, 2L);
 
         List<Diary> diaries = Arrays.asList(diary, diary2);

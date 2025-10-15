@@ -49,8 +49,8 @@ public class MemberLinkService {
                 request.getUrl(),
                 request.getDescription(),
                 request.getDisplayOrder(),
-                request.getIsActive(),
-                request.getIsVisible(),
+                request.isActive(),
+                request.isVisible(),
                 request.getIconUrl()
         );
 

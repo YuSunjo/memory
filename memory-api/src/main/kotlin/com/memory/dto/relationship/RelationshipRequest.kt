@@ -1,17 +1,13 @@
-package com.memory.dto.relationship;
+package com.memory.dto.relationship
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import jakarta.validation.constraints.NotNull
+import lombok.Getter
 
-public class RelationshipRequest {
-
+class RelationshipRequest {
     @Getter
-    public static class Create {
-        @NotNull(message = "대상 회원 ID는 필수 입력값입니다.")
-        private final Long relatedMemberId;
+    class Create(
 
-        public Create(Long relatedMemberId) {
-            this.relatedMemberId = relatedMemberId;
-        }
-    }
+        @field:NotNull(message = "대상 회원 ID는 필수 입력값입니다.")
+        val relatedMemberId: Long?
+    )
 }

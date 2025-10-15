@@ -1,65 +1,43 @@
-package com.memory.dto.todo.response;
+package com.memory.dto.todo.response
 
-import com.memory.domain.todo.Todo;
-import com.memory.dto.member.response.MemberResponse;
-import com.memory.dto.routine.response.RoutinePreviewResponse;
-import lombok.Getter;
+import com.memory.domain.todo.Todo
+import com.memory.dto.member.response.MemberResponse
+import com.memory.dto.routine.response.RoutinePreviewResponse
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
-
-@Getter
-public class TodoResponse {
-    private final Long id;
-    private final String title;
-    private final String content;
-    private final LocalDateTime dueDate;
-    private final boolean completed;
-    private final boolean isRoutine;
-    private final Long routineId;
-    private final MemberResponse member;
-    private final LocalDateTime createDate;
-    private final LocalDateTime updateDate;
-
-    private TodoResponse(Long id, String title, String content, LocalDateTime dueDate, 
-                        boolean completed, boolean isRoutine, Long routineId,
-                        MemberResponse member, LocalDateTime createDate, LocalDateTime updateDate) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.dueDate = dueDate;
-        this.completed = completed;
-        this.isRoutine = isRoutine;
-        this.routineId = routineId;
-        this.member = member;
-        this.createDate = createDate;
-        this.updateDate = updateDate;
+data class TodoResponse private constructor(
+    val id: Long?,
+    val title: String?,
+    val content: String?,
+    val dueDate: LocalDateTime?,
+    val completed: Boolean,
+    val isRoutine: Boolean,
+    val routineId: Long?,
+    val member: MemberResponse?,
+    val createDate: LocalDateTime?,
+    val updateDate: LocalDateTime?,
+) {
+    companion object {
+        @JvmStatic
+        fun from(todo: Todo?): TodoResponse? {
+            if (todo == null) return null
+            return TodoResponse(
+                id = todo.id,
+                title = todo.title,
+                content = todo.content,
+                dueDate = todo.dueDate,
+                completed = todo.completed,
+                isRoutine = todo.isRoutine,
+                routineId = todo.routine?.id,
+                member = todo.member ?.let { MemberResponse.from(it) },
+                createDate = todo.createDate,
+                updateDate = todo.updateDate
+            )
+        }
     }
 
-    public static TodoResponse from(Todo todo) {
-        if (todo == null) {
-            return null;
-        }
-
-        return new TodoResponse(
-            todo.getId(),
-            todo.getTitle(),
-            todo.getContent(),
-            todo.getDueDate(),
-            todo.getCompleted(),
-            todo.isRoutine(),
-            todo.getRoutine() != null ? todo.getRoutine().getId() : null,
-            MemberResponse.from(todo.getMember()),
-            todo.getCreateDate(),
-            todo.getUpdateDate()
-        );
-    }
-
-    public boolean isConvertRoutine(RoutinePreviewResponse routine) {
-        if (routine == null || !this.isRoutine) {
-            return false;
-        }
-
-        return this.getDueDate().toLocalDate().isEqual(routine.getTargetDate()) &&
-               this.getRoutineId() != null && this.getRoutineId().equals(routine.getRoutineId());
+    fun isConvertRoutine(routine: RoutinePreviewResponse?): Boolean {
+        if (routine == null || !isRoutine) return false
+        return dueDate?.toLocalDate() == routine.targetDate && routineId == routine.routineId
     }
 }

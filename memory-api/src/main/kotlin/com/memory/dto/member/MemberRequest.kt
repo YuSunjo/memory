@@ -1,75 +1,49 @@
-package com.memory.dto.member;
+package com.memory.dto.member
 
-import com.memory.domain.member.Member;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
+import com.memory.domain.member.Member
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
-public class MemberRequest {
+class MemberRequest {
 
-    @Getter
-    public static class Signup {
-        @NotBlank(message = "이메일은 필수 입력값입니다.")
-        @Email(message = "이메일 형식이 올바르지 않습니다.")
-        private String email;
+    data class Signup(
+        @field:NotBlank(message = "이메일은 필수 입력값입니다.")
+        @field:Email(message = "이메일 형식이 올바르지 않습니다.")
+        val email: String,
 
-        @NotBlank(message = "비밀번호는 필수 입력값입니다.")
-        private String password;
+        @field:NotBlank(message = "비밀번호는 필수 입력값입니다.")
+        val password: String,
 
-        @NotBlank(message = "이름은 필수 입력값입니다.")
-        private String name;
+        @field:NotBlank(message = "이름은 필수 입력값입니다.")
+        val name: String,
 
-        @NotBlank(message = "닉네임은 필수 입력값입니다.")
-        private String nickname;
-
-        public Signup(String email, String password, String name, String nickname) {
-            this.email = email;
-            this.password = password;
-            this.name = name;
-            this.nickname = nickname;
-        }
-
-        public Member toEntity(String encodedPassword) {
-            return new Member(name, nickname, email, encodedPassword);
-        }
+        @field:NotBlank(message = "닉네임은 필수 입력값입니다.")
+        val nickname: String
+    ) {
+        fun toEntity(encodedPassword: String): Member =
+            Member(name, nickname, email, encodedPassword)
     }
 
-    @Getter
-    public static class Login {
-        @NotBlank(message = "이메일은 필수 입력값입니다.")
-        @Email(message = "이메일 형식이 올바르지 않습니다.")
-        private String email;
+    data class Login(
+        @field:NotBlank(message = "이메일은 필수 입력값입니다.")
+        @field:Email(message = "이메일 형식이 올바르지 않습니다.")
+        val email: String,
 
-        @NotBlank(message = "비밀번호는 필수 입력값입니다.")
-        private String password;
+        @field:NotBlank(message = "비밀번호는 필수 입력값입니다.")
+        val password: String
+    )
 
-        public Login(String email, String password) {
-            this.email = email;
-            this.password = password;
-        }
-    }
+    data class Update(
+        @field:NotBlank(message = "닉네임은 필수 입력값입니다.")
+        val nickname: String,
 
-    @Getter
-    public static class Update {
-        @NotBlank(message = "닉네임은 필수 입력값입니다.")
-        private String nickname;
+        @field:NotNull(message = "파일 ID는 필수 입력값입니다.")
+        val fileId: Long
+    )
 
-        @NotBlank(message = "파일 ID는 필수 입력값입니다.")
-        private Long fileId;
-
-        public Update(String nickname, Long fileId) {
-            this.nickname = nickname;
-            this.fileId = fileId;
-        }
-    }
-
-    @Getter
-    public static class PasswordUpdate {
-        @NotBlank(message = "비밀번호는 필수 입력값입니다.")
-        private String password;
-
-        public PasswordUpdate(String password) {
-            this.password = password;
-        }
-    }
+    data class PasswordUpdate(
+        @field:NotBlank(message = "비밀번호는 필수 입력값입니다.")
+        val password: String
+    )
 }

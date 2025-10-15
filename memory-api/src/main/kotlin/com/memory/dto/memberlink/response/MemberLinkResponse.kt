@@ -1,54 +1,52 @@
-package com.memory.dto.memberlink.response;
+package com.memory.dto.memberlink.response
 
-import com.memory.domain.memberlink.MemberLink;
-import lombok.Getter;
-import lombok.AllArgsConstructor;
+import com.memory.domain.memberlink.MemberLink
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
+data class MemberLinkResponse(
+    val id: Long?,
+    val title: String,
+    val url: String,
+    val description: String?,
+    val displayOrder: Int,
+    val isActive: Boolean?,
+    val isVisible: Boolean?,
+    val iconUrl: String?,
+    val clickCount: Long?,
+    val createDate: LocalDateTime?
+) {
+    companion object {
+        @JvmStatic
+        fun from(memberLink: MemberLink): MemberLinkResponse {
+            return MemberLinkResponse(
+                memberLink.id,
+                memberLink.title,
+                memberLink.url,
+                memberLink.description,
+                memberLink.displayOrder,
+                memberLink.isActive,
+                memberLink.isVisible,
+                memberLink.iconUrl,
+                memberLink.clickCount,
+                memberLink.createDate
+            )
+        }
 
-@Getter
-@AllArgsConstructor
-public class MemberLinkResponse {
-
-    private Long id;
-    private String title;
-    private String url;
-    private String description;
-    private Integer displayOrder;
-    private Boolean isActive;
-    private Boolean isVisible;
-    private String iconUrl;
-    private Long clickCount;
-    private LocalDateTime createdAt;
-
-    public static MemberLinkResponse from(MemberLink memberLink) {
-        return new MemberLinkResponse(
-                memberLink.getId(),
-                memberLink.getTitle(),
-                memberLink.getUrl(),
-                memberLink.getDescription(),
-                memberLink.getDisplayOrder(),
-                memberLink.isActive(),
-                memberLink.isVisible(),
-                memberLink.getIconUrl(),
-                memberLink.getClickCount(),
-                memberLink.getCreateDate()
-        );
-    }
-
-    // 공개용 응답 (통계 정보 제외)
-    public static MemberLinkResponse forPublic(MemberLink memberLink) {
-        return new MemberLinkResponse(
-                memberLink.getId(),
-                memberLink.getTitle(),
-                memberLink.getUrl(),
-                memberLink.getDescription(),
-                memberLink.getDisplayOrder(),
+        // 공개용 응답 (통계 정보 제외)
+        @JvmStatic
+        fun forPublic(memberLink: MemberLink): MemberLinkResponse {
+            return MemberLinkResponse(
+                memberLink.id,
+                memberLink.title,
+                memberLink.url,
+                memberLink.description,
+                memberLink.displayOrder,
                 null,
                 null,
-                memberLink.getIconUrl(),
+                memberLink.iconUrl,
                 null,
                 null
-        );
+            )
+        }
     }
 }

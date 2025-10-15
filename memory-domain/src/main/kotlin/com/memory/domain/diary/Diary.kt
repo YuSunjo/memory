@@ -32,7 +32,7 @@ class Diary(
         @JvmStatic
         fun create(
             title: String,
-            content: String,
+            content: String?,
             date: LocalDate,
             mood: String?,
             weather: String?,

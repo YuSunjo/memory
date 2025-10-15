@@ -1,50 +1,48 @@
-package com.memory.dto.memory.response;
+package com.memory.dto.memory.response
 
-import com.memory.domain.memory.Memory;
-import com.memory.domain.memory.MemoryType;
-import com.memory.dto.file.response.FileResponse;
-import com.memory.dto.map.response.MapResponse;
-import com.memory.dto.member.response.MemberResponse;
+import com.memory.domain.memory.Memory
+import com.memory.domain.memory.MemoryType
+import com.memory.dto.file.response.FileResponse
+import com.memory.dto.map.response.MapResponse
+import com.memory.dto.member.response.MemberResponse
+import java.time.LocalDate
+import java.time.LocalDateTime
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public record MemoryResponse(
-        Long id,
-        String title,
-        String content,
-        String locationName,
-        LocalDate memorableDate,
-        MemberResponse member,
-        MapResponse map,
-        MemoryType memoryType,
-        List<FileResponse> files,
-        List<String> hashTagNames,
-        LocalDateTime createDate,
-        Long commentsCount
+data class MemoryResponse(
+    val id: Long?,
+    val title: String?,
+    val content: String?,
+    val locationName: String?,
+    val memorableDate: LocalDate?,
+    val member: MemberResponse,
+    val map: MapResponse?,
+    val memoryType: MemoryType,
+    val files: List<FileResponse>,
+    val hashTagNames: List<String>,
+    val createDate: LocalDateTime?,
+    val commentsCount: Long
 ) {
+    companion object {
+        @JvmStatic
+        fun from(memory: Memory): MemoryResponse {
+            val fileResponses = memory.files
+                .filter { it.deleteDate == null }
+                .map { FileResponse.from(it) }
 
-    public static MemoryResponse from(Memory memory) {
-        List<FileResponse> fileResponses = memory.getFiles().stream()
-                .filter(file -> file.getDeleteDate() == null)
-                .map(FileResponse::from)
-                .collect(Collectors.toList());
-
-        return new MemoryResponse(
-                memory.getId(),
-                memory.getTitle(),
-                memory.getContent(),
-                memory.getLocationName(),
-                memory.getMemorableDate(),
-                MemberResponse.from(memory.getMember()),
-                MapResponse.from(memory.getMap()),
-                memory.getMemoryType(),
-                fileResponses,
-                memory.getHashTagNames(),
-                memory.getCreateDate(),
-                memory.getCommentsCount()
-        );
+            return MemoryResponse(
+                id = memory.id,
+                title = memory.title,
+                content = memory.content,
+                locationName = memory.locationName,
+                memorableDate = memory.memorableDate,
+                member = MemberResponse.from(memory.member),
+                map = memory.map ?.let { MapResponse.from(it) },
+                memoryType = memory.memoryType,
+                files = fileResponses,
+                hashTagNames = memory.getHashTagNames(),
+                createDate = memory.createDate,
+                commentsCount = memory.getCommentsCount()
+            )
+        }
     }
 }

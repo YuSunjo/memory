@@ -1,28 +1,30 @@
-package com.memory.dto.relationship.response;
+package com.memory.dto.relationship.response
 
-import com.memory.domain.relationship.Relationship;
-import com.memory.domain.relationship.RelationshipStatus;
-import com.memory.dto.member.response.MemberResponse;
+import com.memory.domain.relationship.Relationship
+import com.memory.domain.relationship.RelationshipStatus
+import com.memory.dto.member.response.MemberResponse
+import com.memory.dto.member.response.MemberResponse.Companion.from
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
-
-public record RelationshipResponse(
-        Long id,
-        MemberResponse member,
-        MemberResponse relatedMember,
-        RelationshipStatus relationshipStatus,
-        LocalDateTime startDate,
-        LocalDateTime endDate
+data class RelationshipResponse(
+    val id: Long?,
+    val member: MemberResponse?,
+    val relatedMember: MemberResponse?,
+    val relationshipStatus: RelationshipStatus?,
+    val startDate: LocalDateTime?,
+    val endDate: LocalDateTime?
 ) {
-
-    public static RelationshipResponse from(Relationship relationship) {
-        return new RelationshipResponse(
-                relationship.getId(),
-                MemberResponse.from(relationship.getMember()),
-                MemberResponse.from(relationship.getRelatedMember()),
-                relationship.getRelationshipStatus(),
-                relationship.getStartDate(),
-                relationship.getEndDate()
-        );
+    companion object {
+        @JvmStatic
+        fun from(relationship: Relationship): RelationshipResponse {
+            return RelationshipResponse(
+                relationship.id,
+                from(relationship.member),
+                from(relationship.relatedMember),
+                relationship.relationshipStatus,
+                relationship.startDate,
+                relationship.endDate
+            )
+        }
     }
 }

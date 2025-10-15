@@ -49,6 +49,15 @@ class Member(
         password = password
     )
 
+    constructor(name: String, nickname: String, email: String, password: String, memberType: MemberType) : this(
+        id = null,
+        name = name,
+        nickname = nickname,
+        email = email,
+        password = password,
+        memberType = memberType
+    )
+
     fun update(nickname: String, file: File?) {
         this.nickname = nickname
         file?.let { updateFile(it) }

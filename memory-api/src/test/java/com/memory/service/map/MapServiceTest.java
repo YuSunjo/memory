@@ -86,13 +86,13 @@ class MapServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(mapId, response.id());
-        assertEquals(mapName, response.name());
-        assertEquals(description, response.description());
-        assertEquals(address, response.address());
-        assertEquals(latitude, response.latitude());
-        assertEquals(longitude, response.longitude());
-        assertEquals(mapType, response.mapType());
+        assertEquals(mapId, response.getId());
+        assertEquals(mapName, response.getName());
+        assertEquals(description, response.getDescription());
+        assertEquals(address, response.getAddress());
+        assertEquals(latitude, response.getLatitude());
+        assertEquals(longitude, response.getLongitude());
+        assertEquals(mapType, response.getMapType());
 
         verify(memberRepository).findMemberById(memberId);
         verify(mapRepository).save(any(Map.class));
@@ -124,13 +124,13 @@ class MapServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(mapId, response.id());
-        assertEquals(mapName, response.name());
-        assertEquals(description, response.description());
-        assertEquals(address, response.address());
-        assertEquals(latitude, response.latitude());
-        assertEquals(longitude, response.longitude());
-        assertEquals(mapType, response.mapType());
+        assertEquals(mapId, response.getId());
+        assertEquals(mapName, response.getName());
+        assertEquals(description, response.getDescription());
+        assertEquals(address, response.getAddress());
+        assertEquals(latitude, response.getLatitude());
+        assertEquals(longitude, response.getLongitude());
+        assertEquals(mapType, response.getMapType());
 
         verify(mapRepository).findById(mapId);
     }
@@ -171,9 +171,9 @@ class MapServiceTest {
         // Then
         assertNotNull(responses);
         assertEquals(2, responses.size());
-        assertEquals(mapId, responses.get(0).id());
-        assertEquals(2L, responses.get(1).id());
-        assertTrue(responses.stream().allMatch(map -> map.mapType() == MapType.USER_PLACE));
+        assertEquals(mapId, responses.get(0).getId());
+        assertEquals(2L, responses.get(1).getId());
+        assertTrue(responses.stream().allMatch(map -> map.getMapType() == MapType.USER_PLACE));
 
         verify(mapRepository).findByMapType(MapType.USER_PLACE);
     }
@@ -212,8 +212,8 @@ class MapServiceTest {
         // Then
         assertNotNull(responses);
         assertEquals(2, responses.size());
-        assertEquals(mapId, responses.get(0).id());
-        assertEquals(4L, responses.get(1).id());
+        assertEquals(mapId, responses.get(0).getId());
+        assertEquals(4L, responses.get(1).getId());
 
         verify(mapRepository).findByMemberId(memberId);
     }
@@ -253,9 +253,9 @@ class MapServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(5L, response.id());
-        assertEquals("축제 맵", response.name());
-        assertEquals(MapType.FESTIVAL, response.mapType());
+        assertEquals(5L, response.getId());
+        assertEquals("축제 맵", response.getName());
+        assertEquals(MapType.FESTIVAL, response.getMapType());
 
         verify(memberRepository).findMemberById(memberId);
         verify(mapRepository).save(any(Map.class));
@@ -279,9 +279,9 @@ class MapServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(6L, response.id());
-        assertEquals(mapName, response.name());
-        assertNull(response.description());
+        assertEquals(6L, response.getId());
+        assertEquals(mapName, response.getName());
+        assertNull(response.getDescription());
 
         verify(memberRepository).findMemberById(memberId);
         verify(mapRepository).save(any(Map.class));

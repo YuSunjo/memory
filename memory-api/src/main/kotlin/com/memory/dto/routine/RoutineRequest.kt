@@ -1,52 +1,42 @@
-package com.memory.dto.routine;
+package com.memory.dto.routine
 
-import com.memory.domain.common.repeat.RepeatSetting;
-import com.memory.domain.common.repeat.RepeatType;
-import com.memory.domain.member.Member;
-import com.memory.domain.routine.Routine;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.memory.domain.common.repeat.RepeatSetting
+import com.memory.domain.common.repeat.RepeatType
+import com.memory.domain.member.Member
+import com.memory.domain.routine.Routine
+import java.time.LocalDate
 
-import java.time.LocalDate;
+class RoutineRequest {
 
-public class RoutineRequest {
+    data class Create(
+        var title: String? = null,
+        var content: String? = null,
+        var repeatType: RepeatType,
+        var interval: Int? = null,
+        var startDate: LocalDate? = null,
+        var endDate: LocalDate? = null
+    ) {
+        fun toEntity(member: Member): Routine =
+            Routine.create(
+                title ?: "",
+                content ?: "",
+                member,
+                toRepeatSetting()
+            )
 
-    @Getter
-    @NoArgsConstructor
-    public static class Create {
-        private String title;
-        private String content;
-        private RepeatType repeatType;
-        private Integer interval;
-        private LocalDate startDate;
-        private LocalDate endDate;
-
-        public Routine toEntity(Member member) {
-            return Routine.create(
-                    this.title,
-                    this.content,
-                    member,
-                    toRepeatSetting()
-            );
-        }
-
-        public RepeatSetting toRepeatSetting() {
-            return RepeatSetting.of(this.repeatType, this.interval, this.startDate, this.endDate);
-        }
+        fun toRepeatSetting(): RepeatSetting =
+            RepeatSetting.of(repeatType, interval, startDate, endDate)
     }
 
-    @Getter
-    @NoArgsConstructor
-    public static class Update {
-        private String title;
-        private String content;
-        private RepeatType repeatType;
-        private Integer interval;
-        private LocalDate startDate;
-        private LocalDate endDate;
-
-        public RepeatSetting toRepeatSetting() {
-            return RepeatSetting.of(this.repeatType, this.interval, this.startDate, this.endDate);
-        }
+    data class Update(
+        var title: String? = null,
+        var content: String? = null,
+        var repeatType: RepeatType,
+        var interval: Int? = null,
+        var startDate: LocalDate? = null,
+        var endDate: LocalDate? = null
+    ) {
+        fun toRepeatSetting(): RepeatSetting =
+            RepeatSetting.of(repeatType, interval, startDate, endDate)
     }
 }

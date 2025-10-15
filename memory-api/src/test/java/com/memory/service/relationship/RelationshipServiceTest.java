@@ -98,10 +98,10 @@ class RelationshipServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(relationshipId, response.id());
-        assertEquals(member1Id, response.member().id());
-        assertEquals(member2Id, response.relatedMember().id());
-        assertEquals(RelationshipStatus.PENDING, response.relationshipStatus());
+        assertEquals(relationshipId, response.id);
+        assertEquals(member1Id, response.member.id);
+        assertEquals(member2Id, response.relatedMember.id);
+        assertEquals(RelationshipStatus.PENDING, response.relationshipStatus);
 
         verify(memberRepository).findMemberById(member1Id);
         verify(memberRepository).findMemberById(member2Id);
@@ -154,10 +154,10 @@ class RelationshipServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(relationshipId, response.id());
-        assertEquals(member1Id, response.member().id());
-        assertEquals(member2Id, response.relatedMember().id());
-        assertEquals(RelationshipStatus.ACCEPTED, response.relationshipStatus());
+        assertEquals(relationshipId, response.id);
+        assertEquals(member1Id, response.member.id);
+        assertEquals(member2Id, response.relatedMember.id);
+        assertEquals(RelationshipStatus.ACCEPTED, response.relationshipStatus);
 
         verify(memberRepository).findMemberById(member2Id);
         verify(relationshipRepository).findById(relationshipId);
@@ -228,7 +228,7 @@ class RelationshipServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(2, response.relationships().size());
+        assertEquals(2, response.relationships.size());
 
         verify(memberRepository).findMemberById(member1Id);
         verify(relationshipRepository).findByMember(member1);
@@ -248,8 +248,8 @@ class RelationshipServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(1, response.relationships().size());
-        assertEquals(RelationshipStatus.PENDING, response.relationships().get(0).relationshipStatus());
+        assertEquals(1, response.relationships.size());
+        assertEquals(RelationshipStatus.PENDING, response.relationships.get(0).relationshipStatus);
 
         verify(memberRepository).findMemberById(member1Id);
         verify(relationshipRepository).findByMemberAndRelationshipStatus(member1, RelationshipStatus.PENDING);
@@ -274,8 +274,8 @@ class RelationshipServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(relationshipId, response.id());
-        assertEquals(RelationshipStatus.ENDED, response.relationshipStatus());
+        assertEquals(relationshipId, response.id);
+        assertEquals(RelationshipStatus.ENDED, response.relationshipStatus);
 
         verify(memberRepository).findMemberById(member1Id);
         verify(relationshipRepository).findById(relationshipId);

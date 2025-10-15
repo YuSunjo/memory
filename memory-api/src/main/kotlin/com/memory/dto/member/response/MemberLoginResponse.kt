@@ -1,10 +1,13 @@
-package com.memory.dto.member.response;
+package com.memory.dto.member.response
 
-public record MemberLoginResponse(
-        String accessToken,
-        String refreshToken
+data class MemberLoginResponse(
+    val accessToken: String?,
+    val refreshToken: String?
 ) {
-    public static MemberLoginResponse of(String accessToken, String refreshToken) {
-        return new MemberLoginResponse(accessToken, refreshToken);
+    companion object {
+        @JvmStatic
+        fun of(accessToken: String?, refreshToken: String?): MemberLoginResponse {
+            return MemberLoginResponse(accessToken, refreshToken)
+        }
     }
 }

@@ -78,12 +78,12 @@ class MemberServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(memberId, response.id());
-        assertEquals(email, response.email());
-        assertEquals(name, response.name());
-        assertEquals(nickname, response.nickname());
-        assertEquals(MemberType.MEMBER, response.memberType());
-        assertNull(response.profile());  // No file associated with the member yet
+        assertEquals(memberId, response.getId());
+        assertEquals(email, response.getEmail());
+        assertEquals(name, response.getName());
+        assertEquals(nickname, response.getNickname());
+        assertEquals(MemberType.MEMBER, response.getMemberType());
+        assertNull(response.getProfile());  // No file associated with the member yet
 
         verify(memberRepository).findMemberByEmailAndMemberType(email, MemberType.MEMBER);
         verify(passwordEncoder).encode(password);
@@ -121,8 +121,8 @@ class MemberServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(accessToken, response.accessToken());
-        assertEquals(refreshToken, response.refreshToken());
+        assertEquals(accessToken, response.getAccessToken());
+        assertEquals(refreshToken, response.getRefreshToken());
 
         verify(memberRepository).findMemberByEmailAndMemberType(email, MemberType.MEMBER);
         verify(passwordEncoder).matches(password, encodedPassword);
@@ -174,12 +174,12 @@ class MemberServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(memberId, response.id());
-        assertEquals(email, response.email());
-        assertEquals(name, response.name());
-        assertEquals(nickname, response.nickname());
-        assertEquals(MemberType.MEMBER, response.memberType());
-        assertNull(response.profile());  // No file associated with the member yet
+        assertEquals(memberId, response.getId());
+        assertEquals(email, response.getEmail());
+        assertEquals(name, response.getName());
+        assertEquals(nickname, response.getNickname());
+        assertEquals(MemberType.MEMBER, response.getMemberType());
+        assertNull(response.getProfile());  // No file associated with the member yet
 
         verify(memberRepository).findMemberById(memberId);
     }
@@ -202,6 +202,7 @@ class MemberServiceTest {
     void memberTypeAdminTest() {
         // Given
         Member adminMember = new Member(name, nickname, email, encodedPassword, MemberType.ADMIN);
+
         try {
             java.lang.reflect.Field idField = Member.class.getDeclaredField("id");
             idField.setAccessible(true);
@@ -217,8 +218,8 @@ class MemberServiceTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(MemberType.ADMIN, response.memberType());
-        assertNull(response.profile());  // No file associated with the member yet
+        assertEquals(MemberType.ADMIN, response.getMemberType());
+        assertNull(response.getProfile());  // No file associated with the member yet
         verify(memberRepository).findMemberById(memberId);
     }
 }

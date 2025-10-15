@@ -1,27 +1,29 @@
-package com.memory.dto.routine.response;
+package com.memory.dto.routine.response
 
-import com.memory.domain.routine.Routine;
-import lombok.Builder;
-import lombok.Getter;
-
-import java.time.LocalDate;
+import com.memory.domain.routine.Routine
+import lombok.Builder
+import lombok.Getter
+import java.time.LocalDate
 
 @Getter
 @Builder
-public class RoutinePreviewResponse {
-    private Long routineId;
-    private String title;
-    private String content;
-    private LocalDate targetDate;
-    private boolean isPreview; // UI에서 흐릿하게 표시하기 위한 플래그
-
-    public static RoutinePreviewResponse from(Routine routine, LocalDate targetDate) {
-        return RoutinePreviewResponse.builder()
-                .routineId(routine.getId())
-                .title(routine.getTitle())
-                .content(routine.getContent())
-                .targetDate(targetDate)
-                .isPreview(true)
-                .build();
+class RoutinePreviewResponse(
+    val routineId: Long? = null,
+    val title: String? = null,
+    val content: String? = null,
+    val targetDate: LocalDate? = null,
+    val isPreview: Boolean? = false,
+) {
+    companion object {
+        @JvmStatic
+        fun from(routine: Routine, targetDate: LocalDate?): RoutinePreviewResponse? {
+            return RoutinePreviewResponse(
+                routineId = routine.id,
+                title = routine.title,
+                content = routine.content,
+                targetDate = targetDate,
+                isPreview = true
+            )
+        }
     }
 }

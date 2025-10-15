@@ -1,5 +1,8 @@
 plugins {
     id("java")
+    kotlin("jvm") version "1.9.24"
+    kotlin("plugin.spring") version "1.9.24"
+    kotlin("kapt") version "1.9.24"
 }
 
 tasks.bootJar {
@@ -14,6 +17,11 @@ dependencies {
     implementation(project(":memory-common"))
     implementation(project(":memory-domain"))
     implementation(project(":memory-adapter"))
+
+    // Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
@@ -39,3 +47,33 @@ tasks.named<Test>("test") {
 }
 
 tasks.register("prepareKotlinBuildScriptModel") {}
+
+// Kotlin 소스 디렉토리 설정
+kotlin {
+    sourceSets {
+        main {
+            kotlin.srcDir("src/main/kotlin")
+        }
+        test {
+            kotlin.srcDir("src/test/kotlin")
+        }
+    }
+}
+
+// Java와 Kotlin 소스 디렉토리 모두 사용
+sourceSets {
+    main {
+        java.srcDirs("src/main/java", "src/main/kotlin")
+    }
+    test {
+        java.srcDirs("src/test/java", "src/test/kotlin")
+    }
+}
+
+// Kotlin 컴파일 옵션
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "21"
+    }
+}

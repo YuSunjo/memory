@@ -1,33 +1,37 @@
-package com.memory.dto.routine.response;
+package com.memory.dto.routine.response
 
-import com.memory.domain.routine.Routine;
-import lombok.Builder;
-import lombok.Getter;
-
-import java.time.LocalDate;
+import com.memory.domain.routine.Routine
+import lombok.Builder
+import lombok.Getter
+import java.time.LocalDate
 
 @Getter
 @Builder
-public class RoutineResponse {
-    private Long id;
-    private String title;
-    private String content;
-    private boolean active;
-    private String repeatType;
-    private Integer interval;
-    private LocalDate startDate;
-    private LocalDate endDate;
+class RoutineResponse(
+    val id: Long? = null,
+    val title: String? = null,
+    val content: String? = null,
+    val active: Boolean? = false,
+    val repeatType: String? = null,
+    val interval: Int? = null,
+    val startDate: LocalDate? = null,
+    val endDate: LocalDate? = null,
+) {
 
-    public static RoutineResponse from(Routine routine) {
-        return RoutineResponse.builder()
-                .id(routine.getId())
-                .title(routine.getTitle())
-                .content(routine.getContent())
-                .active(routine.getActive())
-                .repeatType(routine.getRepeatSetting().getRepeatType().name())
-                .interval(routine.getRepeatSetting().getInterval())
-                .startDate(routine.getRepeatSetting().getStartDate())
-                .endDate(routine.getRepeatSetting().getEndDate())
-                .build();
+
+    companion object {
+        @JvmStatic
+        fun from(routine: Routine): RoutineResponse? {
+            return RoutineResponse(
+                routine.id,
+                routine.title,
+                routine.content,
+                routine.active,
+                routine.repeatSetting.repeatType?.name,
+                routine.repeatSetting.interval,
+                routine.repeatSetting.startDate,
+                routine.repeatSetting.endDate
+            )
+        }
     }
 }

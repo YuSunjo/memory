@@ -66,7 +66,7 @@ class Todo(
         )
     }
 
-    fun update(title: String, content: String, dueDate: LocalDateTime) {
+    fun update(title: String, content: String?, dueDate: LocalDateTime) {
         this.title = title
         this.content = content
         this.dueDate = dueDate

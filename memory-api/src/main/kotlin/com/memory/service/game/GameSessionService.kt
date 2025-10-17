@@ -33,10 +33,10 @@ class GameSessionService(
     fun createGameSession(memberId: Long?, request: GameSessionRequest.Create): GameSessionResponse {
         val member = validateAndGetMember(memberId)
         validateNoInProgressGame(member)
-        val gameSetting = validateAndGetGameSetting(request.getGameMode())
+        val gameSetting = validateAndGetGameSetting(request.gameMode)
 
         // 게임 모드별 로직
-        val gameService = gameFactory.getGameService(request.getGameMode())
+        val gameService = gameFactory.getGameService(request.gameMode)
         val gameSession = gameService.createGameSession(member, gameSetting, request)
 
         val savedSession = gameSessionRepository.save<GameSession>(gameSession as GameSession)
@@ -79,18 +79,18 @@ class GameSessionService(
 
         val gameSessions: List<GameSession?> = gameSessionRepository.findByMemberAndGameMode(
             member,
-            request.getGameMode(),
-            request.getLastSessionId(),
-            request.getSize()
+            request.gameMode,
+            request.lastSessionId,
+            request.size
         )
 
-        return gameSessions.stream()
-            .map { gameSession: GameSession? ->
-                val gameSetting = gameSettingRepository.findByGameModeAndIsActiveTrue(gameSession?.gameMode)
+        return gameSessions.filterNotNull()
+            .map { gameSession ->
+                val gameSetting = gameSettingRepository.findByGameModeAndIsActiveTrue(gameSession.gameMode)
                     .orElse(null)
                 GameSessionResponse.from(gameSession, gameSetting)
             }
-            .toList()
+            .toMutableList()
     }
 
     @Transactional

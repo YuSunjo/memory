@@ -1,254 +1,277 @@
-package com.memory.service.search;
+package com.memory.service.search
 
-import com.memory.document.memory.MemoryDocumentRepository;
-import com.memory.dto.search.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
+import com.memory.document.memory.MemoryDocument
+import com.memory.document.memory.MemoryDocumentRepository
+import com.memory.dto.search.AutocompleteResponse
+import com.memory.dto.search.AutocompleteSuggestion
+import com.memory.dto.search.MemorySearchRequest
+import com.memory.dto.search.MemorySearchResponse
+import com.memory.dto.search.SearchResultResponse
+import com.memory.exception.customException.ValidationException
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.elasticsearch.core.SearchHit
+import org.springframework.stereotype.Service
+import org.springframework.util.StringUtils
 
 @Service
-@RequiredArgsConstructor
-public class MemorySearchService {
-
-    private final MemoryDocumentRepository memoryDocumentRepository;
+class MemorySearchService(
+    private val memoryDocumentRepository: MemoryDocumentRepository
+) {
 
     /**
      * 게스트 사용자의 PUBLIC 메모리 검색
      */
-    public SearchResultResponse searchPublic(MemorySearchRequest request) {
-//        long startTime = System.currentTimeMillis();
-//
-//        validateRequest(request);
-//
-//        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-//        Page<SearchHit<MemoryDocument>> searchHits = executePublicSearch(request, pageable);
-//
-//        List<MemorySearchResponse> memories = searchHits.getContent().stream()
-//                .map(hit -> convertToResponse(hit, request.isHighlight()))
-//                .toList();
-//
-//        long searchTime = System.currentTimeMillis() - startTime;
-//
-//        return SearchResultResponse.builder()
-//                .memories(memories)
-//                .pageInfo(buildPageInfo(searchHits))
-//                .metadata(buildMetadata(request, searchTime))
-//                .build();
-        return null;
+    fun searchPublic(request: MemorySearchRequest): SearchResultResponse {
+        val startTime = System.currentTimeMillis()
+
+        validateRequest(request)
+
+        val pageable: Pageable = PageRequest.of(request.page, request.size)
+        val searchHits: Page<SearchHit<MemoryDocument>> = executePublicSearch(request, pageable)
+
+        val memories = searchHits.content.stream()
+            .map { hit -> convertToResponse(hit, request.highlight) }
+            .toList()
+
+        val searchTime = System.currentTimeMillis() - startTime
+
+        return SearchResultResponse(
+            memories = memories,
+            pageInfo = buildPageInfo(searchHits),
+            metadata = buildMetadata(request, searchTime)
+        )
     }
 
     /**
      * 인증된 사용자의 메모리 검색 (본인 메모리 + 관계된 사용자 메모리 + PUBLIC 메모리)
      */
-    public SearchResultResponse searchAuthenticated(MemorySearchRequest request, Long memberId) {
-//        long startTime = System.currentTimeMillis();
-//
-//        validateRequest(request);
-//
-//        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-//        Page<SearchHit<MemoryDocument>> searchHits = executeAuthenticatedSearch(request, memberId, pageable);
-//
-//        List<MemorySearchResponse> memories = searchHits.getContent().stream()
-//                .map(hit -> convertToResponse(hit, request.isHighlight()))
-//                .toList();
-//
-//        long searchTime = System.currentTimeMillis() - startTime;
-//
-//        return SearchResultResponse.builder()
-//                .memories(memories)
-//                .pageInfo(buildPageInfo(searchHits))
-//                .metadata(buildMetadata(request, searchTime))
-//                .build();
-        return null;
+    fun searchAuthenticated(request: MemorySearchRequest, memberId: Long): SearchResultResponse {
+        val startTime = System.currentTimeMillis()
+
+        validateRequest(request)
+
+        val pageable: Pageable = PageRequest.of(request.page, request.size)
+        val searchHits: Page<SearchHit<MemoryDocument>> = executeAuthenticatedSearch(request, memberId, pageable)
+
+        val memories = searchHits.content.stream()
+            .map { hit -> convertToResponse(hit, request.highlight) }
+            .toList()
+
+        val searchTime = System.currentTimeMillis() - startTime
+
+        return SearchResultResponse(
+            memories = memories,
+            pageInfo = buildPageInfo(searchHits),
+            metadata = buildMetadata(request, searchTime)
+        )
     }
 
-//    private void validateRequest(MemorySearchRequest request) {
-//        switch (request.getType()) {
-//            case ALL, TITLE, CONTENT, LOCATION -> {
-//                if (!StringUtils.hasText(request.getQuery())) {
-//                    throw new ValidationException("Query is required for " + request.getType() + " search");
-//                }
-//            }
-//            case HASHTAGS -> {
-//                if (request.getHashtags() == null || request.getHashtags().isEmpty()) {
-//                    throw new ValidationException("Hashtags are required for HASHTAGS search");
-//                }
-//            }
-//            case DATE -> {
-//                if (request.getFromDate() == null || request.getToDate() == null) {
-//                    throw new ValidationException("FromDate and ToDate are required for DATE search");
-//                }
-//                if (request.getFromDate().isAfter(request.getToDate())) {
-//                    throw new ValidationException("FromDate must be before or equal to ToDate");
-//                }
-//            }
-//        }
-//    }
-//
-//    private Page<SearchHit<MemoryDocument>> executePublicSearch(MemorySearchRequest request, Pageable pageable) {
-//        return switch (request.getType()) {
-//            case ALL -> memoryDocumentRepository.searchPublicByAllFields(request.getQuery(), pageable);
-//            case TITLE -> memoryDocumentRepository.searchPublicByTitle(request.getQuery(), pageable);
-//            case CONTENT -> memoryDocumentRepository.searchPublicByContent(request.getQuery(), pageable);
-//            case HASHTAGS -> memoryDocumentRepository.searchPublicByHashtags(request.getHashtags(), pageable);
-//            case LOCATION -> memoryDocumentRepository.searchPublicByLocation(request.getQuery(), pageable);
-//            case DATE -> memoryDocumentRepository.searchPublicByDateRange(request.getFromDate(), request.getToDate(), pageable);
-//        };
-//    }
-//
-//    private Page<SearchHit<MemoryDocument>> executeAuthenticatedSearch(MemorySearchRequest request, Long memberId, Pageable pageable) {
-//        return switch (request.getType()) {
-//            case ALL -> memoryDocumentRepository.searchByMemberAndAllFields(memberId, request.getQuery(), pageable);
-//            case TITLE -> memoryDocumentRepository.searchByMemberAndTitle(memberId, request.getQuery(), pageable);
-//            case CONTENT -> memoryDocumentRepository.searchByMemberAndContent(memberId, request.getQuery(), pageable);
-//            case HASHTAGS -> memoryDocumentRepository.searchByMemberAndHashtags(memberId, request.getHashtags(), pageable);
-//            case LOCATION -> memoryDocumentRepository.searchByMemberAndLocation(memberId, request.getQuery(), pageable);
-//            case DATE -> memoryDocumentRepository.searchByMemberAndDateRange(memberId, request.getFromDate(), request.getToDate(), pageable);
-//        };
-//    }
-//
-//    private MemorySearchResponse convertToResponse(SearchHit<MemoryDocument> hit, boolean includeHighlight) {
-//        MemoryDocument document = hit.getContent();
-//
-//        MemorySearchResponse.MemorySearchResponseBuilder builder = MemorySearchResponse.builder()
-//                .memoryId(document.getMemoryId())
-//                .title(document.getTitle())
-//                .content(document.getContent())
-//                .locationName(document.getLocationName())
-//                .memorableDate(document.getMemorableDate())
-//                .memorableDateText(document.getMemorableDateText())
-//                .memoryType(document.getMemoryType())
-//                .hashtags(document.getHashTags())
-//
-//                // 메모리 작성자 정보
-//                .memberId(document.getMemberId())
-//                .memberName(document.getMemberName())
-//                .memberNickname(document.getMemberNickname())
-//                .memberEmail(document.getMemberEmail())
-//                .memberFileUrl(document.getMemberFileUrl())
-//
-//                // 관계된 멤버 정보
-//                .relationshipMemberId(document.getRelationshipMemberId())
-//                .relationshipMemberName(document.getRelationshipMemberName())
-//                .relationshipMemberNickname(document.getRelationshipMemberNickname())
-//                .relationshipMemberEmail(document.getRelationshipMemberEmail())
-//                .relationshipMemberFileUrl(document.getRelationshipMemberFileUrl());
-//
-//        if (includeHighlight && !hit.getHighlightFields().isEmpty()) {
-//            builder.highlights(buildHighlights(hit.getHighlightFields()));
-//        }
-//
-//        return builder.build();
-//    }
-//
-//    private MemorySearchResponse.HighlightInfo buildHighlights(Map<String, List<String>> highlightFields) {
-//        return MemorySearchResponse.HighlightInfo.builder()
-//                .title(highlightFields.get("title"))
-//                .content(highlightFields.get("content"))
-//                .locationName(highlightFields.get("locationName"))
-//                .hashtags(highlightFields.get("hashTags"))
-//                .memberName(highlightFields.get("memberName"))
-//                .memberNickname(highlightFields.get("memberNickname"))
-//                .relationshipMemberName(highlightFields.get("relationshipMemberName"))
-//                .relationshipMemberNickname(highlightFields.get("relationshipMemberNickname"))
-//                .build();
-//    }
-//
-//    private SearchResultResponse.PageInfo buildPageInfo(Page<SearchHit<MemoryDocument>> searchHits) {
-//        return SearchResultResponse.PageInfo.builder()
-//                .currentPage(searchHits.getNumber())
-//                .totalPages(searchHits.getTotalPages())
-//                .pageSize(searchHits.getSize())
-//                .totalElements(searchHits.getTotalElements())
-//                .hasNext(searchHits.hasNext())
-//                .hasPrevious(searchHits.hasPrevious())
-//                .build();
-//    }
-//
-//    private SearchResultResponse.SearchMetadata buildMetadata(MemorySearchRequest request, long searchTime) {
-//        return SearchResultResponse.SearchMetadata.builder()
-//                .searchType(request.getType())
-//                .query(request.getQuery())
-//                .hashtags(request.getHashtags())
-//                .fromDate(request.getFromDate())
-//                .toDate(request.getToDate())
-//                .searchTimeMs(searchTime)
-//                .build();
-//    }
+    private fun validateRequest(request: MemorySearchRequest) {
+        when (request.type) {
+            com.memory.dto.search.SearchType.ALL,
+            com.memory.dto.search.SearchType.TITLE,
+            com.memory.dto.search.SearchType.CONTENT,
+            com.memory.dto.search.SearchType.LOCATION -> {
+                if (!StringUtils.hasText(request.query)) {
+                    throw ValidationException("Query is required for ${request.type} search")
+                }
+            }
+            com.memory.dto.search.SearchType.HASHTAGS -> {
+                val hashtags = request.hashtags
+                if (hashtags == null || hashtags.isEmpty()) {
+                    throw ValidationException("Hashtags are required for HASHTAGS search")
+                }
+            }
+            com.memory.dto.search.SearchType.DATE -> {
+                val fromDate = request.fromDate
+                val toDate = request.toDate
+                if (fromDate == null || toDate == null) {
+                    throw ValidationException("FromDate and ToDate are required for DATE search")
+                }
+                if (fromDate.isAfter(toDate)) {
+                    throw ValidationException("FromDate must be before or equal to ToDate")
+                }
+            }
+        }
+    }
+
+    private fun executePublicSearch(request: MemorySearchRequest, pageable: Pageable): Page<SearchHit<MemoryDocument>> {
+        return when (request.type) {
+            com.memory.dto.search.SearchType.ALL -> memoryDocumentRepository.searchPublicByAllFields(request.query, pageable)
+            com.memory.dto.search.SearchType.TITLE -> memoryDocumentRepository.searchPublicByTitle(request.query, pageable)
+            com.memory.dto.search.SearchType.CONTENT -> memoryDocumentRepository.searchPublicByContent(request.query, pageable)
+            com.memory.dto.search.SearchType.HASHTAGS -> {
+                val hashtags = request.hashtags!!
+                memoryDocumentRepository.searchPublicByHashtags(hashtags, pageable)
+            }
+            com.memory.dto.search.SearchType.LOCATION -> memoryDocumentRepository.searchPublicByLocation(request.query, pageable)
+            com.memory.dto.search.SearchType.DATE -> {
+                val fromDate = request.fromDate!!
+                val toDate = request.toDate!!
+                memoryDocumentRepository.searchPublicByDateRange(fromDate, toDate, pageable)
+            }
+        }
+    }
+
+    private fun executeAuthenticatedSearch(request: MemorySearchRequest, memberId: Long, pageable: Pageable): Page<SearchHit<MemoryDocument>> {
+        return when (request.type) {
+            com.memory.dto.search.SearchType.ALL -> memoryDocumentRepository.searchByMemberAndAllFields(memberId, request.query, pageable)
+            com.memory.dto.search.SearchType.TITLE -> memoryDocumentRepository.searchByMemberAndTitle(memberId, request.query, pageable)
+            com.memory.dto.search.SearchType.CONTENT -> memoryDocumentRepository.searchByMemberAndContent(memberId, request.query, pageable)
+            com.memory.dto.search.SearchType.HASHTAGS -> {
+                val hashtags = request.hashtags!!
+                memoryDocumentRepository.searchByMemberAndHashtags(memberId, hashtags, pageable)
+            }
+            com.memory.dto.search.SearchType.LOCATION -> memoryDocumentRepository.searchByMemberAndLocation(memberId, request.query, pageable)
+            com.memory.dto.search.SearchType.DATE -> {
+                val fromDate = request.fromDate!!
+                val toDate = request.toDate!!
+                memoryDocumentRepository.searchByMemberAndDateRange(memberId, fromDate, toDate, pageable)
+            }
+        }
+    }
+
+    private fun convertToResponse(hit: SearchHit<MemoryDocument>, includeHighlight: Boolean): MemorySearchResponse {
+        val document = hit.content
+
+        return MemorySearchResponse(
+            memoryId = document.memoryId ?: 0L,
+            title = document.title ?: "",
+            content = document.content,
+            locationName = document.locationName,
+            memorableDate = document.memorableDate,
+            memorableDateText = document.memorableDateText,
+            memoryType = document.memoryType ?: "",
+            hashtags = document.hashTags,
+
+            // 메모리 작성자 정보
+            memberId = document.memberId ?: 0L,
+            memberName = document.memberName ?: "",
+            memberNickname = document.memberNickname ?: "",
+            memberEmail = document.memberEmail ?: "",
+            memberFileUrl = document.memberFileUrl,
+
+            // 관계된 멤버 정보
+            relationshipMemberId = document.relationshipMemberId,
+            relationshipMemberName = document.relationshipMemberName,
+            relationshipMemberNickname = document.relationshipMemberNickname,
+            relationshipMemberEmail = document.relationshipMemberEmail,
+            relationshipMemberFileUrl = document.relationshipMemberFileUrl,
+
+            highlights = if (includeHighlight && hit.highlightFields.isNotEmpty()) {
+                buildHighlights(hit.highlightFields)
+            } else null
+        )
+    }
+
+    private fun buildHighlights(highlightFields: Map<String, List<String>>): MemorySearchResponse.HighlightInfo {
+        return MemorySearchResponse.HighlightInfo(
+            title = highlightFields["title"],
+            content = highlightFields["content"],
+            locationName = highlightFields["locationName"],
+            hashtags = highlightFields["hashTags"],
+            memberName = highlightFields["memberName"],
+            memberNickname = highlightFields["memberNickname"],
+            relationshipMemberName = highlightFields["relationshipMemberName"],
+            relationshipMemberNickname = highlightFields["relationshipMemberNickname"]
+        )
+    }
+
+    private fun buildPageInfo(searchHits: Page<SearchHit<MemoryDocument>>): SearchResultResponse.PageInfo {
+        return SearchResultResponse.PageInfo(
+            currentPage = searchHits.number,
+            totalPages = searchHits.totalPages,
+            pageSize = searchHits.size,
+            totalElements = searchHits.totalElements,
+            hasNext = searchHits.hasNext(),
+            hasPrevious = searchHits.hasPrevious()
+        )
+    }
+
+    private fun buildMetadata(request: MemorySearchRequest, searchTime: Long): SearchResultResponse.SearchMetadata {
+        return SearchResultResponse.SearchMetadata(
+            searchType = request.type,
+            query = request.query,
+            hashtags = request.hashtags,
+            fromDate = request.fromDate,
+            toDate = request.toDate,
+            searchTimeMs = searchTime
+        )
+    }
 
     // ===== 자동완성 메서드들 =====
 
     /**
      * 게스트 사용자의 자동완성 (PUBLIC 메모리만) - 제목 + 해시태그
      */
-    public AutocompleteResponse getPublicAutocomplete(String query, int limit) {
-//        long startTime = System.currentTimeMillis();
-//
-//        validateAutocompleteQuery(query);
-//
-//        List<AutocompleteSuggestion> suggestions = new ArrayList<>();
-//
-//        // 항상 제목과 해시태그 모두 검색
-//        suggestions.addAll(memoryDocumentRepository.getPublicTitleSuggestions(query, limit / 2));
-//        suggestions.addAll(memoryDocumentRepository.getPublicHashtagSuggestions(query, limit / 2));
-//
-//        // 점수 기준으로 정렬하고 제한
-//        suggestions = suggestions.stream()
-//                .sorted((a, b) -> Float.compare(b.getScore(), a.getScore()))
-//                .limit(limit)
-//                .toList();
-//
-//        long responseTime = System.currentTimeMillis() - startTime;
-//
-//        return AutocompleteResponse.builder()
-//                .suggestions(suggestions)
-//                .query(query)
-//                .totalSuggestions(suggestions.size())
-//                .responseTimeMs(responseTime)
-//                .build();
-        return null;
+    fun getPublicAutocomplete(query: String, limit: Int): AutocompleteResponse {
+        val startTime = System.currentTimeMillis()
+
+        validateAutocompleteQuery(query)
+
+        val suggestions = mutableListOf<AutocompleteSuggestion>()
+
+        // 항상 제목과 해시태그 모두 검색
+        suggestions.addAll(memoryDocumentRepository.getPublicTitleSuggestions(query, limit / 2))
+        suggestions.addAll(memoryDocumentRepository.getPublicHashtagSuggestions(query, limit / 2))
+
+        // 점수 기준으로 정렬하고 제한
+        val sortedSuggestions = suggestions.stream()
+            .sorted { a, b -> java.lang.Float.compare(b.score, a.score) }
+            .limit(limit.toLong())
+            .toList()
+
+        val responseTime = System.currentTimeMillis() - startTime
+
+        return AutocompleteResponse(
+            suggestions = sortedSuggestions,
+            query = query,
+            totalSuggestions = sortedSuggestions.size,
+            responseTimeMs = responseTime
+        )
     }
 
     /**
      * 인증된 사용자의 자동완성 (본인 + 관계된 사용자 + PUBLIC) - 제목 + 해시태그
      */
-    public AutocompleteResponse getAuthenticatedAutocomplete(Long memberId, String query, int limit) {
-//        long startTime = System.currentTimeMillis();
-//
-//        validateAutocompleteQuery(query);
-//
-//        List<AutocompleteSuggestion> suggestions = new ArrayList<>();
-//
-//        // 항상 제목과 해시태그 모두 검색
-//        suggestions.addAll(memoryDocumentRepository.getAuthenticatedTitleSuggestions(memberId, query, limit / 2));
-//        suggestions.addAll(memoryDocumentRepository.getAuthenticatedHashtagSuggestions(memberId, query, limit / 2));
-//
-//        // 점수 기준으로 정렬하고 제한
-//        suggestions = suggestions.stream()
-//                .sorted((a, b) -> Float.compare(b.getScore(), a.getScore()))
-//                .limit(limit)
-//                .toList();
-//
-//        long responseTime = System.currentTimeMillis() - startTime;
-//
-//        return AutocompleteResponse.builder()
-//                .suggestions(suggestions)
-//                .query(query)
-//                .totalSuggestions(suggestions.size())
-//                .responseTimeMs(responseTime)
-//                .build();
-        return null;
+    fun getAuthenticatedAutocomplete(memberId: Long, query: String, limit: Int): AutocompleteResponse {
+        val startTime = System.currentTimeMillis()
+
+        validateAutocompleteQuery(query)
+
+        val suggestions = mutableListOf<AutocompleteSuggestion>()
+
+        // 항상 제목과 해시태그 모두 검색
+        suggestions.addAll(memoryDocumentRepository.getAuthenticatedTitleSuggestions(memberId, query, limit / 2))
+        suggestions.addAll(memoryDocumentRepository.getAuthenticatedHashtagSuggestions(memberId, query, limit / 2))
+
+        // 점수 기준으로 정렬하고 제한
+        val sortedSuggestions = suggestions.stream()
+            .sorted { a, b -> java.lang.Float.compare(b.score, a.score) }
+            .limit(limit.toLong())
+            .toList()
+
+        val responseTime = System.currentTimeMillis() - startTime
+
+        return AutocompleteResponse(
+            suggestions = sortedSuggestions,
+            query = query,
+            totalSuggestions = sortedSuggestions.size,
+            responseTimeMs = responseTime
+        )
     }
 
-//    private void validateAutocompleteQuery(String query) {
-//        if (!StringUtils.hasText(query)) {
-//            throw new ValidationException("검색어는 필수입니다");
-//        }
-//        if (query.isEmpty()) {
-//            throw new ValidationException("검색어는 최소 1자 이상이어야 합니다");
-//        }
-//        if (query.length() > 100) {
-//            throw new ValidationException("검색어는 최대 100자까지 입력 가능합니다");
-//        }
-//    }
+    private fun validateAutocompleteQuery(query: String) {
+        if (!StringUtils.hasText(query)) {
+            throw ValidationException("검색어는 필수입니다")
+        }
+        if (query.isEmpty()) {
+            throw ValidationException("검색어는 최소 1자 이상이어야 합니다")
+        }
+        if (query.length > 100) {
+            throw ValidationException("검색어는 최대 100자까지 입력 가능합니다")
+        }
+    }
 }

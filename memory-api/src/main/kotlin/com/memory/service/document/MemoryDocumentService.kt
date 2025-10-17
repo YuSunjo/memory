@@ -60,15 +60,19 @@ class MemoryDocumentService(
         }
 
         val relationships = relationshipListResponse.relationships.stream()
-            .map<RelatedMember?> { rel: RelationshipResponse? ->
-                RelatedMember(
-                    rel!!.relatedMember!!.id,
-                    rel.relatedMember.name,
-                    rel.relatedMember.nickname,
-                    rel.relatedMember.email,
-                    if (rel.relatedMember.profile != null) rel.relatedMember.profile.fileUrl else null
-                )
+            .map { rel: RelationshipResponse? ->
+                rel?.relatedMember?.let { member ->
+                    RelatedMember(
+                        member.id,
+                        member.name,
+                        member.nickname,
+                        member.email,
+                        member.profile?.fileUrl
+                    )
+                }
             }
+            .filter { it != null }
+            .map { it!! }
             .toList()
 
         return RelationshipInfo(relationships)

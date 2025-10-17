@@ -62,7 +62,7 @@ class MemoryDocumentAdminService(
                 }
 
                 pageNumber++
-            } while (memoryPage.hasNext())
+            } while (memoryPage?.hasNext() == true)
 
             val elapsedTime = System.currentTimeMillis() - startTime
 
@@ -71,12 +71,12 @@ class MemoryDocumentAdminService(
                 processedCount, successCount, errorCount
             )
 
-            return MigrationResponse.Companion.success(message, processedCount, successCount, errorCount, elapsedTime)
+            return MigrationResponse.success(message, processedCount, successCount, errorCount, elapsedTime)
         } catch (e: Exception) {
             val elapsedTime = System.currentTimeMillis() - startTime
             log.error("Migration failed: {}", e.message)
 
-            return MigrationResponse.Companion.failure(
+            return MigrationResponse.failure(
                 "마이그레이션 실패: " + e.message,
                 processedCount, successCount, errorCount, elapsedTime
             )
@@ -95,15 +95,15 @@ class MemoryDocumentAdminService(
             val elapsedTime = System.currentTimeMillis() - startTime
 
             if (success) {
-                return MigrationResponse.Companion.success("메모리 마이그레이션 성공", 1, 1, 0, elapsedTime)
+                return MigrationResponse.success("메모리 마이그레이션 성공", 1, 1, 0, elapsedTime)
             } else {
-                return MigrationResponse.Companion.failure("메모리 마이그레이션 실패", 1, 0, 1, elapsedTime)
+                return MigrationResponse.failure("메모리 마이그레이션 실패", 1, 0, 1, elapsedTime)
             }
         } catch (e: Exception) {
             val elapsedTime = System.currentTimeMillis() - startTime
             log.error("Failed to migrate memory ID: {}, Error: {}", memoryId, e.message)
 
-            return MigrationResponse.Companion.failure(
+            return MigrationResponse.failure(
                 "마이그레이션 실패: " + e.message,
                 1, 0, 1, elapsedTime
             )
@@ -117,12 +117,12 @@ class MemoryDocumentAdminService(
             memoryDocumentRepository.deleteAll()
             val elapsedTime = System.currentTimeMillis() - startTime
 
-            return MigrationResponse.Companion.success("모든 문서 삭제 완료", 0, 0, 0, elapsedTime)
+            return MigrationResponse.success("모든 문서 삭제 완료", 0, 0, 0, elapsedTime)
         } catch (e: Exception) {
             val elapsedTime = System.currentTimeMillis() - startTime
             log.error("Failed to delete all documents: {}", e.message)
 
-            return MigrationResponse.Companion.failure(
+            return MigrationResponse.failure(
                 "문서 삭제 실패: " + e.message,
                 0, 0, 0, elapsedTime
             )
@@ -135,7 +135,7 @@ class MemoryDocumentAdminService(
                 memory.member,
                 RelationshipStatus.ACCEPTED
             )
-            val relationshipListResponse = RelationshipListResponse.Companion.fromEntities(relationships)
+            val relationshipListResponse = RelationshipListResponse.fromEntities(relationships)
 
             val existingDocument = memoryDocumentRepository.findByMemoryId(memory.id!!)
 
@@ -155,15 +155,19 @@ class MemoryDocumentAdminService(
         }
 
         val relationships = relationshipListResponse.relationships.stream()
-            .map<RelatedMember?> { rel: RelationshipResponse? ->
-                RelatedMember(
-                    rel!!.relatedMember!!.id,
-                    rel.relatedMember.name,
-                    rel.relatedMember.nickname,
-                    rel.relatedMember.email,
-                    if (rel.relatedMember.profile != null) rel.relatedMember.profile.fileUrl else null
-                )
+            .map { rel: RelationshipResponse? ->
+                rel?.relatedMember?.let { member ->
+                    RelatedMember(
+                        member.id,
+                        member.name,
+                        member.nickname,
+                        member.email,
+                        member.profile?.fileUrl
+                    )
+                }
             }
+            .filter { it != null }
+            .map { it!! }
             .toList()
 
         return RelationshipInfo(relationships)

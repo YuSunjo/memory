@@ -7,14 +7,12 @@ import com.memory.dto.calendar.CalendarEventRequest
 import com.memory.dto.calendar.response.BaseCalendarEventResponse
 import com.memory.exception.customException.NotFoundException
 import com.memory.service.calendar.factory.CalendarEventFactoryService
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.stream.Collectors
 
 @Service
-@RequiredArgsConstructor
 class PersonalEventService(
     private val memberRepository: MemberRepository,
     private val personalEventRepository: PersonalEventRepository,
@@ -51,11 +49,11 @@ class PersonalEventService(
 
         // 일정 업데이트
         personalEvent.update(
-            request.getTitle(),
-            request.getDescription(),
-            request.getStartDateTime(),
-            request.getEndDateTime(),
-            request.getLocation()
+            request.title,
+            request.description,
+            request.startDateTime,
+            request.endDateTime,
+            request.location
         )
 
         return BaseCalendarEventResponse.from(personalEvent)

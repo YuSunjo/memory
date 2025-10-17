@@ -16,17 +16,13 @@ import com.memory.dto.game.GameSessionRequest
 import com.memory.dto.game.response.GameQuestionResponse
 import com.memory.exception.customException.NotFoundException
 import com.memory.service.game.factory.GameFactoryService
-import lombok.RequiredArgsConstructor
-import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.*
 import java.util.stream.Collectors
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 class MemoriesRandomGameService(
     private val gameQuestionRepository: GameQuestionRepository,
     private val memoryRepository: MemoryRepository,

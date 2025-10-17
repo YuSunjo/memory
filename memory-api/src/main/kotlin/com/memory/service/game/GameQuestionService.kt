@@ -91,8 +91,8 @@ class GameQuestionService(
         val distanceKm = calculateDistance(
             gameQuestion.correctLatitude,
             gameQuestion.correctLongitude,
-            request.getPlayerLatitude(),
-            request.getPlayerLongitude()
+            request.playerLatitude,
+            request.playerLongitude
         )
 
         // 점수 계산
@@ -100,11 +100,11 @@ class GameQuestionService(
 
         // 답안 제출
         gameQuestion.submitAnswer(
-            request.getPlayerLatitude(),
-            request.getPlayerLongitude(),
+            request.playerLatitude,
+            request.playerLongitude,
             distanceKm,
             score,
-            request.getTimeTakenSeconds()
+            request.timeTakenSeconds
         )
 
         // 게임 세션 점수 업데이트

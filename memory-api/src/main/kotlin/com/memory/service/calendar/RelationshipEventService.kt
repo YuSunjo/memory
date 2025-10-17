@@ -10,14 +10,12 @@ import com.memory.dto.calendar.CalendarEventRequest
 import com.memory.dto.calendar.response.BaseCalendarEventResponse
 import com.memory.exception.customException.NotFoundException
 import com.memory.service.calendar.factory.CalendarEventFactoryService
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.stream.Collectors
 
 @Service
-@RequiredArgsConstructor
 class RelationshipEventService(
     private val memberRepository: MemberRepository,
     private val relationshipRepository: RelationshipRepository,
@@ -40,10 +38,14 @@ class RelationshipEventService(
         // 모든 관계에 대해 관계 이벤트 생성
         val savedEventList = relationshipList.stream()
             .map { relationship: Relationship? ->
-                CalendarEventServiceUtils.validateRelationshipMember(relationship?.member, relationship)
-                val relationshipEvent = request.toRelationshipEvent(relationship?.member, relationship)
-                relationshipEventRepository.save(relationshipEvent)
+                relationship?.let { rel ->
+                    CalendarEventServiceUtils.validateRelationshipMember(rel.member, rel)
+                    val relationshipEvent = request.toRelationshipEvent(rel.member, rel)
+                    relationshipEventRepository.save(relationshipEvent)
+                }
             }
+            .filter { it != null }
+            .map { it!! }
             .toList()
 
         return BaseCalendarEventResponse.from(savedEventList.get(0))
@@ -66,11 +68,11 @@ class RelationshipEventService(
 
         // 일정 업데이트
         relationshipEvent.update(
-            request.getTitle(),
-            request.getDescription(),
-            request.getStartDateTime(),
-            request.getEndDateTime(),
-            request.getLocation()
+            request.title,
+            request.description,
+            request.startDateTime,
+            request.endDateTime,
+            request.location
         )
 
         return BaseCalendarEventResponse.from(relationshipEvent)

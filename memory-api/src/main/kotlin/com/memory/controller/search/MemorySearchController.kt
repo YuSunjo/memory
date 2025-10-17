@@ -28,8 +28,8 @@ class MemorySearchController(
         response = SearchResultResponse::class
     )
     fun searchMyMemories(
-        @RequestBody request: @Valid MemorySearchRequest?,
-        @MemberId memberId: Long?
+        @RequestBody request: @Valid MemorySearchRequest,
+        @MemberId memberId: Long
     ): ServerResponse<SearchResultResponse?> {
         val response = memorySearchService.searchAuthenticated(request, memberId)
         return success(response)
@@ -41,7 +41,7 @@ class MemorySearchController(
         description = "로그인 없이 PUBLIC 메모리만 검색합니다. 하이라이팅 기능을 지원합니다.",
         response = SearchResultResponse::class
     )
-    fun searchPublicMemories(@RequestBody request: @Valid MemorySearchRequest?): ServerResponse<SearchResultResponse?> {
+    fun searchPublicMemories(@RequestBody request: @Valid MemorySearchRequest): ServerResponse<SearchResultResponse?> {
         val response = memorySearchService.searchPublic(request)
         return success(response)
     }
@@ -55,9 +55,9 @@ class MemorySearchController(
         response = AutocompleteResponse::class
     )
     fun getAutocomplete(
-        @RequestParam query: String?,
+        @RequestParam query: String,
         @RequestParam(defaultValue = "10") limit: Int,
-        @MemberId memberId: Long?
+        @MemberId memberId: Long
     ): ServerResponse<AutocompleteResponse?> {
         val response = memorySearchService.getAuthenticatedAutocomplete(memberId, query, limit)
         return success(response)
@@ -70,7 +70,7 @@ class MemorySearchController(
         response = AutocompleteResponse::class
     )
     fun getPublicAutocomplete(
-        @RequestParam query: String?,
+        @RequestParam query: String,
         @RequestParam(defaultValue = "10") limit: Int
     ): ServerResponse<AutocompleteResponse?> {
         val response = memorySearchService.getPublicAutocomplete(query, limit)

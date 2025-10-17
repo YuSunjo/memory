@@ -10,14 +10,12 @@ import com.memory.dto.calendar.CalendarEventRequest
 import com.memory.dto.calendar.response.BaseCalendarEventResponse
 import com.memory.exception.customException.NotFoundException
 import com.memory.service.calendar.factory.CalendarEventFactoryService
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.stream.Collectors
 
 @Service
-@RequiredArgsConstructor
 class AnniversaryEventService(
     private val memberRepository: MemberRepository,
     private val relationshipRepository: RelationshipRepository,
@@ -41,10 +39,14 @@ class AnniversaryEventService(
         // 모든 관계에 대해 기념일 이벤트 생성
         val savedEventList = relationshipList.stream()
             .map { relationship: Relationship? ->
-                CalendarEventServiceUtils.validateRelationshipMember(relationship?.member, relationship)
-                val anniversaryEvent = request.toAnniversaryEvent(relationship?.member, relationship)
-                anniversaryEventRepository.save(anniversaryEvent)
+                relationship?.let { rel ->
+                    CalendarEventServiceUtils.validateRelationshipMember(rel.member, rel)
+                    val anniversaryEvent = request.toAnniversaryEvent(rel.member, rel)
+                    anniversaryEventRepository.save(anniversaryEvent)
+                }
             }
+            .filter { it != null }
+            .map { it!! }
             .toList()
 
         return BaseCalendarEventResponse.from(savedEventList.get(0))
@@ -67,12 +69,12 @@ class AnniversaryEventService(
 
         // 일정 업데이트
         anniversaryEvent.update(
-            request.getTitle(),
-            request.getDescription(),
-            request.getStartDateTime(),
-            request.getEndDateTime(),
-            request.getLocation(),
-            request.getIsDday()
+            request.title,
+            request.description,
+            request.startDateTime,
+            request.endDateTime,
+            request.location,
+            request.isDday ?: false
         )
 
         return BaseCalendarEventResponse.from(anniversaryEvent)

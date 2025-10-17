@@ -2,7 +2,7 @@ package com.memory.response
 
 data class ServerResponse<T>(
     val statusCode: Int,
-    val message: String,
+    val message: String?,
     val data: T?
 ) {
     companion object {
@@ -15,7 +15,7 @@ data class ServerResponse<T>(
         }
 
         @JvmStatic
-        fun error(statusCode: Int, message: String): ServerResponse<Any?> {
+        fun error(statusCode: Int, message: String?): ServerResponse<Any?> {
             return ServerResponse(statusCode, message, null)
         }
     }

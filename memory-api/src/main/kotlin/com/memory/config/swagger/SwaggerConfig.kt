@@ -1,44 +1,46 @@
-package com.memory.config.swagger;
+package com.memory.config.swagger
 
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.servers.Server;
-import org.springdoc.core.models.GroupedOpenApi;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Info
+import io.swagger.v3.oas.models.security.SecurityScheme
+import io.swagger.v3.oas.models.servers.Server
+import org.springdoc.core.models.GroupedOpenApi
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
 @Configuration
-public class SwaggerConfig {
+class SwaggerConfigKT {
+
     @Bean
-    public GroupedOpenApi memoryApi() {
-        return GroupedOpenApi.builder()
-                .group("memory-api")
-                .pathsToMatch("/api/**")
-                .build();
-    }
+    fun memoryApi(): GroupedOpenApi =
+        GroupedOpenApi.builder()
+            .group("memory-api")
+            .pathsToMatch("/api/**")
+            .build()
+
     @Bean
-    public OpenAPI openAPI() {
-        Info info = new Info()
-                .title("Memory API")
-                .version("v1.0")
-                .description("Memory API Documentation");
+    fun openAPI(): OpenAPI {
+        val info = Info()
+            .title("Memory API")
+            .version("v1.0")
+            .description("Memory API Documentation")
 
-        SecurityScheme securityScheme = new SecurityScheme()
-                .type(SecurityScheme.Type.HTTP)
-                .scheme("bearer")
-                .bearerFormat("JWT")
-                .in(SecurityScheme.In.HEADER)
-                .name("Authorization");
+        val securityScheme = SecurityScheme()
+            .type(SecurityScheme.Type.HTTP)
+            .scheme("bearer")
+            .bearerFormat("JWT")
+            .`in`(SecurityScheme.In.HEADER)
+            .name("Authorization")
 
-        // Add server configuration
-        Server server = new Server().url("/").description("Default Server URL");
+        val server = Server()
+            .url("/")
+            .description("Default Server URL")
 
-        return new OpenAPI()
-                .openapi("3.0.1")
-                .info(info)
-                .addServersItem(server)
-                .components(new Components().addSecuritySchemes("bearerAuth", securityScheme));
+        return OpenAPI()
+            .openapi("3.0.1")
+            .info(info)
+            .addServersItem(server)
+            .components(Components().addSecuritySchemes("bearerAuth", securityScheme))
     }
 }

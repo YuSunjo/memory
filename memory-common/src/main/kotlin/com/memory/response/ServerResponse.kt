@@ -7,7 +7,7 @@ data class ServerResponse<T>(
 ) {
     companion object {
         @JvmField
-        val OK = ServerResponse(200, "OK", null)
+        val OK: ServerResponse<String> = ServerResponse(200, "OK", null)
 
         @JvmStatic
         fun <T> success(data: T): ServerResponse<T> {

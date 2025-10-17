@@ -33,7 +33,7 @@ class MapService(
     }
 
     @Transactional(readOnly = true)
-    fun findMapsByType(mapType: MapType?): List<MapResponse?> {
+    fun findMapsByType(mapType: MapType?): List<MapResponse> {
         val maps: List<Map> = mapRepository.findByMapType(mapType)
         return maps.stream()
             .map { obj: Map -> from(obj) }
@@ -41,7 +41,7 @@ class MapService(
     }
 
     @Transactional(readOnly = true)
-    fun findMapsByMemberAndType(memberId: Long?): List<MapResponse?> {
+    fun findMapsByMemberAndType(memberId: Long?): List<MapResponse> {
         val maps: List<Map> = mapRepository.findByMemberId(memberId)
         return maps.stream()
             .map { obj: Map -> from(obj) }

@@ -43,12 +43,12 @@ class HashTagService(
     }
 
     @Transactional(readOnly = true)
-    fun searchHashTagsByName(keyword: String?, limit: Int): List<HashTag?> {
+    fun searchHashTagsByName(keyword: String?, limit: Int): List<HashTag> {
         return hashTagRepository.findHashTagsByNameContaining(keyword, limit)
     }
 
     @Transactional(readOnly = true)
-    fun getPopularHashTags(limit: Int): List<HashTag?> {
+    fun getPopularHashTags(limit: Int): List<HashTag> {
         return hashTagRepository.findPopularHashTags(limit)
     }
 

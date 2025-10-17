@@ -14,8 +14,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy
         "com.memory.search.repository"
     ]
 )
-class MemoryApiApplicationKT
+class MemoryApiApplication
 
 fun main(args: Array<String>) {
-    runApplication<MemoryApiApplicationKT>(*args)
+    runApplication<MemoryApiApplication>(*args)
 }

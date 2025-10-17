@@ -1,31 +1,18 @@
-package com.memory.dto.game;
+package com.memory.dto.game
 
-import com.memory.domain.game.GameMode;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import com.memory.domain.game.GameMode
+import jakarta.validation.constraints.NotNull
 
-public class GameSessionRequest {
+class GameSessionRequest {
 
-    @Getter
-    public static class Create {
-        @NotNull(message = "게임 모드는 필수 입력값입니다.")
-        private GameMode gameMode;
+    data class Create(
+        @field:NotNull(message = "게임 모드는 필수 입력값입니다.")
+        val gameMode: GameMode
+    )
 
-        public Create(GameMode gameMode) {
-            this.gameMode = gameMode;
-        }
-    }
-
-    @Getter
-    public static class GetList {
-        private final GameMode gameMode;
-        private final Long lastSessionId;
-        private final Integer size;
-
-        public GetList(GameMode gameMode, Long lastSessionId, Integer size) {
-            this.gameMode = gameMode;
-            this.lastSessionId = lastSessionId;
-            this.size = size != null ? size : 10;
-        }
-    }
+    data class GetList(
+        val gameMode: GameMode? = null,
+        val lastSessionId: Long? = null,
+        val size: Int = 10
+    )
 }

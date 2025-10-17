@@ -1,48 +1,48 @@
-package com.memory.dto.calendar.response;
+package com.memory.dto.calendar.response
 
-import com.memory.domain.calendar.BaseCalendarEvent;
-import com.memory.domain.calendar.PersonalEvent;
-import com.memory.dto.member.response.MemberResponse;
-import lombok.Getter;
+import com.memory.domain.calendar.BaseCalendarEvent
+import com.memory.domain.calendar.PersonalEvent
+import com.memory.dto.member.response.MemberResponse
+import com.memory.dto.member.response.MemberResponse.Companion.from
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
-import java.time.LocalDateTime;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+class PersonalEventResponse(
+    id: Long?,
+    title: String?,
+    description: String?,
+    startDateTime: LocalDateTime?,
+    endDateTime: LocalDateTime?,
+    location: String?,
+    member: MemberResponse?,
+    createDate: LocalDateTime?,
+    dday: Int?
+) : BaseCalendarEventResponse(id, title, description, startDateTime, endDateTime, location, member, createDate, dday) {
+    companion object {
+        fun from(event: BaseCalendarEvent?): PersonalEventResponse {
+            require(event is PersonalEvent) { "Event is not a PersonalEvent" }
 
-@Getter
-public class PersonalEventResponse extends BaseCalendarEventResponse {
+            val dday: Int = calculateDday(event.startDateTime)
 
-    public PersonalEventResponse(Long id, String title, String description, 
-                               LocalDateTime startDateTime, LocalDateTime endDateTime, 
-                               String location, MemberResponse member, LocalDateTime createDate,
-                               Integer dday) {
-        super(id, title, description, startDateTime, endDateTime, location, member, createDate, dday);
-    }
-
-    public static PersonalEventResponse from(BaseCalendarEvent event) {
-        if (!(event instanceof PersonalEvent personalEvent)) {
-            throw new IllegalArgumentException("Event is not a PersonalEvent");
+            return PersonalEventResponse(
+                event.id,
+                event.title,
+                event.description,
+                event.startDateTime,
+                event.endDateTime,
+                event.location,
+                from(event.member),
+                event.createDate,
+                dday
+            )
         }
 
-        Integer dday = calculateDday(personalEvent.getStartDateTime());
+        private fun calculateDday(eventDateTime: LocalDateTime): Int {
+            val today = LocalDate.now()
+            val eventDate = eventDateTime.toLocalDate()
 
-        return new PersonalEventResponse(
-                personalEvent.getId(),
-                personalEvent.getTitle(),
-                personalEvent.getDescription(),
-                personalEvent.getStartDateTime(),
-                personalEvent.getEndDateTime(),
-                personalEvent.getLocation(),
-                MemberResponse.from(personalEvent.getMember()),
-                personalEvent.getCreateDate(),
-                dday
-        );
-    }
-
-    private static Integer calculateDday(LocalDateTime eventDateTime) {
-        LocalDate today = LocalDate.now();
-        LocalDate eventDate = eventDateTime.toLocalDate();
-
-        return (int) ChronoUnit.DAYS.between(today, eventDate);
+            return ChronoUnit.DAYS.between(today, eventDate).toInt()
+        }
     }
 }

@@ -1,48 +1,32 @@
-package com.memory.dto.calendar.response;
+package com.memory.dto.calendar.response
 
-import com.memory.domain.calendar.BaseCalendarEvent;
-import com.memory.dto.member.response.MemberResponse;
-import lombok.Getter;
+import com.memory.domain.calendar.BaseCalendarEvent
+import com.memory.dto.member.response.MemberResponse
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
+abstract class BaseCalendarEventResponse protected constructor(
+    id: Long?,
+    title: String?,
+    description: String?,
+    startDateTime: LocalDateTime?,
+    endDateTime: LocalDateTime?,
+    location: String?,
+    member: MemberResponse?,
+    createDate: LocalDateTime?,
+    dday: Int?
+) {
+    companion object {
+        fun from(event: BaseCalendarEvent?): BaseCalendarEventResponse? {
+            if (event == null) {
+                return null
+            }
 
-@Getter
-public abstract class BaseCalendarEventResponse {
-    private final Long id;
-    private final String title;
-    private final String description;
-    private final LocalDateTime startDateTime;
-    private final LocalDateTime endDateTime;
-    private final String location;
-    private final MemberResponse member;
-    private final LocalDateTime createDate;
-    private final Integer dday;
-
-    protected BaseCalendarEventResponse(Long id, String title, String description, 
-                                      LocalDateTime startDateTime, LocalDateTime endDateTime, 
-                                      String location, MemberResponse member, LocalDateTime createDate,
-                                      Integer dday) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-        this.location = location;
-        this.member = member;
-        this.createDate = createDate;
-        this.dday = dday;
-    }
-
-    public static BaseCalendarEventResponse from(BaseCalendarEvent event) {
-        if (event == null) {
-            return null;
+            return when (event.javaClass.getSimpleName()) {
+                "PersonalEvent" -> PersonalEventResponse.Companion.from(event)
+                "AnniversaryEvent" -> AnniversaryEventResponse.Companion.from(event)
+                "RelationshipEvent" -> RelationshipEventResponse.Companion.from(event)
+                else -> throw IllegalArgumentException("Unknown event type: " + event.javaClass.getSimpleName())
+            }
         }
-
-        return switch (event.getClass().getSimpleName()) {
-            case "PersonalEvent" -> PersonalEventResponse.from(event);
-            case "AnniversaryEvent" -> AnniversaryEventResponse.from(event);
-            case "RelationshipEvent" -> RelationshipEventResponse.from(event);
-            default -> throw new IllegalArgumentException("Unknown event type: " + event.getClass().getSimpleName());
-        };
     }
 }

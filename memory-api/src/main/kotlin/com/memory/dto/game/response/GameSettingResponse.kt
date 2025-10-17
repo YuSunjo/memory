@@ -1,35 +1,33 @@
-package com.memory.dto.game.response;
+package com.memory.dto.game.response
 
-import com.memory.domain.game.GameMode;
-import com.memory.domain.game.GameSetting;
-import lombok.Getter;
+import com.memory.domain.game.GameMode
+import com.memory.domain.game.GameSetting
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
+class GameSettingResponse(gameSetting: GameSetting) {
+    private val id: Long?
+    private val gameMode: GameMode
+    private val maxQuestions: Int
+    private val timeLimitSeconds: Int
+    private val maxDistanceForFullScoreKm: Int
+    private val scoringFormula: String
+    private val isActive: Boolean
+    private val createDate: LocalDateTime?
 
-@Getter
-public class GameSettingResponse {
-    
-    private final Long id;
-    private final GameMode gameMode;
-    private final Integer maxQuestions;
-    private final Integer timeLimitSeconds;
-    private final Integer maxDistanceForFullScoreKm;
-    private final String scoringFormula;
-    private final Boolean isActive;
-    private final LocalDateTime createDate;
-    
-    public GameSettingResponse(GameSetting gameSetting) {
-        this.id = gameSetting.getId();
-        this.gameMode = gameSetting.getGameMode();
-        this.maxQuestions = gameSetting.getMaxQuestions();
-        this.timeLimitSeconds = gameSetting.getTimeLimitSeconds();
-        this.maxDistanceForFullScoreKm = gameSetting.getMaxDistanceForFullScoreKm();
-        this.scoringFormula = gameSetting.getScoringFormula();
-        this.isActive = gameSetting.isActive();
-        this.createDate = gameSetting.getCreateDate();
+    init {
+        this.id = gameSetting.id
+        this.gameMode = gameSetting.gameMode
+        this.maxQuestions = gameSetting.maxQuestions
+        this.timeLimitSeconds = gameSetting.timeLimitSeconds
+        this.maxDistanceForFullScoreKm = gameSetting.maxDistanceForFullScoreKm
+        this.scoringFormula = gameSetting.scoringFormula
+        this.isActive = gameSetting.isActive
+        this.createDate = gameSetting.createDate
     }
-    
-    public static GameSettingResponse from(GameSetting gameSetting) {
-        return new GameSettingResponse(gameSetting);
+
+    companion object {
+        fun from(gameSetting: GameSetting): GameSettingResponse {
+            return GameSettingResponse(gameSetting)
+        }
     }
 }

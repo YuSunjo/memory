@@ -1,53 +1,50 @@
-package com.memory.dto.calendar.response;
+package com.memory.dto.calendar.response
 
-import com.memory.domain.calendar.AnniversaryEvent;
-import com.memory.domain.calendar.BaseCalendarEvent;
-import com.memory.dto.member.response.MemberResponse;
-import lombok.Getter;
+import com.memory.domain.calendar.AnniversaryEvent
+import com.memory.domain.calendar.BaseCalendarEvent
+import com.memory.dto.member.response.MemberResponse
+import com.memory.dto.member.response.MemberResponse.Companion.from
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.LocalDate;
+class AnniversaryEventResponse(
+    id: Long?,
+    title: String?,
+    description: String?,
+    startDateTime: LocalDateTime?,
+    endDateTime: LocalDateTime?,
+    location: String?,
+    member: MemberResponse?,
+    createDate: LocalDateTime?,
+    relatedMember: MemberResponse?,
+    isDday: Boolean?, dday: Int?
+) : BaseCalendarEventResponse(id, title, description, startDateTime, endDateTime, location, member, createDate, dday) {
+    companion object {
+        fun from(event: BaseCalendarEvent?): AnniversaryEventResponse {
+            require(event is AnniversaryEvent) { "Event is not an AnniversaryEvent" }
 
-@Getter
-public class AnniversaryEventResponse extends BaseCalendarEventResponse {
-    private final MemberResponse relatedMember;
-    private final Boolean isDday;
+            val dday: Int = calculateDday(event.startDateTime)
 
-    public AnniversaryEventResponse(Long id, String title, String description, 
-                             LocalDateTime startDateTime, LocalDateTime endDateTime, 
-                             String location, MemberResponse member, LocalDateTime createDate,
-                             MemberResponse relatedMember, Boolean isDday, Integer dday) {
-        super(id, title, description, startDateTime, endDateTime, location, member, createDate, dday);
-        this.relatedMember = relatedMember;
-        this.isDday = isDday;
-    }
-
-    public static AnniversaryEventResponse from(BaseCalendarEvent event) {
-        if (!(event instanceof AnniversaryEvent anniversaryEvent)) {
-            throw new IllegalArgumentException("Event is not an AnniversaryEvent");
+            return AnniversaryEventResponse(
+                event.id,
+                event.title,
+                event.description,
+                event.startDateTime,
+                event.endDateTime,
+                event.location,
+                from(event.member),
+                event.createDate,
+                from(event.relationship.relatedMember),
+                event.isDday,
+                dday
+            )
         }
 
-        Integer dday = calculateDday(anniversaryEvent.getStartDateTime());
-
-        return new AnniversaryEventResponse(
-                anniversaryEvent.getId(),
-                anniversaryEvent.getTitle(),
-                anniversaryEvent.getDescription(),
-                anniversaryEvent.getStartDateTime(),
-                anniversaryEvent.getEndDateTime(),
-                anniversaryEvent.getLocation(),
-                MemberResponse.from(anniversaryEvent.getMember()),
-                anniversaryEvent.getCreateDate(),
-                MemberResponse.from(anniversaryEvent.getRelationship().getRelatedMember()),
-                anniversaryEvent.isDday(),
-                dday
-        );
-    }
-
-    private static Integer calculateDday(LocalDateTime eventDateTime) {
-        LocalDate today = LocalDate.now();
-        LocalDate eventDate = eventDateTime.toLocalDate();
-        return (int) ChronoUnit.DAYS.between(today, eventDate);
+        private fun calculateDday(eventDateTime: LocalDateTime): Int {
+            val today = LocalDate.now()
+            val eventDate = eventDateTime.toLocalDate()
+            return ChronoUnit.DAYS.between(today, eventDate).toInt()
+        }
     }
 }

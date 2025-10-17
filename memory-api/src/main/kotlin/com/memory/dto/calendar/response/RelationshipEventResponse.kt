@@ -1,51 +1,49 @@
-package com.memory.dto.calendar.response;
+package com.memory.dto.calendar.response
 
-import com.memory.domain.calendar.BaseCalendarEvent;
-import com.memory.domain.calendar.RelationshipEvent;
-import com.memory.dto.member.response.MemberResponse;
-import lombok.Getter;
+import com.memory.domain.calendar.BaseCalendarEvent
+import com.memory.domain.calendar.RelationshipEvent
+import com.memory.dto.member.response.MemberResponse
+import com.memory.dto.member.response.MemberResponse.Companion.from
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
-import java.time.LocalDateTime;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+class RelationshipEventResponse(
+    id: Long?,
+    title: String?,
+    description: String?,
+    startDateTime: LocalDateTime?,
+    endDateTime: LocalDateTime?,
+    location: String?, member: MemberResponse?,
+    createDate: LocalDateTime?,
+    relatedMember: MemberResponse?,
+    dday: Int?
+) : BaseCalendarEventResponse(id, title, description, startDateTime, endDateTime, location, member, createDate, dday) {
+    companion object {
+        fun from(event: BaseCalendarEvent?): RelationshipEventResponse {
+            require(event is RelationshipEvent) { "Event is not a RelationshipEvent" }
 
-@Getter
-public class RelationshipEventResponse extends BaseCalendarEventResponse {
-    private final MemberResponse relatedMember;
+            val dday: Int = calculateDday(event.startDateTime)
 
-    public RelationshipEventResponse(Long id, String title, String description, 
-                            LocalDateTime startDateTime, LocalDateTime endDateTime, 
-                            String location, MemberResponse member, LocalDateTime createDate,
-                            MemberResponse relatedMember, Integer dday) {
-        super(id, title, description, startDateTime, endDateTime, location, member, createDate, dday);
-        this.relatedMember = relatedMember;
-    }
-
-    public static RelationshipEventResponse from(BaseCalendarEvent event) {
-        if (!(event instanceof RelationshipEvent relationshipEvent)) {
-            throw new IllegalArgumentException("Event is not a RelationshipEvent");
+            return RelationshipEventResponse(
+                event.id,
+                event.title,
+                event.description,
+                event.startDateTime,
+                event.endDateTime,
+                event.location,
+                from(event.member),
+                event.createDate,
+                from(event.relationship.relatedMember),
+                dday
+            )
         }
 
-        Integer dday = calculateDday(relationshipEvent.getStartDateTime());
+        private fun calculateDday(eventDateTime: LocalDateTime): Int {
+            val today = LocalDate.now()
+            val eventDate = eventDateTime.toLocalDate()
 
-        return new RelationshipEventResponse(
-                relationshipEvent.getId(),
-                relationshipEvent.getTitle(),
-                relationshipEvent.getDescription(),
-                relationshipEvent.getStartDateTime(),
-                relationshipEvent.getEndDateTime(),
-                relationshipEvent.getLocation(),
-                MemberResponse.from(relationshipEvent.getMember()),
-                relationshipEvent.getCreateDate(),
-                MemberResponse.from(relationshipEvent.getRelationship().getRelatedMember()),
-                dday
-        );
-    }
-
-    private static Integer calculateDday(LocalDateTime eventDateTime) {
-        LocalDate today = LocalDate.now();
-        LocalDate eventDate = eventDateTime.toLocalDate();
-
-        return (int) ChronoUnit.DAYS.between(today, eventDate);
+            return ChronoUnit.DAYS.between(today, eventDate).toInt()
+        }
     }
 }

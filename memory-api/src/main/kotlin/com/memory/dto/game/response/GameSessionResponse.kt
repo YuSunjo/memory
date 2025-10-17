@@ -1,48 +1,45 @@
-package com.memory.dto.game.response;
+package com.memory.dto.game.response
 
-import com.memory.domain.game.GameMode;
-import com.memory.domain.game.GameSession;
-import com.memory.domain.game.GameSetting;
-import com.memory.domain.game.GameSessionStatus;
-import lombok.Getter;
+import com.memory.domain.game.GameMode
+import com.memory.domain.game.GameSession
+import com.memory.domain.game.GameSessionStatus
+import com.memory.domain.game.GameSetting
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
+class GameSessionResponse(gameSession: GameSession, gameSetting: GameSetting?) {
+    private val id: Long?
+    private val memberId: Long?
+    private val targetMemberId: Long?
+    private val gameMode: GameMode
+    private val status: GameSessionStatus
+    private val totalScore: Int
+    private val totalQuestions: Int
+    private val correctAnswers: Int
+    private val accuracy: Double
+    private val startTime: LocalDateTime
+    private val endTime: LocalDateTime?
+    private val gameSetting: GameSettingResponse?
+    private val createDate: LocalDateTime?
 
-@Getter
-public class GameSessionResponse {
-    
-    private final Long id;
-    private final Long memberId;
-    private final Long targetMemberId;
-    private final GameMode gameMode;
-    private final GameSessionStatus status;
-    private final Integer totalScore;
-    private final Integer totalQuestions;
-    private final Integer correctAnswers;
-    private final Double accuracy;
-    private final LocalDateTime startTime;
-    private final LocalDateTime endTime;
-    private final GameSettingResponse gameSetting;
-    private final LocalDateTime createDate;
-
-    public GameSessionResponse(GameSession gameSession, GameSetting gameSetting) {
-        this.id = gameSession.getId();
-        this.memberId = gameSession.getMember().getId();
-        this.targetMemberId = gameSession.getTargetMember() != null ? gameSession.getTargetMember().getId() : null;
-        this.gameMode = gameSession.getGameMode();
-        this.status = gameSession.getStatus();
-        this.totalScore = gameSession.getTotalScore();
-        this.totalQuestions = gameSession.getTotalQuestions();
-        this.correctAnswers = gameSession.getCorrectAnswers();
-        this.accuracy = gameSession.getAccuracy();
-        this.startTime = gameSession.getStartTime();
-        this.endTime = gameSession.getEndTime();
-        this.gameSetting = gameSetting != null ? GameSettingResponse.from(gameSetting) : null;
-        this.createDate = gameSession.getCreateDate();
+    init {
+        this.id = gameSession.id
+        this.memberId = gameSession.member.id
+        this.targetMemberId = if (gameSession.targetMember != null) gameSession.targetMember!!.id else null
+        this.gameMode = gameSession.gameMode
+        this.status = gameSession.status
+        this.totalScore = gameSession.totalScore
+        this.totalQuestions = gameSession.totalQuestions
+        this.correctAnswers = gameSession.correctAnswers
+        this.accuracy = gameSession.getAccuracy()
+        this.startTime = gameSession.startTime
+        this.endTime = gameSession.endTime
+        this.gameSetting = if (gameSetting != null) GameSettingResponse.Companion.from(gameSetting) else null
+        this.createDate = gameSession.createDate
     }
 
-    public static GameSessionResponse from(GameSession gameSession, GameSetting gameSetting) {
-        return new GameSessionResponse(gameSession, gameSetting);
+    companion object {
+        fun from(gameSession: GameSession, gameSetting: GameSetting?): GameSessionResponse {
+            return GameSessionResponse(gameSession, gameSetting)
+        }
     }
-
 }

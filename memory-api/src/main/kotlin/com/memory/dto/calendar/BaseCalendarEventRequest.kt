@@ -1,59 +1,58 @@
-package com.memory.dto.calendar;
+package com.memory.dto.calendar
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import jakarta.validation.constraints.NotNull
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
 
-public abstract class BaseCalendarEventRequest {
-    
-    @Getter
-    public static abstract class Create {
-        @NotBlank(message = "제목은 필수 입력값입니다.")
-        protected String title;
+abstract class BaseCalendarEventRequest {
 
-        protected String description;
+    abstract class Create protected constructor(
+        @field:NotBlank(message = "제목은 필수 입력값입니다.")
+        title: String,
+        description: String?,
+        @field:NotNull(message = "시작 일시는 필수 입력값입니다.")
+        startDateTime: LocalDateTime,
+        endDateTime: LocalDateTime?,
+        location: String?
+    ) {
+        open var title: String = title
+            protected set
 
-        @NotNull(message = "시작 일시는 필수 입력값입니다.")
-        protected LocalDateTime startDateTime;
+        open var description: String? = description
+            protected set
 
-        protected LocalDateTime endDateTime;
+        open var startDateTime: LocalDateTime = startDateTime
+            protected set
 
-        protected String location;
+        open var endDateTime: LocalDateTime? = endDateTime
+            protected set
 
-        protected Create(String title, String description, LocalDateTime startDateTime, 
-                       LocalDateTime endDateTime, String location) {
-            this.title = title;
-            this.description = description;
-            this.startDateTime = startDateTime;
-            this.endDateTime = endDateTime;
-            this.location = location;
-        }
+        open var location: String? = location
+            protected set
     }
 
-    @Getter
-    public static abstract class Update {
-        @NotBlank(message = "제목은 필수 입력값입니다.")
-        protected String title;
+    abstract class Update protected constructor(
+        @field:NotBlank(message = "제목은 필수 입력값입니다.")
+        title: String,
+        description: String?,
+        @field:NotNull(message = "시작 일시는 필수 입력값입니다.")
+        startDateTime: LocalDateTime,
+        endDateTime: LocalDateTime?,
+        location: String?
+    ) {
+        open var title: String = title
+            protected set
 
-        protected String description;
+        open var description: String? = description
+            protected set
 
-        @NotNull(message = "시작 일시는 필수 입력값입니다.")
-        protected LocalDateTime startDateTime;
+        open var startDateTime: LocalDateTime = startDateTime
+            protected set
 
-        protected LocalDateTime endDateTime;
+        open var endDateTime: LocalDateTime? = endDateTime
+            protected set
 
-        protected String location;
-
-        protected Update(String title, String description, LocalDateTime startDateTime, 
-                       LocalDateTime endDateTime, String location) {
-            this.title = title;
-            this.description = description;
-            this.startDateTime = startDateTime;
-            this.endDateTime = endDateTime;
-            this.location = location;
-        }
+        open var location: String? = location
+            protected set
     }
-
 }

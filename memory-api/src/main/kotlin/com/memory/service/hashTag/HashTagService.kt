@@ -1,63 +1,59 @@
-package com.memory.service.hashTag;
+package com.memory.service.hashTag
 
-import com.memory.domain.hashtag.HashTag;
-import com.memory.domain.hashtag.MemoryHashTag;
-import com.memory.domain.hashtag.repository.HashTagRepository;
-import com.memory.domain.hashtag.repository.MemoryHashTagRepository;
-import com.memory.domain.memory.Memory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.memory.domain.hashtag.HashTag
+import com.memory.domain.hashtag.HashTag.Companion.create
+import com.memory.domain.hashtag.MemoryHashTag
+import com.memory.domain.hashtag.repository.HashTagRepository
+import com.memory.domain.hashtag.repository.MemoryHashTagRepository
+import com.memory.domain.memory.Memory
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.util.function.Supplier
 
 @Service
-@RequiredArgsConstructor
-public class HashTagService {
-
-    private final HashTagRepository hashTagRepository;
-    private final MemoryHashTagRepository memoryHashTagRepository;
-
+class HashTagService(
+    private val hashTagRepository: HashTagRepository,
+    private val memoryHashTagRepository: MemoryHashTagRepository,
+) {
     @Transactional
-    public List<HashTag> findOrCreateHashTags(List<String> hashTagNames) {
+    fun findOrCreateHashTags(hashTagNames: MutableList<String>?): MutableList<HashTag?> {
         if (hashTagNames == null || hashTagNames.isEmpty()) {
-            return new ArrayList<>();
+            return ArrayList()
         }
 
-        List<HashTag> hashTags = new ArrayList<>();
-        
-        for (String hashTagName : hashTagNames) {
-            HashTag hashTag = hashTagRepository.findByName(hashTagName)
-                    .orElseGet(() -> createHashTag(hashTagName));
-            
-            hashTag.incrementUseCount();
-            hashTags.add(hashTag);
+        val hashTags: MutableList<HashTag?> = ArrayList()
+
+        for (hashTagName in hashTagNames) {
+            val hashTag = hashTagRepository.findByName(hashTagName)
+                .orElseGet(Supplier { createHashTag(hashTagName) })
+
+            hashTag.incrementUseCount()
+            hashTags.add(hashTag)
         }
-        
-        return hashTags;
+
+        return hashTags
     }
 
     @Transactional
-    public void decrementUseCountForMemoryHashTags(Memory memory) {
-        List<MemoryHashTag> memoryHashTags = memoryHashTagRepository.findByMemory(memory);
-        for (MemoryHashTag memoryHashTag : memoryHashTags) {
-            memoryHashTag.getHashTag().decrementUseCount();
+    fun decrementUseCountForMemoryHashTags(memory: Memory?) {
+        val memoryHashTags: List<MemoryHashTag> = memoryHashTagRepository.findByMemory(memory)
+        for (memoryHashTag in memoryHashTags) {
+            memoryHashTag.hashTag!!.decrementUseCount()
         }
     }
 
     @Transactional(readOnly = true)
-    public List<HashTag> searchHashTagsByName(String keyword, int limit) {
-        return hashTagRepository.findHashTagsByNameContaining(keyword, limit);
+    fun searchHashTagsByName(keyword: String?, limit: Int): List<HashTag?> {
+        return hashTagRepository.findHashTagsByNameContaining(keyword, limit)
     }
 
     @Transactional(readOnly = true)
-    public List<HashTag> getPopularHashTags(int limit) {
-        return hashTagRepository.findPopularHashTags(limit);
+    fun getPopularHashTags(limit: Int): List<HashTag?> {
+        return hashTagRepository.findPopularHashTags(limit)
     }
 
-    private HashTag createHashTag(String hashTagName) {
-        HashTag hashTag = HashTag.create(hashTagName);
-        return hashTagRepository.save(hashTag);
+    private fun createHashTag(hashTagName: String): HashTag {
+        val hashTag = create(hashTagName)
+        return hashTagRepository.save<HashTag>(hashTag)
     }
 }

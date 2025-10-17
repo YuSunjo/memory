@@ -1,18 +1,23 @@
-package com.memory.service.calendar.factory;
+package com.memory.service.calendar.factory
 
-import com.memory.dto.calendar.CalendarEventRequest;
-import com.memory.dto.calendar.response.BaseCalendarEventResponse;
+import com.memory.dto.calendar.CalendarEventRequest
+import com.memory.dto.calendar.response.BaseCalendarEventResponse
+import java.time.LocalDateTime
 
-import java.util.List;
-import java.time.LocalDateTime;
+interface CalendarEventFactoryService {
+    fun createCalendarEvent(memberId: Long?, request: CalendarEventRequest.Create): BaseCalendarEventResponse?
 
-public interface CalendarEventFactoryService {
+    fun updateCalendarEvent(
+        memberId: Long?,
+        eventId: Long,
+        request: CalendarEventRequest.Update
+    ): BaseCalendarEventResponse?
 
-    BaseCalendarEventResponse createCalendarEvent(Long memberId, CalendarEventRequest.Create request);
+    fun getCalendarEventsByDateRange(
+        memberId: Long?,
+        startDate: LocalDateTime?,
+        endDate: LocalDateTime?
+    ): MutableList<BaseCalendarEventResponse?>?
 
-    BaseCalendarEventResponse updateCalendarEvent(Long memberId, Long eventId, CalendarEventRequest.Update request);
-
-    List<BaseCalendarEventResponse> getCalendarEventsByDateRange(Long memberId, LocalDateTime startDate, LocalDateTime endDate);
-
-    List<BaseCalendarEventResponse> getCalendarEventsWithDday(Long memberId);
+    fun getCalendarEventsWithDday(memberId: Long?): MutableList<BaseCalendarEventResponse?>?
 }

@@ -25,10 +25,10 @@ class FileRequest {
         val fileSize: Long,
 
         @field:NotNull(message = "메모리 ID는 필수 입력값입니다.")
-        val memoryId: Long,
+        val memoryId: Long?,
 
         @field:NotNull(message = "멤버 ID는 필수 입력값입니다.")
-        val memberId: Long
+        val memberId: Long?
     ) {
         // MultipartFile 기반 보조 생성자
         constructor(
@@ -47,7 +47,6 @@ class FileRequest {
             memberId = memberId
         )
 
-        // 주의: 도메인의 File과 java.io.File 충돌 시 import 별칭 사용
         fun toEntity(): File =
             File(originalFileName, fileName, fileUrl, fileType, fileSize)
     }

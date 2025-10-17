@@ -1,160 +1,165 @@
-package com.memory.service.memory;
+package com.memory.service.memory
 
-import com.memory.domain.file.File;
-import com.memory.domain.file.repository.FileRepository;
-import com.memory.domain.map.Map;
-import com.memory.domain.map.repository.MapRepository;
-import com.memory.domain.member.Member;
-import com.memory.domain.member.repository.MemberRepository;
-import com.memory.domain.memory.Memory;
-import com.memory.domain.memory.MemoryType;
-import com.memory.domain.memory.repository.MemoryRepository;
-import com.memory.domain.relationship.Relationship;
-import com.memory.domain.relationship.RelationshipStatus;
-import com.memory.domain.relationship.repository.RelationshipRepository;
-import com.memory.dto.memory.MemoryRequest;
-import com.memory.dto.memory.response.MemoryResponse;
-import com.memory.exception.customException.NotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import com.memory.domain.file.repository.FileRepository
+import com.memory.domain.map.repository.MapRepository
+import com.memory.domain.member.repository.MemberRepository
+import com.memory.domain.memory.Memory
+import com.memory.domain.memory.MemoryType
+import com.memory.domain.memory.repository.MemoryRepository
+import com.memory.domain.relationship.Relationship
+import com.memory.domain.relationship.RelationshipStatus
+import com.memory.domain.relationship.repository.RelationshipRepository
+import com.memory.dto.memory.MemoryRequest
+import com.memory.dto.memory.response.MemoryResponse
+import com.memory.dto.memory.response.MemoryResponse.Companion.from
+import com.memory.exception.customException.NotFoundException
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.util.stream.Collectors
 
 @Service
-@RequiredArgsConstructor
-public class MemoryService {
-
-    private final MemoryRepository memoryRepository;
-    private final MemberRepository memberRepository;
-    private final MapRepository mapRepository;
-    private final FileRepository fileRepository;
-    private final RelationshipRepository relationshipRepository;
-
+class MemoryService(
+    private val memoryRepository: MemoryRepository,
+    private val memberRepository: MemberRepository,
+    private val mapRepository: MapRepository,
+    private val fileRepository: FileRepository,
+    private val relationshipRepository: RelationshipRepository,
+) {
     @Transactional
-    public MemoryResponse createMemory(Long memberId, MemoryRequest.Create createRequest) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    fun createMemory(memberId: Long?, createRequest: MemoryRequest.Create): MemoryResponse {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        Map map = mapRepository.findById(createRequest.getMapId())
-                .orElseThrow(() -> new NotFoundException("지도를 찾을 수 없습니다."));
+        val map = mapRepository.findById(createRequest.mapId)
+            .orElseThrow { NotFoundException("지도를 찾을 수 없습니다.") }
 
-        Memory savedMemory = memoryRepository.save(createRequest.toEntity(member, map));
+        val savedMemory = memoryRepository.save<Memory>(createRequest.toEntity(member, map))
 
-        if (createRequest.getFileIdList() != null && !createRequest.getFileIdList().isEmpty()) {
-            List<File> files = fileRepository.findAllById(createRequest.getFileIdList());
-            savedMemory.addFiles(files);
+        if (!createRequest.fileIdList.isEmpty()) {
+            val files = fileRepository.findAllById(createRequest.fileIdList)
+            savedMemory.addFiles(files)
         }
 
-        return MemoryResponse.from(savedMemory);
+        return from(savedMemory)
     }
 
     @Transactional(readOnly = true)
-    public MemoryResponse findMemoryById(Long memberId, Long memoryId) {
+    fun findMemoryById(memberId: Long?, memoryId: Long?): MemoryResponse {
         memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        Memory memory = memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)
-                .orElseThrow(() -> new NotFoundException("해당 유저의 메모리를 찾을 수 없습니다."));
+        val memory = memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)
+            .orElseThrow { NotFoundException("해당 유저의 메모리를 찾을 수 없습니다.") }
 
-        return MemoryResponse.from(memory);
+        return from(memory)
     }
 
     @Transactional(readOnly = true)
-    public MemoryResponse findPublicMemoryById(Long memoryId) {
-        Memory memory = memoryRepository.findById(memoryId)
-                .orElseThrow(() -> new NotFoundException("메모리를 찾을 수 없습니다."));
+    fun findPublicMemoryById(memoryId: Long): MemoryResponse {
+        val memory = memoryRepository.findById(memoryId)
+            .orElseThrow { NotFoundException("메모리를 찾을 수 없습니다.") }
 
         if (!memory.isPublic()) {
-            throw new NotFoundException("해당 메모리는 공개되지 않았습니다.");
+            throw NotFoundException("해당 메모리는 공개되지 않았습니다.")
         }
 
-        return MemoryResponse.from(memory);
+        return from(memory)
     }
 
     @Transactional(readOnly = true)
-    public List<MemoryResponse> findMemoriesByMember(Long memberId, Long lastMemoryId, Integer size, MemoryType memoryType) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    fun findMemoriesByMember(
+        memberId: Long?,
+        lastMemoryId: Long?,
+        size: Int,
+        memoryType: MemoryType?
+    ): MutableList<MemoryResponse?> {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        List<Relationship> relationshipList = relationshipRepository.findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED);
+        val relationshipList: List<Relationship> =
+            relationshipRepository.findByMemberAndRelationshipStatus(member, RelationshipStatus.ACCEPTED)
 
-        List<Long> relatedMemberIds = relationshipList.stream()
-                .map(relationship -> relationship.getRelatedMember().getId())
-                .toList();
+        val relatedMemberIds = relationshipList.stream()
+            .map<Long> { relationship: Relationship -> relationship.relatedMember.id }
+            .toList()
 
-        List<Memory> memories;
+        val memories: List<Memory>?
+
         if (lastMemoryId == null) {
-            memories = memoryRepository.findByMemberAndMemoryType(member, relatedMemberIds, memoryType, size);
+            memories = memoryRepository.findByMemberAndMemoryType(member, relatedMemberIds, memoryType, size)
         } else {
-            memories = memoryRepository.findByMemberAndMemoryType(member, relatedMemberIds, memoryType, lastMemoryId, size);
+            memories =
+                memoryRepository.findByMemberAndMemoryType(member, relatedMemberIds, memoryType, lastMemoryId, size)
         }
 
         return memories.stream()
-                .map(MemoryResponse::from)
-                .collect(Collectors.toList());
+            .map { obj: Memory -> from(obj) }
+            .collect(Collectors.toList())
     }
 
     @Transactional
-    public MemoryResponse updateMemory(Long memberId, Long memoryId, MemoryRequest.Update updateRequest) {
+    fun updateMemory(memberId: Long?, memoryId: Long?, updateRequest: MemoryRequest.Update): MemoryResponse {
         memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        Memory memory = memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)
-                .orElseThrow(() -> new NotFoundException("해당 유저의 메모리를 찾을 수 없습니다."));
+        val memory = memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)
+            .orElseThrow { NotFoundException("해당 유저의 메모리를 찾을 수 없습니다.") }
 
         // Check if the memory belongs to the member
-        if (!memory.getMember().getId().equals(memberId)) {
-            throw new NotFoundException("해당 메모리에 접근 권한이 없습니다.");
+        if (memory.member.id != memberId) {
+            throw NotFoundException("해당 메모리에 접근 권한이 없습니다.")
         }
 
-        memory.update(updateRequest.getTitle(), updateRequest.getContent(), updateRequest.getLocationName(), updateRequest.getMemorableDate(), updateRequest.getMemoryType());
+        memory.update(
+            updateRequest.title,
+            updateRequest.content,
+            updateRequest.locationName,
+            updateRequest.memorableDate,
+            updateRequest.memoryType
+        )
 
         // Associate files with the memory if fileIdList is not empty
-        if (updateRequest.getFileIdList() != null && !updateRequest.getFileIdList().isEmpty()) {
-            List<File> files = fileRepository.findAllById(updateRequest.getFileIdList());
-            for (File file : files) {
-                memory.addFile(file);
+        if (!updateRequest.fileIdList.isEmpty()) {
+            val files = fileRepository.findAllById(updateRequest.fileIdList)
+            for (file in files) {
+                memory.addFile(file)
             }
         }
 
-        return MemoryResponse.from(memory);
+        return from(memory)
     }
 
     @Transactional
-    public void deleteMemory(Long memberId, Long memoryId) {
+    fun deleteMemory(memberId: Long?, memoryId: Long?) {
         memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        Memory memory = memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)
-                .orElseThrow(() -> new NotFoundException("해당 유저의 메모리를 찾을 수 없습니다."));
+        val memory = memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)
+            .orElseThrow { NotFoundException("해당 유저의 메모리를 찾을 수 없습니다.") }
 
-        if (!memory.getMember().getId().equals(memberId)) {
-            throw new NotFoundException("해당 메모리에 접근 권한이 없습니다.");
+        if (memory.member.id != memberId) {
+            throw NotFoundException("해당 메모리에 접근 권한이 없습니다.")
         }
 
-        memory.updateDelete();
+        memory.updateDelete()
     }
 
     @Transactional(readOnly = true)
-    public List<MemoryResponse> findPublicMemories(Long lastMemoryId, Integer size) {
-        List<Memory> memories;
-        if (lastMemoryId == null) {
-            memories = memoryRepository.findByMemoryType(MemoryType.PUBLIC, size);
+    fun findPublicMemories(lastMemoryId: Long?, size: Int): MutableList<MemoryResponse?> {
+        val memories = if (lastMemoryId == null) {
+            memoryRepository.findByMemoryType(MemoryType.PUBLIC, size)
         } else {
-            memories = memoryRepository.findByMemoryType(MemoryType.PUBLIC, lastMemoryId, size != null ? size : 10);
+            memoryRepository.findByMemoryType(MemoryType.PUBLIC, lastMemoryId, size)
         }
 
         return memories.stream()
-                .map(MemoryResponse::from)
-                .collect(Collectors.toList());
+            .map { obj: Memory -> from(obj) }
+            .collect(Collectors.toList())
     }
 
     @Transactional(readOnly = true)
-    public Memory findMemoryEntityById(Long memberId, Long memoryId) {
+    fun findMemoryEntityById(memberId: Long?, memoryId: Long?): Memory {
         return memoryRepository.findMemoryByIdAndMemberId(memoryId, memberId)
-                .orElseThrow(() -> new NotFoundException("해당 유저의 메모리를 찾을 수 없습니다."));
+            .orElseThrow { NotFoundException("해당 유저의 메모리를 찾을 수 없습니다.") }
     }
-
 }

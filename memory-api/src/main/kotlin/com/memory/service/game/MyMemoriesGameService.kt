@@ -1,101 +1,117 @@
-package com.memory.service.game;
+package com.memory.service.game
 
-import com.memory.domain.file.File;
-import com.memory.domain.game.*;
-import com.memory.domain.game.repository.GameQuestionRepository;
-import com.memory.domain.member.Member;
-import com.memory.domain.memory.Memory;
-import com.memory.domain.memory.repository.MemoryRepository;
-import com.memory.dto.game.GameSessionRequest;
-import com.memory.dto.game.response.GameQuestionResponse;
-import com.memory.exception.customException.NotFoundException;
-import com.memory.service.game.factory.GameFactoryService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.memory.domain.game.GameSession.gameSessionInit;
+import com.memory.domain.file.File
+import com.memory.domain.game.GameMode
+import com.memory.domain.game.GameQuestion
+import com.memory.domain.game.GameQuestion.Companion.init
+import com.memory.domain.game.GameSession
+import com.memory.domain.game.GameSession.Companion.gameSessionInit
+import com.memory.domain.game.GameSetting
+import com.memory.domain.game.repository.GameQuestionRepository
+import com.memory.domain.member.Member
+import com.memory.domain.memory.Memory
+import com.memory.domain.memory.repository.MemoryRepository
+import com.memory.dto.game.GameSessionRequest
+import com.memory.dto.game.response.GameQuestionResponse
+import com.memory.exception.customException.NotFoundException
+import com.memory.service.game.factory.GameFactoryService
+import lombok.RequiredArgsConstructor
+import lombok.extern.slf4j.Slf4j
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
+import java.math.BigDecimal
+import java.util.*
+import java.util.stream.Collectors
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MyMemoriesGameService implements GameFactoryService {
+class MyMemoriesGameService(
+    private val gameQuestionRepository: GameQuestionRepository,
+    private val memoryRepository: MemoryRepository,
+) : GameFactoryService {
+    private val log = LoggerFactory.getLogger(MyMemoriesGameService::class.java)
 
-    private final GameQuestionRepository gameQuestionRepository;
-    private final MemoryRepository memoryRepository;
-    
-    private static final int MIN_MEMORIES_FOR_GAME = 3;
-
-    @Override
-    public GameSession createGameSession(Member member, GameSetting gameSetting, GameSessionRequest.Create request) {
-        List<Memory> availableMemories = memoryRepository.findMemoriesWithImagesByMember(member);
-        if (availableMemories.size() < MIN_MEMORIES_FOR_GAME) {
-            throw new IllegalStateException(
-                    String.format("내 추억 게임을 시작하기 위해서는 최소 %d개의 이미지가 있는 추억이 필요합니다.", MIN_MEMORIES_FOR_GAME)
-            );
+    override fun createGameSession(
+        member: Member,
+        gameSetting: GameSetting?,
+        request: GameSessionRequest.Create
+    ): GameSession {
+        val availableMemories: List<Memory?> = memoryRepository.findMemoriesWithImagesByMember(member)
+        check(availableMemories.size >= MIN_MEMORIES_FOR_GAME) {
+            String.format(
+                "내 추억 게임을 시작하기 위해서는 최소 %d개의 이미지가 있는 추억이 필요합니다.",
+                MIN_MEMORIES_FOR_GAME
+            )
         }
-        
-        GameSession gameSession = gameSessionInit(member, GameMode.MY_MEMORIES);
-        
-        log.info("내 추억 게임 세션 생성 완료 - memberId: {}, sessionId: {}", 
-                member.getId(), gameSession.getId());
-        
-        return gameSession;
+
+        val gameSession = gameSessionInit(member, GameMode.MY_MEMORIES)
+
+        log.info(
+            "내 추억 게임 세션 생성 완료 - memberId: {}, sessionId: {}",
+            member.id, gameSession.id
+        )
+
+        return gameSession
     }
 
-    @Override
-    public GameQuestionResponse getNextQuestion(Member member, GameSession gameSession, GameSetting gameSetting, Integer nextOrder) {
+    override fun getNextQuestion(
+        member: Member?,
+        gameSession: GameSession,
+        gameSetting: GameSetting?,
+        nextOrder: Int
+    ): GameQuestionResponse {
         // 이미 사용된 Memory ID들 조회
-        List<GameQuestion> existingQuestions = gameQuestionRepository.findByGameSessionOrderByQuestionOrder(gameSession);
-        List<Long> usedMemoryIds = existingQuestions.stream()
-                .map(q -> q.getMemory().getId())
-                .collect(Collectors.toList());
+        val existingQuestions: List<GameQuestion?> =
+            gameQuestionRepository.findByGameSessionOrderByQuestionOrder(gameSession)
+        val usedMemoryIds = existingQuestions.stream()
+            .map<Long?> { q: GameQuestion? -> q!!.memory!!.id }
+            .collect(Collectors.toList())
 
-        Memory selectedMemory = selectRandomMemory(gameSession, usedMemoryIds);
+        val selectedMemory = selectRandomMemory(gameSession, usedMemoryIds)
 
         // GameQuestion 생성
-        String latitude = selectedMemory.getMap().getLatitude();
-        String longitude = selectedMemory.getMap().getLongitude();
+        val latitude = selectedMemory.map!!.latitude
+        val longitude = selectedMemory.map!!.longitude
 
-        GameQuestion gameQuestion = GameQuestion.init(
-                gameSession,
-                selectedMemory,
-                nextOrder,
-                new BigDecimal(latitude),
-                new BigDecimal(longitude),
-                selectedMemory.getLocationName()
-        );
+        val gameQuestion = init(
+            gameSession,
+            selectedMemory,
+            nextOrder,
+            BigDecimal(latitude),
+            BigDecimal(longitude),
+            selectedMemory.locationName
+        )
 
-        GameQuestion savedQuestion = gameQuestionRepository.save(gameQuestion);
+        val savedQuestion = gameQuestionRepository.save<GameQuestion>(gameQuestion)
 
-        gameSession.addGameQuestion(savedQuestion);
+        gameSession.addGameQuestion(savedQuestion)
 
-        List<String> imageUrls = selectedMemory.getFiles().stream()
-                .map(File::getFileUrl)
-                .toList();
+        val imageUrls = selectedMemory.files.stream()
+            .map<String?>(File::fileUrl)
+            .toList()
 
-        return GameQuestionResponse.forQuestion(savedQuestion, imageUrls);
+        return GameQuestionResponse.forQuestion(savedQuestion, imageUrls)
     }
 
-    private Memory selectRandomMemory(GameSession gameSession, List<Long> usedMemoryIds) {
-        List<Memory> availableMemories = memoryRepository.findMemoriesWithImagesByMember(gameSession.getMember());
+    private fun selectRandomMemory(gameSession: GameSession, usedMemoryIds: MutableList<Long?>): Memory {
+        val availableMemories: List<Memory?> =
+            memoryRepository.findMemoriesWithImagesByMember(gameSession.member)
 
         // 이미 사용된 Memory 제외
-        List<Memory> unusedMemories = availableMemories.stream()
-                .filter(memory -> !usedMemoryIds.contains(memory.getId()))
-                .collect(Collectors.toList());
+        val unusedMemories: MutableList<Memory> = availableMemories.stream()
+            .filter { memory: Memory? -> !usedMemoryIds.contains(memory!!.id) }
+            .collect(Collectors.toList())
 
         if (unusedMemories.isEmpty()) {
-            throw new NotFoundException("사용 가능한 내 추억이 부족합니다.");
+            throw NotFoundException("사용 가능한 내 추억이 부족합니다.")
         }
 
-        Collections.shuffle(unusedMemories);
-        return unusedMemories.get(0);
+        Collections.shuffle(unusedMemories)
+        return unusedMemories.get(0)
     }
 
+    companion object {
+        private const val MIN_MEMORIES_FOR_GAME = 3
+    }
 }

@@ -1,146 +1,147 @@
-package com.memory.service.memberlink;
+package com.memory.service.memberlink
 
-import com.memory.domain.member.Member;
-import com.memory.domain.member.repository.MemberRepository;
-import com.memory.domain.memberlink.MemberLink;
-import com.memory.domain.memberlink.repository.MemberLinkRepository;
-import com.memory.dto.member.response.MemberResponse;
-import com.memory.dto.memberlink.MemberLinkRequest;
-import com.memory.dto.memberlink.response.MemberLinkResponse;
-import com.memory.dto.memberlink.response.MemberPublicLinkResponse;
-import com.memory.exception.customException.NotFoundException;
-import com.memory.exception.customException.ValidationException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.memory.domain.member.repository.MemberRepository
+import com.memory.domain.memberlink.MemberLink
+import com.memory.domain.memberlink.repository.MemberLinkRepository
+import com.memory.dto.member.response.MemberResponse.Companion.from
+import com.memory.dto.memberlink.MemberLinkRequest
+import com.memory.dto.memberlink.response.MemberLinkResponse
+import com.memory.dto.memberlink.response.MemberLinkResponse.Companion.forPublic
+import com.memory.dto.memberlink.response.MemberLinkResponse.Companion.from
+import com.memory.dto.memberlink.response.MemberPublicLinkResponse
+import com.memory.dto.memberlink.response.MemberPublicLinkResponse.Companion.of
+import com.memory.exception.customException.NotFoundException
+import com.memory.exception.customException.ValidationException
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
-import java.util.List;
-
-@Slf4j
 @Service
-@RequiredArgsConstructor
-public class MemberLinkService {
-
-    private final MemberLinkRepository memberLinkRepository;
-    private final MemberRepository memberRepository;
-
+class MemberLinkService(
+    private val memberLinkRepository: MemberLinkRepository,
+    private val memberRepository: MemberRepository,
+) {
     @Transactional
-    public MemberLinkResponse createMemberLink(Long memberId, MemberLinkRequest.Create request) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    fun createMemberLink(memberId: Long?, request: MemberLinkRequest.Create): MemberLinkResponse {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        Integer nextDisplayOrder = memberLinkRepository.findMaxDisplayOrderByMemberId(memberId) + 1;
+        val nextDisplayOrder = memberLinkRepository.findMaxDisplayOrderByMemberId(memberId)?.plus(1) ?: 1
 
-        MemberLink memberLink = request.toEntity(member, nextDisplayOrder);
-        MemberLink savedMemberLink = memberLinkRepository.save(memberLink);
-        member.addMemberLink(savedMemberLink);
+        val memberLink = request.toEntity(member, nextDisplayOrder)
+        val savedMemberLink = memberLinkRepository.save<MemberLink>(memberLink)
+        member.addMemberLink(savedMemberLink)
 
-        return MemberLinkResponse.from(savedMemberLink);
+        return from(savedMemberLink)
     }
 
     @Transactional
-    public MemberLinkResponse updateMemberLink(Long memberId, Long linkId, MemberLinkRequest.Update request) {
-        MemberLink memberLink = memberLinkRepository.findByIdAndMemberId(linkId, memberId)
-                .orElseThrow(() -> new NotFoundException("링크를 찾을 수 없거나 수정 권한이 없습니다."));
+    fun updateMemberLink(memberId: Long?, linkId: Long?, request: MemberLinkRequest.Update): MemberLinkResponse {
+        val memberLink = memberLinkRepository.findByIdAndMemberId(linkId, memberId)
+            .orElseThrow { NotFoundException("링크를 찾을 수 없거나 수정 권한이 없습니다.") }
 
         memberLink.update(
-                request.getTitle(),
-                request.getUrl(),
-                request.getDescription(),
-                request.getDisplayOrder(),
-                request.isActive(),
-                request.isVisible(),
-                request.getIconUrl()
-        );
+            request.title,
+            request.url,
+            request.description,
+            request.displayOrder,
+            request.isActive,
+            request.isVisible,
+            request.iconUrl
+        )
 
-        return MemberLinkResponse.from(memberLink);
+        return from(memberLink)
     }
 
     @Transactional
-    public MemberLinkResponse updateMemberLinkOrder(Long memberId, Long linkId, MemberLinkRequest.UpdateOrder request) {
-        MemberLink memberLink = memberLinkRepository.findByIdAndMemberId(linkId, memberId)
-                .orElseThrow(() -> new NotFoundException("링크를 찾을 수 없거나 수정 권한이 없습니다."));
+    fun updateMemberLinkOrder(
+        memberId: Long?,
+        linkId: Long?,
+        request: MemberLinkRequest.UpdateOrder
+    ): MemberLinkResponse {
+        val memberLink = memberLinkRepository.findByIdAndMemberId(linkId, memberId)
+            .orElseThrow { NotFoundException("링크를 찾을 수 없거나 수정 권한이 없습니다.") }
 
-        Integer newDisplayOrder = request.getDisplayOrder();
-        Long totalCount = memberLinkRepository.countByMemberId(memberId);
-        
+        val newDisplayOrder = request.displayOrder
+        val totalCount = memberLinkRepository.countByMemberId(memberId) ?: 0L
+
         if (newDisplayOrder < 1 || newDisplayOrder > totalCount) {
-            throw new IllegalArgumentException("유효하지 않은 순서입니다. (1 ~ " + totalCount + ")");
+            throw ValidationException("유효하지 않은 순서입니다. (1 ~ $totalCount)")
         }
 
         if (memberLink.isSameOrder(newDisplayOrder)) {
-            return MemberLinkResponse.from(memberLink);
+            return from(memberLink)
         }
 
         // 순서 재배치 로직
-        Integer currentOrder = memberLink.getDisplayOrder();
+        val currentOrder = memberLink.displayOrder
         if (currentOrder < newDisplayOrder) {
             // 뒤로 이동: 현재 순서보다 크고 새 순서보다 작거나 같은 항목들을 앞으로 당김
-            List<MemberLink> linksToUpdate = memberLinkRepository
-                    .findByMemberIdAndDisplayOrderBetween(memberId, currentOrder + 1, newDisplayOrder);
-            for (MemberLink link : linksToUpdate) {
-                link.updateDisplayOrder(link.getDisplayOrder() - 1);
+            val linksToUpdate: List<MemberLink> = memberLinkRepository
+                .findByMemberIdAndDisplayOrderBetween(memberId, currentOrder + 1, newDisplayOrder)
+            for (link in linksToUpdate) {
+                link.updateDisplayOrder(link.displayOrder - 1)
             }
         } else {
             // 앞으로 이동: 새 순서보다 크거나 같고 현재 순서보다 작은 항목들을 뒤로 밀어냄
-            List<MemberLink> linksToUpdate = memberLinkRepository
-                    .findByMemberIdAndDisplayOrderBetween(memberId, newDisplayOrder, currentOrder - 1);
-            for (MemberLink link : linksToUpdate) {
-                link.updateDisplayOrder(link.getDisplayOrder() + 1);
+            val linksToUpdate: List<MemberLink> = memberLinkRepository
+                .findByMemberIdAndDisplayOrderBetween(memberId, newDisplayOrder, currentOrder - 1)
+            for (link in linksToUpdate) {
+                link.updateDisplayOrder(link.displayOrder + 1)
             }
         }
 
-        memberLink.updateDisplayOrder(newDisplayOrder);
+        memberLink.updateDisplayOrder(newDisplayOrder)
 
-        return MemberLinkResponse.from(memberLink);
+        return from(memberLink)
     }
 
     @Transactional(readOnly = true)
-    public List<MemberLinkResponse> getMemberLinks(Long memberId) {
-        List<MemberLink> memberLinks = memberLinkRepository.findActiveByMemberIdOrderByDisplayOrder(memberId);
-        
+    fun getMemberLinks(memberId: Long?): List<MemberLinkResponse> {
+        val memberLinks: List<MemberLink> =
+            memberLinkRepository.findActiveByMemberIdOrderByDisplayOrder(memberId)
+
         return memberLinks.stream()
-                .map(MemberLinkResponse::from)
-                .toList();
+            .map { obj: MemberLink -> from(obj) }
+            .toList()
     }
 
     @Transactional(readOnly = true)
-    public MemberPublicLinkResponse getPublicMemberLinks(Long memberId) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    fun getPublicMemberLinks(memberId: Long?): MemberPublicLinkResponse {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        List<MemberLink> publicLinks = memberLinkRepository.findPublicByMemberIdOrderByDisplayOrder(memberId);
+        val publicLinks: List<MemberLink> =
+            memberLinkRepository.findPublicByMemberIdOrderByDisplayOrder(memberId)
 
-        List<MemberLinkResponse> linkResponses = publicLinks.stream()
-                .map(MemberLinkResponse::forPublic)
-                .toList();
-        return MemberPublicLinkResponse.of(linkResponses, MemberResponse.from(member));
+        val linkResponses = publicLinks.stream()
+            .map { obj: MemberLink -> forPublic(obj) }
+            .toList()
+        return of(linkResponses, from(member))
     }
 
     @Transactional
-    public void deleteMemberLink(Long memberId, Long linkId) {
-        MemberLink memberLink = memberLinkRepository.findByIdAndMemberId(linkId, memberId)
-                .orElseThrow(() -> new NotFoundException("링크를 찾을 수 없거나 삭제 권한이 없습니다."));
+    fun deleteMemberLink(memberId: Long?, linkId: Long?) {
+        val memberLink = memberLinkRepository.findByIdAndMemberId(linkId, memberId)
+            .orElseThrow { NotFoundException("링크를 찾을 수 없거나 삭제 권한이 없습니다.") }
 
-        memberLink.updateDelete();
+        memberLink.updateDelete()
     }
 
     @Transactional
-    public MemberLinkResponse incrementClickCount(Long linkId) {
-        MemberLink memberLink = memberLinkRepository.findById(linkId)
-                .orElseThrow(() -> new NotFoundException("링크를 찾을 수 없습니다."));
+    fun incrementClickCount(linkId: Long): MemberLinkResponse {
+        val memberLink = memberLinkRepository.findById(linkId)
+            .orElseThrow { NotFoundException("링크를 찾을 수 없습니다.") }
 
         if (memberLink.isDeleted()) {
-            throw new NotFoundException("삭제된 링크입니다.");
+            throw NotFoundException("삭제된 링크입니다.")
         }
 
         if (!memberLink.isAccessible()) {
-            throw new ValidationException("접근할 수 없는 링크입니다.");
+            throw ValidationException("접근할 수 없는 링크입니다.")
         }
 
-        memberLink.incrementClickCount();
+        memberLink.incrementClickCount()
 
-        return MemberLinkResponse.forPublic(memberLink);
+        return forPublic(memberLink)
     }
 }

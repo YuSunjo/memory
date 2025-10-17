@@ -1,54 +1,51 @@
-package com.memory.service.file;
+package com.memory.service.file
 
-import com.memory.domain.file.FileType;
-import com.memory.storage.dto.UploadResponse;
-import com.memory.dto.file.FileRequest;
-import com.memory.dto.file.response.FileResponse;
-import com.memory.storage.service.upload.FileUploadService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
+import com.memory.domain.file.FileType
+import com.memory.dto.file.FileRequest
+import com.memory.dto.file.response.FileResponse
+import com.memory.storage.dto.UploadResponse
+import com.memory.storage.service.upload.FileUploadService
+import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 
 @Service
-@RequiredArgsConstructor
-public class FileFacade {
-
-    private final FileUploadService uploadService;
-    private final FileService fileService;
-
-    public FileResponse uploadFile(MultipartFile file, FileType fileType) {
-        UploadResponse uploadResponse = uploadService.uploadFile(file, fileType.getDirectory());
-        FileRequest.Create request = new FileRequest.Create(
-                uploadResponse.originalFileName(),
-                uploadResponse.fileName(),
-                uploadResponse.fileUrl(),
-                fileType,
-                uploadResponse.fileSize(),
-                null,
-                null
-        );
-        return fileService.createFile(request);
+class FileFacade(
+    private val uploadService: FileUploadService,
+    private val fileService: FileService,
+) {
+    fun uploadFile(file: MultipartFile?, fileType: FileType): FileResponse? {
+        val uploadResponse = uploadService.uploadFile(file, fileType.directory)
+        val request = FileRequest.Create(
+            uploadResponse.originalFileName,
+            uploadResponse.fileName,
+            uploadResponse.fileUrl,
+            fileType,
+            uploadResponse.fileSize,
+            null,
+            null
+        )
+        return fileService.createFile(request)
     }
 
-    public void deleteFile(Long fileId) {
-        fileService.deleteFile(fileId);
+    fun deleteFile(fileId: Long) {
+        fileService.deleteFile(fileId)
     }
 
-    public List<FileResponse> uploadFileList(List<MultipartFile> files, FileType fileType) {
-        List<UploadResponse> uploadResponseList = uploadService.uploadFileList(files, fileType.getDirectory());
-        List<FileRequest.Create> requestList = uploadResponseList.stream()
-                .map(uploadResponse -> new FileRequest.Create(
-                        uploadResponse.originalFileName(),
-                        uploadResponse.fileName(),
-                        uploadResponse.fileUrl(),
-                        fileType,
-                        uploadResponse.fileSize(),
-                        null,
-                        null
-                ))
-                .toList();
-        return fileService.createFileList(requestList);
+    fun uploadFileList(files: MutableList<MultipartFile?>?, fileType: FileType): MutableList<FileResponse?>? {
+        val uploadResponseList = uploadService.uploadFileList(files, fileType.directory)
+        val requestList = uploadResponseList.stream()
+            .map<FileRequest.Create?> { uploadResponse: UploadResponse? ->
+                FileRequest.Create(
+                    uploadResponse!!.originalFileName,
+                    uploadResponse.fileName,
+                    uploadResponse.fileUrl,
+                    fileType,
+                    uploadResponse.fileSize,
+                    null,
+                    null
+                )
+            }
+            .toList()
+        return fileService.createFileList(requestList)
     }
 }

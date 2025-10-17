@@ -50,8 +50,8 @@ class Routine(
     }
 
     fun update(
-        title: String,
-        content: String,
+        title: String?,
+        content: String?,
         repeatSetting: RepeatSetting?
     ) {
         this.title = title

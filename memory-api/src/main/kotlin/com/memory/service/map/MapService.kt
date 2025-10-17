@@ -1,55 +1,50 @@
-package com.memory.service.map;
+package com.memory.service.map
 
-import com.memory.domain.map.Map;
-import com.memory.domain.map.MapType;
-import com.memory.domain.map.repository.MapRepository;
-import com.memory.domain.member.Member;
-import com.memory.domain.member.repository.MemberRepository;
-import com.memory.dto.map.MapRequest;
-import com.memory.dto.map.response.MapResponse;
-import com.memory.exception.customException.NotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import com.memory.domain.map.Map
+import com.memory.domain.map.MapType
+import com.memory.domain.map.repository.MapRepository
+import com.memory.domain.member.repository.MemberRepository
+import com.memory.dto.map.MapRequest
+import com.memory.dto.map.response.MapResponse
+import com.memory.dto.map.response.MapResponse.Companion.from
+import com.memory.exception.customException.NotFoundException
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.util.stream.Collectors
 
 @Service
-@RequiredArgsConstructor
-public class MapService {
-
-    private final MemberRepository memberRepository;
-    private final MapRepository mapRepository;
-
+class MapService(
+    private val memberRepository: MemberRepository,
+    private val mapRepository: MapRepository,
+) {
     @Transactional
-    public MapResponse createMap(MapRequest.Create createRequest, Long memberId) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원이 존재하지 않습니다."));
-        Map savedMap = mapRepository.save(createRequest.toEntity(member));
-        return MapResponse.from(savedMap);
+    fun createMap(createRequest: MapRequest.Create, memberId: Long?): MapResponse {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow{ NotFoundException("회원이 존재하지 않습니다.") }
+        val savedMap = mapRepository.save<Map>(createRequest.toEntity(member))
+        return from(savedMap)
     }
 
     @Transactional(readOnly = true)
-    public MapResponse findMapById(Long mapId) {
-        Map map = mapRepository.findById(mapId)
-                .orElseThrow(() -> new NotFoundException("지도를 찾을 수 없습니다."));
-        return MapResponse.from(map);
+    fun findMapById(mapId: Long): MapResponse {
+        val map = mapRepository.findById(mapId)
+            .orElseThrow{ NotFoundException("지도를 찾을 수 없습니다.") }
+        return from(map)
     }
 
     @Transactional(readOnly = true)
-    public List<MapResponse> findMapsByType(MapType mapType) {
-        List<Map> maps = mapRepository.findByMapType(mapType);
+    fun findMapsByType(mapType: MapType?): List<MapResponse?> {
+        val maps: List<Map> = mapRepository.findByMapType(mapType)
         return maps.stream()
-                .map(MapResponse::from)
-                .collect(Collectors.toList());
+            .map { obj: Map -> from(obj) }
+            .collect(Collectors.toList())
     }
 
     @Transactional(readOnly = true)
-    public List<MapResponse> findMapsByMemberAndType(Long memberId) {
-        List<Map> maps = mapRepository.findByMemberId(memberId);
+    fun findMapsByMemberAndType(memberId: Long?): List<MapResponse?> {
+        val maps: List<Map> = mapRepository.findByMemberId(memberId)
         return maps.stream()
-                .map(MapResponse::from)
-                .collect(Collectors.toList());
+            .map { obj: Map -> from(obj) }
+            .collect(Collectors.toList())
     }
 }

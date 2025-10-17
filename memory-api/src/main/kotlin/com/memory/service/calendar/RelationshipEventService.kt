@@ -1,110 +1,113 @@
-package com.memory.service.calendar;
+package com.memory.service.calendar
 
-import com.memory.domain.calendar.RelationshipEvent;
-import com.memory.domain.calendar.repository.RelationshipEventRepository;
-import com.memory.domain.member.Member;
-import com.memory.domain.member.repository.MemberRepository;
-import com.memory.domain.relationship.Relationship;
-import com.memory.domain.relationship.RelationshipStatus;
-import com.memory.domain.relationship.repository.RelationshipRepository;
-import com.memory.dto.calendar.CalendarEventRequest;
-import com.memory.dto.calendar.response.BaseCalendarEventResponse;
-import com.memory.exception.customException.NotFoundException;
-import com.memory.service.calendar.factory.CalendarEventFactoryService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.memory.service.calendar.CalendarEventServiceUtils.validateRelationshipMember;
+import com.memory.domain.calendar.RelationshipEvent
+import com.memory.domain.calendar.repository.RelationshipEventRepository
+import com.memory.domain.member.repository.MemberRepository
+import com.memory.domain.relationship.Relationship
+import com.memory.domain.relationship.RelationshipStatus
+import com.memory.domain.relationship.repository.RelationshipRepository
+import com.memory.dto.calendar.CalendarEventRequest
+import com.memory.dto.calendar.response.BaseCalendarEventResponse
+import com.memory.exception.customException.NotFoundException
+import com.memory.service.calendar.factory.CalendarEventFactoryService
+import lombok.RequiredArgsConstructor
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.util.stream.Collectors
 
 @Service
 @RequiredArgsConstructor
-public class RelationshipEventService implements CalendarEventFactoryService {
-
-    private final MemberRepository memberRepository;
-    private final RelationshipRepository relationshipRepository;
-    private final RelationshipEventRepository relationshipEventRepository;
-
-    @Override
+class RelationshipEventService(
+    private val memberRepository: MemberRepository,
+    private val relationshipRepository: RelationshipRepository,
+    private val relationshipEventRepository: RelationshipEventRepository,
+) : CalendarEventFactoryService {
     @Transactional
-    public BaseCalendarEventResponse createCalendarEvent(Long memberId, CalendarEventRequest.Create request) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    override fun createCalendarEvent(
+        memberId: Long?,
+        request: CalendarEventRequest.Create
+    ): BaseCalendarEventResponse? {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        List<Relationship> relationshipList = relationshipRepository.findByMemberOrRelatedMemberAndStatus(member, RelationshipStatus.ACCEPTED);
+        val relationshipList: List<Relationship?> =
+            relationshipRepository.findByMemberOrRelatedMemberAndStatus(member, RelationshipStatus.ACCEPTED)
         if (relationshipList.isEmpty()) {
-            throw new NotFoundException("회원의 관계가 존재하지 않습니다.");
+            throw NotFoundException("회원의 관계가 존재하지 않습니다.")
         }
 
         // 모든 관계에 대해 관계 이벤트 생성
-        List<RelationshipEvent> savedEventList = relationshipList.stream()
-                .map(relationship -> {
-                    validateRelationshipMember(relationship.getMember(), relationship);
-                    RelationshipEvent relationshipEvent = request.toRelationshipEvent(relationship.getMember(), relationship);
-                    return relationshipEventRepository.save(relationshipEvent);
-                })
-                .toList();
+        val savedEventList = relationshipList.stream()
+            .map { relationship: Relationship? ->
+                CalendarEventServiceUtils.validateRelationshipMember(relationship?.member, relationship)
+                val relationshipEvent = request.toRelationshipEvent(relationship?.member, relationship)
+                relationshipEventRepository.save(relationshipEvent)
+            }
+            .toList()
 
-        return BaseCalendarEventResponse.from(savedEventList.get(0));
+        return BaseCalendarEventResponse.from(savedEventList.get(0))
     }
 
-    @Override
     @Transactional
-    public BaseCalendarEventResponse updateCalendarEvent(Long memberId, Long eventId, CalendarEventRequest.Update request) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    override fun updateCalendarEvent(
+        memberId: Long?,
+        eventId: Long,
+        request: CalendarEventRequest.Update
+    ): BaseCalendarEventResponse? {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        RelationshipEvent relationshipEvent = relationshipEventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("일정을 찾을 수 없습니다."));
+        val relationshipEvent = relationshipEventRepository.findById(eventId)
+            .orElseThrow { NotFoundException("일정을 찾을 수 없습니다.") }
 
         // 접근 권한 확인
-        relationshipEvent.validateAccessPermission(member);
+        relationshipEvent.validateAccessPermission(member)
 
         // 일정 업데이트
         relationshipEvent.update(
-                request.getTitle(),
-                request.getDescription(),
-                request.getStartDateTime(),
-                request.getEndDateTime(),
-                request.getLocation()
-        );
+            request.getTitle(),
+            request.getDescription(),
+            request.getStartDateTime(),
+            request.getEndDateTime(),
+            request.getLocation()
+        )
 
-        return BaseCalendarEventResponse.from(relationshipEvent);
+        return BaseCalendarEventResponse.from(relationshipEvent)
     }
 
-    @Override
     @Transactional(readOnly = true)
-    public List<BaseCalendarEventResponse> getCalendarEventsByDateRange(Long memberId, LocalDateTime startDate, LocalDateTime endDate) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    override fun getCalendarEventsByDateRange(
+        memberId: Long?,
+        startDate: LocalDateTime?,
+        endDate: LocalDateTime?
+    ): MutableList<BaseCalendarEventResponse?> {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        List<RelationshipEvent> events = relationshipEventRepository.findByMemberAndStartDateTimeBetween(
-                member, startDate, endDate);
+        val events: List<RelationshipEvent?> = relationshipEventRepository.findByMemberAndStartDateTimeBetween(
+            member, startDate, endDate
+        )
 
         return events.stream()
-                .map(BaseCalendarEventResponse::from)
-                .collect(Collectors.toList());
+            .map { event: RelationshipEvent? -> BaseCalendarEventResponse.from(event) }
+            .collect(Collectors.toList())
     }
 
-    @Override
-    public List<BaseCalendarEventResponse> getCalendarEventsWithDday(Long memberId) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    override fun getCalendarEventsWithDday(memberId: Long?): MutableList<BaseCalendarEventResponse?> {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        List<Relationship> relationshipList = relationshipRepository.findByMemberOrRelatedMemberAndStatus(member, RelationshipStatus.ACCEPTED);
+        val relationshipList: List<Relationship?> =
+            relationshipRepository.findByMemberOrRelatedMemberAndStatus(member, RelationshipStatus.ACCEPTED)
         if (relationshipList.isEmpty()) {
-            return List.of();
+            return mutableListOf()
         }
 
-        List<RelationshipEvent> events = relationshipEventRepository.findByMemberAndFutureEvents(member);
+        val events: List<RelationshipEvent?> = relationshipEventRepository.findByMemberAndFutureEvents(member)
 
         return events.stream()
-                .map(BaseCalendarEventResponse::from)
-                .collect(Collectors.toList());
+            .map { event: RelationshipEvent? -> BaseCalendarEventResponse.from(event) }
+            .collect(Collectors.toList())
     }
-
 }

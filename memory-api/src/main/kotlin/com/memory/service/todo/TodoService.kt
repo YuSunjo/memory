@@ -1,110 +1,105 @@
-package com.memory.service.todo;
+package com.memory.service.todo
 
-import com.memory.domain.member.Member;
-import com.memory.domain.member.repository.MemberRepository;
-import com.memory.domain.todo.Todo;
-import com.memory.domain.todo.repository.TodoRepository;
-import com.memory.dto.todo.TodoRequest;
-import com.memory.dto.todo.response.TodoResponse;
-import com.memory.exception.customException.NotFoundException;
-import com.memory.exception.customException.ValidationException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.memory.domain.member.repository.MemberRepository
+import com.memory.domain.todo.Todo
+import com.memory.domain.todo.repository.TodoRepository
+import com.memory.dto.todo.TodoRequest
+import com.memory.dto.todo.TodoRequest.UpdateStatus
+import com.memory.dto.todo.response.TodoResponse
+import com.memory.dto.todo.response.TodoResponse.Companion.from
+import com.memory.exception.customException.NotFoundException
+import com.memory.exception.customException.ValidationException
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.time.LocalTime
+import java.util.stream.Collectors
 
 @Service
-@RequiredArgsConstructor
-public class TodoService {
-
-    private final MemberRepository memberRepository;
-    private final TodoRepository todoRepository;
-
+class TodoService(
+    private val memberRepository: MemberRepository,
+    private val todoRepository: TodoRepository,
+) {
     @Transactional
-    public TodoResponse createTodo(Long memberId, TodoRequest.Create request) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    fun createTodo(memberId: Long?, request: TodoRequest.Create): TodoResponse? {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        Todo todo = request.toEntity(member);
+        val todo = request.toEntity(member)
 
-        Todo savedTodo = todoRepository.save(todo);
-        return TodoResponse.from(savedTodo);
+        val savedTodo = todoRepository.save<Todo>(todo)
+        return from(savedTodo)
     }
 
     @Transactional
-    public TodoResponse updateTodo(Long memberId, Long todoId, TodoRequest.Update request) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    fun updateTodo(memberId: Long?, todoId: Long, request: TodoRequest.Update): TodoResponse? {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        Todo todo = todoRepository.findById(todoId)
-                .orElseThrow(() -> new NotFoundException("할 일을 찾을 수 없습니다."));
+        val todo = todoRepository.findById(todoId)
+            .orElseThrow { NotFoundException("할 일을 찾을 수 없습니다.") }
 
         if (!todo.isOwner(member)) {
-            throw new ValidationException("해당 할 일에 대한 권한이 없습니다.");
+            throw ValidationException("해당 할 일에 대한 권한이 없습니다.")
         }
 
         todo.update(
-                request.getTitle(),
-                request.getContent(),
-                request.getDueDate()
-        );
+            request.title,
+            request.content,
+            request.dueDate
+        )
 
-        return TodoResponse.from(todo);
+        return from(todo)
     }
 
     @Transactional
-    public TodoResponse updateTodoStatus(Long memberId, Long todoId, TodoRequest.UpdateStatus request) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    fun updateTodoStatus(memberId: Long?, todoId: Long, request: UpdateStatus): TodoResponse? {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        Todo todo = todoRepository.findById(todoId)
-                .orElseThrow(() -> new NotFoundException("할 일을 찾을 수 없습니다."));
+        val todo = todoRepository.findById(todoId)
+            .orElseThrow { NotFoundException("할 일을 찾을 수 없습니다.") }
 
         if (!todo.isOwner(member)) {
-            throw new ValidationException("해당 할 일에 대한 권한이 없습니다.");
+            throw ValidationException("해당 할 일에 대한 권한이 없습니다.")
         }
 
-        if (request.getCompleted()) {
-            todo.complete();
+        if (request.completed) {
+            todo.complete()
         } else {
-            todo.incomplete();
+            todo.incomplete()
         }
 
-        return TodoResponse.from(todo);
+        return from(todo)
     }
 
     @Transactional
-    public void deleteTodo(Long memberId, Long todoId) {
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+    fun deleteTodo(memberId: Long?, todoId: Long) {
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        Todo todo = todoRepository.findById(todoId)
-                .orElseThrow(() -> new NotFoundException("할 일을 찾을 수 없습니다."));
+        val todo = todoRepository.findById(todoId)
+            .orElseThrow { NotFoundException("할 일을 찾을 수 없습니다.") }
 
         if (!todo.isOwner(member)) {
-            throw new ValidationException("해당 할 일에 대한 권한이 없습니다.");
+            throw ValidationException("해당 할 일에 대한 권한이 없습니다.")
         }
 
-        todo.updateDelete();
+        todo.updateDelete()
     }
 
     @Transactional(readOnly = true)
-    public List<TodoResponse> getTodosByDateRange(Long memberId, LocalDate startDate, LocalDate endDate) {
+    fun getTodosByDateRange(memberId: Long?, startDate: LocalDate, endDate: LocalDate): MutableList<TodoResponse?> {
+        val startDateTime = startDate.atStartOfDay()
+        val endDateTime = endDate.atTime(LocalTime.MAX)
 
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+        val member = memberRepository.findMemberById(memberId)
+            .orElseThrow { NotFoundException("회원을 찾을 수 없습니다.") }
 
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
-
-        List<Todo> todos = todoRepository.findByMemberAndDueDateBetween(member, startDateTime, endDateTime);
+        val todos: List<Todo> =
+            todoRepository.findByMemberAndDueDateBetween(member, startDateTime, endDateTime)
         return todos.stream()
-                .map(TodoResponse::from)
-                .collect(Collectors.toList());
+            .map<TodoResponse?> { obj: Todo -> from(obj) }
+            .collect(Collectors.toList())
     }
 }

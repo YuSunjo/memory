@@ -56,13 +56,13 @@ class MemberLinkRequest {
         var description: String? = null,
 
         @field:NotNull(message = "표시 순서는 필수입니다.")
-        var displayOrder: Int? = null,
+        var displayOrder: Int,
 
         @field:NotNull(message = "활성 상태는 필수입니다.")
-        var isActive: Boolean? = null,
+        var isActive: Boolean,
 
         @field:NotNull(message = "공개 여부는 필수입니다.")
-        var isVisible: Boolean? = null,
+        var isVisible: Boolean,
 
         @field:URL(message = "올바른 URL 형식이어야 합니다.")
         @field:Size(max = 500, message = "아이콘 URL은 500자를 초과할 수 없습니다.")
@@ -71,6 +71,6 @@ class MemberLinkRequest {
 
     data class UpdateOrder(
         @field:NotNull(message = "표시 순서는 필수입니다.")
-        var displayOrder: Int? = null
+        var displayOrder: Int,
     )
 }

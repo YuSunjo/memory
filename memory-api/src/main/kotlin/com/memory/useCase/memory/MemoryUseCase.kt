@@ -1,75 +1,72 @@
-package com.memory.useCase.memory;
+package com.memory.useCase.memory
 
-import com.memory.domain.hashtag.HashTag;
-import com.memory.domain.memory.Memory;
-import com.memory.domain.relationship.RelationshipStatus;
-import com.memory.dto.memory.MemoryRequest;
-import com.memory.dto.memory.response.MemoryResponse;
-import com.memory.dto.relationship.response.RelationshipListResponse;
-import com.memory.service.document.MemoryDocumentService;
-import com.memory.service.hashTag.HashTagService;
-import com.memory.service.hashTag.MemoryHashTagService;
-import com.memory.service.memory.MemoryService;
-import com.memory.service.relationship.RelationshipService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
+import com.memory.domain.relationship.RelationshipStatus
+import com.memory.dto.memory.MemoryRequest
+import com.memory.dto.memory.response.MemoryResponse
+import com.memory.service.document.MemoryDocumentService
+import com.memory.service.hashTag.HashTagService
+import com.memory.service.hashTag.MemoryHashTagService
+import com.memory.service.memory.MemoryService
+import com.memory.service.relationship.RelationshipService
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
-@RequiredArgsConstructor
-public class MemoryUseCase {
-
-    private final MemoryService memoryService;
-    private final RelationshipService relationshipService;
-    private final HashTagService hashTagService;
-    private final MemoryHashTagService memoryHashTagService;
-    private final MemoryDocumentService memoryDocumentService;
-
+class MemoryUseCase(
+    private val memoryService: MemoryService,
+    private val relationshipService: RelationshipService,
+    private val hashTagService: HashTagService,
+    private val memoryHashTagService: MemoryHashTagService,
+    private val memoryDocumentService: MemoryDocumentService,
+) {
     @Transactional
-    public MemoryResponse createMemoryWithHashTags(Long memberId, MemoryRequest.Create createRequest) {
+    fun createMemoryWithHashTags(memberId: Long?, createRequest: MemoryRequest.Create): MemoryResponse {
         // 1. 메모리 생성
-        MemoryResponse memoryResponse = memoryService.createMemory(memberId, createRequest);
+        val memoryResponse = memoryService.createMemory(memberId, createRequest)
 
-        Memory memory = memoryService.findMemoryEntityById(memberId, memoryResponse.id);
+        val memory = memoryService.findMemoryEntityById(memberId, memoryResponse.id)
 
         // 2. 해시태그 처리
-        if (createRequest.getHashTagList() != null && !createRequest.getHashTagList().isEmpty()) {
-            List<HashTag> hashTags = hashTagService.findOrCreateHashTags(createRequest.getHashTagList());
-            
-            memoryHashTagService.createMemoryHashTags(memory, hashTags);
+        if (!createRequest.hashTagList.isEmpty()) {
+            val hashTags = hashTagService.findOrCreateHashTags(createRequest.hashTagList as MutableList<String>?)
+
+            memoryHashTagService.createMemoryHashTags(memory, hashTags)
         }
-        RelationshipListResponse relationships = relationshipService.getRelationshipsByStatus(memberId, RelationshipStatus.ACCEPTED);
+        val relationships = relationshipService.getRelationshipsByStatus(memberId, RelationshipStatus.ACCEPTED)
 
         // 3. Elasticsearch 인덱싱 저장
-        memoryDocumentService.indexMemory(memory, relationships);
-        
-        return memoryResponse;
+        memoryDocumentService.indexMemory(memory, relationships)
+
+        return memoryResponse
     }
 
     @Transactional
-    public MemoryResponse updateMemoryWithHashTags(Long memberId, Long memoryId, MemoryRequest.Update updateRequest) {
+    fun updateMemoryWithHashTags(
+        memberId: Long?,
+        memoryId: Long?,
+        updateRequest: MemoryRequest.Update
+    ): MemoryResponse {
         // 1. 메모리 업데이트
-        MemoryResponse memoryResponse = memoryService.updateMemory(memberId, memoryId, updateRequest);
-        
+        val memoryResponse = memoryService.updateMemory(memberId, memoryId, updateRequest)
+
         // 2. 해시태그 처리
-        Memory memory = memoryService.findMemoryEntityById(memberId, memoryId);
-        List<HashTag> newHashTags = hashTagService.findOrCreateHashTags(updateRequest.getHashTagList());
-        memoryHashTagService.updateMemoryHashTags(memory, newHashTags);
-        
+        val memory = memoryService.findMemoryEntityById(memberId, memoryId)
+        val newHashTags = hashTagService.findOrCreateHashTags(updateRequest.hashTagList as MutableList<String>?)
+        memoryHashTagService.updateMemoryHashTags(memory, newHashTags)
+
+
         // 3. Elasticsearch 인덱스 업데이트
-        RelationshipListResponse relationships = relationshipService.getRelationshipsByStatus(memberId, RelationshipStatus.ACCEPTED);
-        memoryDocumentService.updateMemoryIndex(memory, relationships);
-        
-        return memoryResponse;
+        val relationships = relationshipService.getRelationshipsByStatus(memberId, RelationshipStatus.ACCEPTED)
+        memoryDocumentService.updateMemoryIndex(memory, relationships)
+
+        return memoryResponse
     }
 
     @Transactional
-    public void deleteMemory(Long memberId, Long memoryId) {
-        memoryService.deleteMemory(memberId, memoryId);
+    fun deleteMemory(memberId: Long?, memoryId: Long) {
+        memoryService.deleteMemory(memberId, memoryId)
 
         // Elasticsearch 인덱스 삭제
-        memoryDocumentService.deleteMemoryIndex(memoryId);
+        memoryDocumentService.deleteMemoryIndex(memoryId)
     }
 }
